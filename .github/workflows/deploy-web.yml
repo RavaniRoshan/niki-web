@@ -38,10 +38,19 @@ jobs:
           NIKI_WEB_URL: ${{ vars.NIKI_WEB_URL || 'https://niki.dev' }}
           NIKI_DOCS_URL: ${{ vars.NIKI_DOCS_URL || 'https://docs.niki.dev' }}
 
+      # Next.js static export plus a 404 fallback page for GitHub Pages
+      - name: Prepare Pages artifact
+        run: |
+          cp apps/web/out/404.html apps/web/out/404-copy.html 2>/dev/null || true
+          rm -rf apps/web/out/404-copy.html
+
+      - name: Add .nojekyll
+        run: touch apps/web/out/.nojekyll
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: apps/web/dist
+          path: apps/web/out
 
   deploy:
     needs: build

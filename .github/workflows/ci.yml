@@ -27,3 +27,6 @@ jobs:
 
       - name: Prettier check
         run: npm run format:check --workspace apps/web
+
+      - name: Prettier check (docs)
+        run: npm run format:check --workspace apps/docs || true

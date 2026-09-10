@@ -9,3 +9,5 @@ dist/
 apps/docs/dist/
 apps/web/dist/
 .astro/
+.next/
+out/

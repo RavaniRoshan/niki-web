@@ -5,7 +5,7 @@ multi-agent coding pipeline. Marketing site + documentation under one roof, shar
 brand system.
 
 ```
-niki.dev        → apps/web   (marketing, Astro)
+niki.dev        → apps/web   (marketing, Next.js)
 docs.niki.dev   → apps/docs  (documentation, Blume)
 ```
 
@@ -13,7 +13,7 @@ docs.niki.dev   → apps/docs  (documentation, Blume)
 
 ```
 apps/
-  web/           # Marketing site — Astro 5, static output
+  web/           # Marketing site — Next.js 15 (App Router, static export)
   docs/          # Documentation — Blume 1.4.3, content in content/
 packages/
   niki-theme/    # Shared design tokens + centralized site URLs (site.ts)
@@ -37,23 +37,26 @@ packages/
 ```bash
 npm install
 
-npm run dev:web        # marketing dev server
+npm run dev:web        # marketing dev server (port 4321)
 npm run dev:docs        # docs dev server
 
 npm run build           # build both sites
-npm run build:web       # → apps/web/dist
+npm run build:web       # → apps/web/out (static export + sitemap)
 npm run build:docs      # → apps/docs/dist
 
-npm run preview:web     # preview the marketing build
+npm run preview:web     # serve the marketing build (port 4321)
 ```
 
 Docs also support `npm run doctor --workspace apps/docs` (Blume content diagnostics).
 
 ## Design system
 
-Dark-first, flat surfaces, thin borders, mint-dominant (`#4ff7d1`), magenta reserved for
+Dark-first, flat surfaces, hairline borders, mint-dominant (`#4ff7d1`), magenta reserved for
 secondary/code states. Tokens live in `packages/niki-theme/tokens.css`; typography is Inter +
-JetBrains Mono; section rhythm 80px; max width 1200px; cards 16px, code 12px, pills 9999px.
+JetBrains Mono. The marketing site uses a boxy framed-column layout (max-width 1189px):
+sections stack as bordered boxes between dashed separator strips, full-bleed hairline cell
+grids (`gap-px` mesh), square corners everywhere, mono `//comment` section headings, and big
+tabular mono numerals for stats. No border-radius, no shadows on the marketing site.
 
 Agent role colors (planner / coder / tester / reviewer / red / security) remain semantically
 distinct in both apps — they carry meaning in the pipeline documentation and are intentionally
