@@ -3,50 +3,8 @@ import { Frame, Box, Strip, BoxHeader } from "@/components/Frame";
 import CodeBlock from "@/components/CodeBlock";
 import { Terminal, T } from "@/components/Terminal";
 import { HeroShader } from "@/components/HeroShader";
+import PipelineLive from "@/components/PipelineLive";
 import { SITE, WEB_ROUTES, DOCS_ROUTES, docsUrl } from "@/lib/site";
-
-const stages = [
-  {
-    role: "planner",
-    glyph: "P",
-    name: "Planner",
-    status: "planning",
-    desc: "Reads the task and your repo, produces a written implementation spec — files, steps, acceptance criteria.",
-    meta: ["artifact: plan.json", "output: implementation spec"],
-  },
-  {
-    role: "coder",
-    glyph: "C",
-    name: "Coder",
-    status: "coding",
-    desc: "Implements the plan inside a hermetic sandbox copy of your project. Never touches your working tree.",
-    meta: ["artifact: changes.patch", "output: branch niki/<id>"],
-  },
-  {
-    role: "tester",
-    glyph: "T",
-    name: "Tester",
-    status: "testing",
-    desc: "Runs the project's own test suite — plus generated regression tests — in the same isolated sandbox.",
-    meta: ["artifact: test-results.json", "gate: failing tests block the branch"],
-  },
-  {
-    role: "reviewer",
-    glyph: "R",
-    name: "Reviewer",
-    status: "reviewing",
-    desc: "Audits the diff for correctness and quality. Bounces work back to the Coder until it passes.",
-    meta: ["artifact: review.json", "loop: up to max_revision_rounds"],
-  },
-  {
-    role: "output",
-    glyph: "✓",
-    name: "Verified branch",
-    status: "complete",
-    desc: "You get a reviewable niki/<id> branch with a real commit, the full patch, a run report and per-agent artifacts.",
-    meta: ["branch: niki/<id>", "report: report.md"],
-  },
-];
 
 const features = [
   {
@@ -224,34 +182,13 @@ export default function HomePage() {
           heading="The multi-agent pipeline"
           aside={
             <span className="nx-badge">
-              <span className="nx-dot" aria-hidden="true" /> typed artifacts, not chat
+              <span className="nx-dot nx-dot--pulse" aria-hidden="true" /> live run · typed
+              artifacts, not chat
             </span>
           }
         />
-        <div className="nx-pipeline" data-anim="stagger">
-          {stages.map((stage) => (
-            <div key={stage.role} className="nx-stage" data-role={stage.role}>
-              <div className="nx-stage__glyph" aria-hidden="true">
-                {stage.glyph}
-              </div>
-              <div className="nx-stage__main">
-                <h3 className="nx-stage__name">
-                  {stage.name}
-                  <span className="nx-badge">{stage.status}</span>
-                </h3>
-                <p className="nx-stage__desc">{stage.desc}</p>
-              </div>
-              <div className="nx-stage__meta">
-                {stage.meta.map((m) => (
-                  <div key={m}>
-                    <b>{m.split(": ")[0]}:</b> {m.split(": ")[1]}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div style={{ padding: "18px 24px", display: "flex", justifyContent: "flex-end" }}>
+        <PipelineLive />
+        <div style={{ padding: "0 24px 24px", display: "flex", justifyContent: "flex-end" }}>
           <Link className="nx-arrow" href={WEB_ROUTES.agents}>
             Explore the pipeline
           </Link>

@@ -2996,3 +2996,401 @@ html::-webkit-scrollbar {
     opacity: 1;
   }
 }
+
+/* ============ Pipeline Live v2 ============ */
+/* An execution view: task chip, agent stages on a connector spine,
+   live state chips, progress sweeps, artifact tags, branch finale. */
+
+.nplv {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 8px 24px 40px;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .nplv {
+    padding: 8px 48px 56px;
+  }
+}
+
+/* --- task chip --- */
+.nplv-task {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid var(--nk-surface-border);
+  background: var(--nk-bg-1);
+  position: relative;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.nplv-task-label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--nk-mint);
+  border: 1px solid color-mix(in srgb, var(--nk-mint) 35%, transparent);
+  padding: 2px 8px;
+  flex: none;
+}
+
+.nplv-task-text {
+  font-size: 0.8125rem;
+  color: var(--nk-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
+}
+
+.nplv-task-text::after {
+  content: '"';
+}
+
+.nplv-task-text::before {
+  content: '"';
+}
+
+.nplv-task-caret {
+  width: 7px;
+  height: 13px;
+  background: var(--nk-mint);
+  flex: none;
+  animation: nplv-caret 1.1s steps(1) infinite;
+}
+
+@keyframes nplv-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* --- rail: stage groups with connector spine --- */
+.nplv-rail {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  position: relative;
+  min-width: 0;
+}
+
+.nplv-stage-group {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 0 18px;
+  position: relative;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .nplv-stage-group {
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 0 26px;
+  }
+}
+
+/* the connector line column */
+.nplv-rail-line {
+  grid-column: 1;
+  display: flex;
+  justify-content: center;
+  padding-top: 26px;
+  padding-bottom: 28px;
+  position: relative;
+}
+
+.nplv-rail-line::before {
+  content: "";
+  width: 1px;
+  flex: 1;
+  background: var(--nk-surface-border);
+}
+
+.nplv-rail-fill {
+  position: absolute;
+  top: 26px;
+  bottom: 28px;
+  width: 1px;
+  background: var(--nk-mint);
+  transform-origin: top;
+  transform: scaleY(0);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--nk-mint) 60%, transparent);
+}
+
+/* last group's rail doesn't overhang */
+.nplv-stage-group:last-of-type .nplv-rail-line {
+  display: none;
+}
+
+/* --- stage card --- */
+.nplv-stage {
+  grid-column: 2;
+  border: 1px solid var(--nk-surface-border);
+  background: var(--nk-bg-0);
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  min-width: 0;
+  margin-bottom: 14px;
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+@media (min-width: 768px) {
+  .nplv-stage {
+    padding: 22px 26px 20px;
+    margin-bottom: 18px;
+  }
+}
+
+/* reduced motion / no-JS fallback: fully visible */
+@media (prefers-reduced-motion: reduce) {
+  .nplv-stage {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .nplv-chip,
+  .nplv-artifact,
+  .nplv-rail-fill,
+  .nplv-bar-fill,
+  .nplv-branch,
+  .nplv-loop {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .nplv-bar-fill {
+    transform: scaleX(1) !important;
+  }
+  .nplv-rail-fill {
+    transform: scaleY(1) !important;
+  }
+}
+
+/* node square on the spine */
+.nplv-stage-group::after {
+  content: "";
+  position: absolute;
+  left: 40px;
+  top: 26px;
+  width: 12px;
+  height: 12px;
+  transform: translateX(-50%);
+  background: var(--nk-bg-0);
+  border: 1px solid var(--nk-surface-border);
+  z-index: 2;
+  margin-left: 20px;
+}
+
+@media (min-width: 768px) {
+  .nplv-stage-group::after {
+    left: 56px;
+    margin-left: 28px;
+  }
+}
+
+[data-role="planner"].nplv-stage ~ * .nplv-stage-group::after {
+  border-color: var(--nk-agent-planner);
+}
+
+/* glyph tile per stage */
+.nplv-stage-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.nplv-glyph {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--nk-font-mono);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border: 1px solid var(--nk-surface-border);
+  background: var(--nk-bg-1);
+  color: var(--nk-mint);
+  flex: none;
+}
+
+[data-role="planner"] .nplv-glyph {
+  color: var(--nk-agent-planner);
+  border-color: color-mix(in srgb, var(--nk-agent-planner) 45%, var(--nk-surface-border));
+}
+[data-role="coder"] .nplv-glyph {
+  color: var(--nk-agent-coder);
+  border-color: color-mix(in srgb, var(--nk-agent-coder) 45%, var(--nk-surface-border));
+}
+[data-role="tester"] .nplv-glyph {
+  color: var(--nk-agent-tester);
+  border-color: color-mix(in srgb, var(--nk-agent-tester) 45%, var(--nk-surface-border));
+}
+[data-role="reviewer"] .nplv-glyph {
+  color: var(--nk-agent-reviewer);
+  border-color: color-mix(in srgb, var(--nk-agent-reviewer) 45%, var(--nk-surface-border));
+}
+[data-role="output"] .nplv-glyph {
+  color: var(--nk-mint);
+  border-color: var(--nk-mint);
+  background: var(--nk-mint-deep);
+}
+
+.nplv-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--nk-text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* live state chip */
+.nplv-chip {
+  margin-left: auto;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid var(--nk-surface-border);
+  color: var(--nk-text-muted);
+  opacity: 0;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.nplv-chip[data-state="running"] {
+  color: var(--nk-agent-tester);
+  border-color: color-mix(in srgb, var(--nk-agent-tester) 55%, transparent);
+  background: color-mix(in srgb, var(--nk-agent-tester) 10%, transparent);
+}
+
+.nplv-chip[data-state="revising"] {
+  color: var(--nk-magenta);
+  border-color: color-mix(in srgb, var(--nk-magenta) 55%, transparent);
+  background: color-mix(in srgb, var(--nk-magenta) 10%, transparent);
+}
+
+.nplv-chip[data-state="done"],
+.nplv-chip[data-state="approved"] {
+  color: var(--nk-mint);
+  border-color: color-mix(in srgb, var(--nk-mint) 55%, transparent);
+  background: color-mix(in srgb, var(--nk-mint) 10%, transparent);
+}
+
+/* revision loop tag */
+.nplv-loop {
+  font-size: 0.625rem;
+  color: var(--nk-magenta);
+  border: 1px dashed color-mix(in srgb, var(--nk-magenta) 50%, transparent);
+  padding: 3px 8px;
+  opacity: 0;
+}
+
+.nplv-desc {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--nk-text-secondary);
+  max-width: 58ch;
+}
+
+/* progress bar */
+.nplv-progress {
+  height: 2px;
+  background: color-mix(in srgb, var(--nk-surface-border) 60%, transparent);
+  overflow: hidden;
+}
+
+.nplv-bar-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--nk-mint) 70%, transparent),
+    var(--nk-mint)
+  );
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+/* artifact tag */
+.nplv-artifact {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 0.6875rem;
+  opacity: 0;
+}
+
+.nplv-artifact-key {
+  color: var(--nk-text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  flex: none;
+}
+
+.nplv-artifact-val {
+  color: var(--nk-mint);
+  overflow-wrap: anywhere;
+}
+
+/* verified branch finale */
+.nplv-branch {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  border: 1px solid color-mix(in srgb, var(--nk-mint) 45%, var(--nk-surface-border));
+  background: color-mix(in srgb, var(--nk-mint-deep) 40%, var(--nk-bg-0));
+  padding: 16px 20px;
+  margin-top: 4px;
+  opacity: 0;
+}
+
+@media (min-width: 768px) {
+  .nplv-branch {
+    padding: 20px 26px;
+  }
+}
+
+.nplv-branch-glyph {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--nk-mint);
+  color: var(--nk-mint);
+  font-size: 0.9375rem;
+  flex: none;
+}
+
+.nplv-branch-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--nk-mint);
+  letter-spacing: -0.01em;
+}
+
+.nplv-branch-meta {
+  font-size: 0.6875rem;
+  color: var(--nk-text-muted);
+  letter-spacing: 0.06em;
+  overflow-wrap: anywhere;
+}
