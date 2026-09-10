@@ -1,0 +1,54 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+/**
+ * PageHeader — consistent hero band for subpages.
+ */
+interface Props {
+  eyebrow: string;
+  title: string;
+  description: string;
+  canonicalPath: string;
+}
+const { eyebrow, title, description, canonicalPath } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} canonicalPath={canonicalPath}>
+  <section class="nk-pagehead">
+    <div class="nk-container">
+      <p class="nk-eyebrow">{eyebrow}</p>
+      <h1>{title}</h1>
+      <p class="nk-pagehead__desc">{description}</p>
+      <slot name="actions" />
+    </div>
+  </section>
+  <slot />
+</BaseLayout>
+
+<style>
+  .nk-pagehead {
+    padding-block: var(--nk-space-8) var(--nk-space-6);
+    border-bottom: 1px solid var(--nk-surface-border);
+    background:
+      radial-gradient(
+        600px 300px at 70% 0%,
+        color-mix(in srgb, var(--nk-mint) 5%, transparent),
+        transparent
+      ),
+      var(--nk-bg-0);
+  }
+
+  .nk-pagehead__desc {
+    margin-top: var(--nk-space-2);
+    max-width: 44rem;
+    font-size: 1.125rem;
+    color: var(--nk-text-secondary);
+  }
+
+  :global(.nk-pagehead__actions) {
+    margin-top: var(--nk-space-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--nk-space-1);
+  }
+</style>

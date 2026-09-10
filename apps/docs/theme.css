@@ -1,0 +1,162 @@
+/**
+ * Niki docs — brand theme overrides on top of Blume's tokens.
+ * Canonical palette: packages/niki-theme/tokens.css
+ * Dark-first, flat surfaces, thin borders, mint-dominant.
+ */
+
+:root {
+  /* Surfaces */
+  --blume-background: #f6f8f9;
+  --blume-foreground: #12181d;
+  --blume-muted: #e8ecee;
+  --blume-muted-foreground: #5a6367;
+  --blume-border: #cdd6da;
+
+  /* Brand accents (light mode — deep mint for contrast) */
+  --blume-accent: #0e342d;
+  --blume-accent-foreground: #ffffff;
+  --blume-action: #0e342d;
+  --blume-action-foreground: #ffffff;
+
+  /* Code surfaces */
+  --blume-code-background: #f0f3f5;
+  --blume-code-add: rgba(14, 52, 45, 0.12);
+  --blume-code-add-border: #0e342d;
+  --blume-code-remove: rgba(220, 38, 38, 0.12);
+  --blume-code-remove-border: #dc2626;
+  --blume-code-highlight: rgba(162, 28, 175, 0.12);
+  --blume-code-highlight-border: #a21caf;
+
+  /* Niki brand tokens (shared with the marketing site) */
+  --nk-bg-0: #0d1318;
+  --nk-bg-1: #121b1f;
+  --nk-bg-2: #162129;
+  --nk-border: #283945;
+  --nk-text-primary: #ffffff;
+  --nk-text-secondary: #c5cace;
+  --nk-text-muted: #86898c;
+  --nk-mint: #0e342d;
+  --nk-magenta: #a21caf;
+
+  /* Niki agent role tokens — semantic, kept distinct from brand system */
+  --niki-agent-planner: #0e7490;
+  --niki-agent-coder: #86198f;
+  --niki-agent-tester: #b45309;
+  --niki-agent-reviewer: #1d4ed8;
+  --niki-agent-red: #dc2626;
+  --niki-agent-security: #047857;
+}
+
+:root[data-theme="dark"] {
+  /* Surfaces */
+  --blume-background: #0d1318;
+  --blume-foreground: #ffffff;
+  --blume-muted: #121b1f;
+  --blume-muted-foreground: #86898c;
+  --blume-border: #283945;
+
+  /* Brand accents */
+  --blume-accent: #4ff7d1;
+  --blume-accent-foreground: #0d1318;
+  --blume-action: #4ff7d1;
+  --blume-action-foreground: #0d1318;
+
+  /* Code surfaces */
+  --blume-code-background: #162129;
+  --blume-code-add: rgba(79, 247, 209, 0.14);
+  --blume-code-add-border: #4ff7d1;
+  --blume-code-remove: rgba(248, 113, 113, 0.15);
+  --blume-code-remove-border: #f87171;
+  --blume-code-highlight: rgba(217, 70, 239, 0.14);
+  --blume-code-highlight-border: #d946ef;
+
+  /* Niki brand tokens (dark) */
+  --nk-bg-0: #0d1318;
+  --nk-bg-1: #121b1f;
+  --nk-bg-2: #162129;
+  --nk-border: #283945;
+  --nk-text-primary: #ffffff;
+  --nk-text-secondary: #c5cace;
+  --nk-text-muted: #86898c;
+  --nk-mint: #4ff7d1;
+  --nk-magenta: #d946ef;
+
+  /* Agent role tokens (dark) — distinct hues, readable on dark surfaces */
+  --niki-agent-planner: #4ff7d1;
+  --niki-agent-coder: #e879f9;
+  --niki-agent-tester: #fbbf24;
+  --niki-agent-reviewer: #93c5fd;
+  --niki-agent-red: #f87171;
+  --niki-agent-security: #34d399;
+}
+
+/* ---- Agent role badges (Blume content components) ---- */
+.blume-agent-badge-planner { color: var(--niki-agent-planner); }
+.blume-agent-badge-coder { color: var(--niki-agent-coder); }
+.blume-agent-badge-tester { color: var(--niki-agent-tester); }
+.blume-agent-badge-reviewer { color: var(--niki-agent-reviewer); }
+.blume-agent-badge-red { color: var(--niki-agent-red); }
+.blume-agent-badge-security { color: var(--niki-agent-security); }
+
+/* ---- Brand adjustments ---- */
+:root[data-theme="dark"] .blume-code,
+:root[data-theme="dark"] pre {
+  border: 1px solid var(--nk-border);
+  border-radius: 12px;
+}
+
+/* Inline code: mint chip, consistent with marketing site */
+:root[data-theme="dark"] :not(pre) > code {
+  background: rgba(79, 247, 209, 0.07);
+  border: 1px solid rgba(79, 247, 209, 0.14);
+  color: var(--nk-mint);
+  border-radius: 6px;
+  padding: 0.1em 0.35em;
+}
+
+:root:not([data-theme="dark"]) :not(pre) > code {
+  background: rgba(14, 52, 45, 0.06);
+  border: 1px solid rgba(14, 52, 45, 0.12);
+  color: var(--nk-mint);
+  border-radius: 6px;
+  padding: 0.1em 0.35em;
+}
+
+/* Headings: tighten like the marketing site */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
+}
+
+/* Links: mint in dark, deep mint in light */
+:root[data-theme="dark"] a {
+  color: var(--nk-mint);
+}
+
+/* Changelog / release bodies: Shiki spans must never blow out the layout.
+   The spans render inside pre > code; the pre scrolls, the code wraps no. */
+:where(main, article, .prose) pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+:where(main, article, .prose) pre > code,
+:where(main, article, .prose) pre code span {
+  white-space: pre;
+}
+
+/* Grid children holding code must be allowed to shrink */
+main :where(div, article, section, li) {
+  min-width: 0;
+}
+
+/* Long tokens (URLs, commands, paths) in release bodies and prose must wrap
+   instead of pushing the page wide on small screens. */
+.prose :where(li, p, code, a) {
+  overflow-wrap: anywhere;
+}
+
+.prose :where(pre, pre code, pre code span) {
+  overflow-wrap: normal;
+}

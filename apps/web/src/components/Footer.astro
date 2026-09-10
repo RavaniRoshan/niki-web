@@ -1,0 +1,172 @@
+---
+import { SITE, WEB_ROUTES, DOCS_ROUTES, docsUrl } from "@niki/theme/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="nk-footer">
+  <div class="nk-container">
+    <div class="nk-footer__grid">
+      <div class="nk-footer__brand">
+        <a href={WEB_ROUTES.home} class="nk-footer__logo" aria-label="Niki home">
+          <svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="29" height="29" rx="7" fill="#121b1f" stroke="#283945"
+            ></rect>
+            <path
+              d="M9 22.5 L9 9.5 L23 22.5 L23 9.5"
+              fill="none"
+              stroke="#4ff7d1"
+              stroke-width="2.6"
+              stroke-linecap="square"></path>
+          </svg>
+          <span>niki</span>
+        </a>
+        <p>
+          The open-source multi-agent coding pipeline. Four independent agents — Planner, Coder,
+          Tester, Reviewer — hand you a verified git branch.
+        </p>
+        <p class="nk-footer__license">Apache-2.0 · Built in Rust</p>
+      </div>
+
+      <div class="nk-footer-col">
+        <h2 class="nk-footer-col__title">Product</h2>
+        <ul>
+          <li><a href={WEB_ROUTES.product}>Overview</a></li>
+          <li><a href={WEB_ROUTES.agents}>Multi-Agent Pipeline</a></li>
+          <li><a href={WEB_ROUTES.security}>Security & Sandboxing</a></li>
+          <li><a href={WEB_ROUTES.integrations}>Integrations</a></li>
+          <li><a href={WEB_ROUTES.downloads}>Downloads</a></li>
+          <li><a href={WEB_ROUTES.pricing}>Pricing</a></li>
+        </ul>
+      </div>
+
+      <div class="nk-footer-col">
+        <h2 class="nk-footer-col__title">Docs</h2>
+        <ul>
+          <li><a href={docsUrl(DOCS_ROUTES.home)}>Documentation</a></li>
+          <li><a href={docsUrl(DOCS_ROUTES.quickstart)}>Quickstart</a></li>
+          <li><a href={docsUrl(DOCS_ROUTES.installation)}>Installation</a></li>
+          <li><a href={docsUrl(DOCS_ROUTES.cli)}>CLI Reference</a></li>
+          <li><a href={docsUrl(DOCS_ROUTES.configuration)}>Configuration</a></li>
+        </ul>
+      </div>
+
+      <div class="nk-footer-col">
+        <h2 class="nk-footer-col__title">Resources</h2>
+        <ul>
+          <li><a href={WEB_ROUTES.blog}>Blog</a></li>
+          <li><a href={WEB_ROUTES.changelog}>Changelog</a></li>
+          <li><a href={WEB_ROUTES.guides}>Guides</a></li>
+          <li><a href={WEB_ROUTES.examples}>Examples</a></li>
+          <li><a href={WEB_ROUTES.community}>Community</a></li>
+          <li><a href={WEB_ROUTES.about}>About</a></li>
+        </ul>
+      </div>
+
+      <div class="nk-footer-col">
+        <h2 class="nk-footer-col__title">Project</h2>
+        <ul>
+          <li>
+            <a href={SITE.repo} rel="noopener noreferrer">GitHub</a>
+          </li>
+          <li>
+            <a href={SITE.social.issues} rel="noopener noreferrer">Issue Tracker</a>
+          </li>
+          <li>
+            <a href={SITE.social.discussions} rel="noopener noreferrer">Issue Tracker</a>
+          </li>
+          <li><a href={SITE.release.latest}>Releases</a></li>
+          <li>
+            <a href="https://www.apache.org/licenses/LICENSE-2.0" rel="noopener noreferrer"
+              >License</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="nk-footer__bottom">
+      <span>© {year} Niki contributors.</span>
+      <span class="nk-footer__motto nk-mono">Planner → Coder → Tester → Reviewer</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .nk-footer {
+    border-top: 1px solid var(--nk-surface-border);
+    background: var(--nk-bg-0);
+    padding-block: var(--nk-space-8) var(--nk-space-4);
+  }
+
+  .nk-footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--nk-space-4);
+  }
+
+  @media (min-width: 900px) {
+    .nk-footer__grid {
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      gap: var(--nk-space-3);
+    }
+  }
+
+  .nk-footer__brand {
+    max-width: 320px;
+    display: grid;
+    gap: var(--nk-space-1);
+  }
+
+  .nk-footer__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--nk-text-primary);
+    font-family: var(--nk-font-mono);
+    font-weight: 700;
+    font-size: 1.05rem;
+    width: fit-content;
+  }
+
+  .nk-footer__logo:hover {
+    text-decoration: none;
+  }
+
+  .nk-footer__brand p {
+    font-size: 0.875rem;
+    color: var(--nk-text-muted);
+  }
+
+  .nk-footer__license {
+    font-family: var(--nk-font-mono);
+    font-size: 0.75rem !important;
+    color: var(--nk-text-muted);
+  }
+
+  .nk-footer__bottom {
+    margin-top: var(--nk-space-6);
+    padding-top: var(--nk-space-3);
+    border-top: 1px solid var(--nk-surface-border);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--nk-space-1);
+    font-size: 0.8125rem;
+    color: var(--nk-text-muted);
+  }
+
+  .nk-footer__motto {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+
+  .nk-footer-col__title {
+    font-size: 0.8125rem;
+    font-family: var(--nk-font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--nk-text-muted);
+    margin-bottom: var(--nk-space-2);
+  }
+</style>

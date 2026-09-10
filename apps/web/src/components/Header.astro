@@ -1,0 +1,449 @@
+---
+import { SITE, WEB_ROUTES, DOCS_ROUTES, docsUrl } from "@niki/theme/site";
+
+const productItems = [
+  { label: "Overview", href: WEB_ROUTES.product },
+  { label: "Multi-Agent Pipeline", href: WEB_ROUTES.agents },
+  { label: "Security & Sandboxing", href: WEB_ROUTES.security },
+  { label: "Integrations", href: WEB_ROUTES.integrations },
+];
+
+const resourceItems = [
+  { label: "Blog", href: WEB_ROUTES.blog },
+  { label: "Changelog", href: WEB_ROUTES.changelog },
+  { label: "Guides", href: WEB_ROUTES.guides },
+  { label: "Examples", href: WEB_ROUTES.examples },
+];
+
+const currentPath = Astro.url.pathname;
+const isProductActive = [
+  "/product",
+  "/product/agents",
+  "/product/security",
+  "/product/integrations",
+].some((p) => currentPath === p || currentPath === `${p}/`);
+const isResourcesActive = [
+  "/resources",
+  "/resources/blog",
+  "/resources/changelog",
+  "/resources/guides",
+  "/resources/examples",
+].some((p) => currentPath === p || currentPath === `${p}/`);
+---
+
+<header class="nk-header">
+  <div class="nk-container nk-header__inner">
+    <a class="nk-header__brand" href={WEB_ROUTES.home} aria-label="Niki home">
+      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="29" height="29" rx="7" fill="#121b1f" stroke="#283945"></rect>
+        <path
+          d="M9 22.5 L9 9.5 L23 22.5 L23 9.5"
+          fill="none"
+          stroke="#4ff7d1"
+          stroke-width="2.6"
+          stroke-linecap="square"></path>
+      </svg>
+      <span class="nk-header__brand-text">niki</span>
+    </a>
+
+    <nav class="nk-header__nav" aria-label="Primary">
+      <div class="nk-nav-item nk-has-dropdown">
+        <a
+          href={WEB_ROUTES.product}
+          class="nk-nav-link"
+          aria-current={isProductActive ? "page" : undefined}
+        >
+          Product
+          <svg class="nk-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+            <path d="M2 3.5 L5 6.5 L8 3.5" fill="none" stroke="currentColor" stroke-width="1.4"
+            ></path>
+          </svg>
+        </a>
+        <div class="nk-dropdown" role="menu">
+          {
+            productItems.map((item) => (
+              <a role="menuitem" href={item.href}>
+                {item.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <a href={docsUrl(DOCS_ROUTES.home)} class="nk-nav-link" rel="noopener"> Docs </a>
+
+      <a
+        href={WEB_ROUTES.downloads}
+        class="nk-nav-link"
+        aria-current={currentPath === "/downloads" ? "page" : undefined}
+      >
+        Downloads
+      </a>
+
+      <div class="nk-nav-item nk-has-dropdown">
+        <a
+          href={WEB_ROUTES.resources}
+          class="nk-nav-link"
+          aria-current={isResourcesActive ? "page" : undefined}
+        >
+          Resources
+          <svg class="nk-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+            <path d="M2 3.5 L5 6.5 L8 3.5" fill="none" stroke="currentColor" stroke-width="1.4"
+            ></path>
+          </svg>
+        </a>
+        <div class="nk-dropdown" role="menu">
+          {
+            resourceItems.map((item) => (
+              <a role="menuitem" href={item.href}>
+                {item.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <a
+        href={WEB_ROUTES.pricing}
+        class="nk-nav-link"
+        aria-current={currentPath === "/pricing" ? "page" : undefined}
+      >
+        Pricing
+      </a>
+    </nav>
+
+    <div class="nk-header__actions">
+      <a
+        class="nk-btn nk-btn--ghost nk-gh-link"
+        href={SITE.repo}
+        aria-label="Niki on GitHub"
+        rel="noopener noreferrer"
+      >
+        <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+          ></path>
+        </svg>
+        <span class="nk-visually-hidden">GitHub</span>
+      </a>
+      <a class="nk-btn nk-btn--primary nk-header__cta" href={docsUrl(DOCS_ROUTES.quickstart)}>
+        Get Started
+      </a>
+      <button
+        class="nk-burger"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="Open menu"
+        id="burger"
+        type="button"
+      >
+        <span class="nk-burger__line"></span>
+        <span class="nk-burger__line"></span>
+        <span class="nk-burger__line"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="nk-mobile-menu" id="mobile-menu" hidden>
+    <nav aria-label="Mobile">
+      <a href={WEB_ROUTES.product} class="nk-mm-link">Product</a>
+      <a href={docsUrl(DOCS_ROUTES.home)} class="nk-mm-link">Docs</a>
+      <a href={WEB_ROUTES.downloads} class="nk-mm-link">Downloads</a>
+      <a href={WEB_ROUTES.pricing} class="nk-mm-link">Pricing</a>
+
+      <div class="nk-mm-group" role="group" aria-label="Resources">
+        <span class="nk-mm-label">Resources</span>
+        <a href={WEB_ROUTES.resources} class="nk-mm-link nk-mm-link--sub">Overview</a>
+        <a href={WEB_ROUTES.blog} class="nk-mm-link nk-mm-link--sub">Blog</a>
+        <a href={WEB_ROUTES.changelog} class="nk-mm-link nk-mm-link--sub">Changelog</a>
+        <a href={WEB_ROUTES.guides} class="nk-mm-link nk-mm-link--sub">Guides</a>
+        <a href={WEB_ROUTES.examples} class="nk-mm-link nk-mm-link--sub">Examples</a>
+      </div>
+
+      <div class="nk-mm-group" role="group" aria-label="Product pages">
+        <span class="nk-mm-label">Product</span>
+        <a href={WEB_ROUTES.agents} class="nk-mm-link nk-mm-link--sub">Multi-Agent Pipeline</a>
+        <a href={WEB_ROUTES.security} class="nk-mm-link nk-mm-link--sub">Security & Sandboxing</a>
+        <a href={WEB_ROUTES.integrations} class="nk-mm-link nk-mm-link--sub">Integrations</a>
+      </div>
+
+      <div class="nk-mm-actions">
+        <a class="nk-btn nk-btn--primary" href={docsUrl(DOCS_ROUTES.quickstart)}>Get Started</a>
+        <a class="nk-btn nk-btn--secondary" href={SITE.repo} rel="noopener noreferrer">GitHub</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const burger = document.getElementById("burger");
+  const menu = document.getElementById("mobile-menu");
+  if (burger && menu) {
+    const setMenu = (open: boolean) => {
+      burger.setAttribute("aria-expanded", String(open));
+      burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      menu.hidden = !open;
+      document.body.classList.toggle("nk-menu-open", open);
+    };
+    burger.addEventListener("click", () => {
+      setMenu(menu.hidden);
+    });
+    menu.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => setMenu(false));
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !menu.hidden) {
+        setMenu(false);
+        burger.focus();
+      }
+    });
+    window.addEventListener("resize", () => {
+      if (window.innerWidth >= 1024) setMenu(false);
+    });
+  }
+</script>
+
+<style>
+  .nk-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: color-mix(in srgb, var(--nk-bg-0) 88%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--nk-surface-border);
+  }
+
+  .nk-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--nk-header-h);
+    gap: var(--nk-space-2);
+  }
+
+  .nk-header__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--nk-text-primary);
+    font-family: var(--nk-font-mono);
+    font-weight: 700;
+    font-size: 1.125rem;
+    letter-spacing: 0.02em;
+  }
+
+  .nk-header__brand:hover {
+    text-decoration: none;
+  }
+
+  .nk-header__brand-text {
+    color: var(--nk-text-primary);
+  }
+
+  .nk-header__nav {
+    display: none;
+    gap: var(--nk-space-1);
+  }
+
+  .nk-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: var(--nk-radius-pill);
+    color: var(--nk-text-secondary);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+  }
+
+  .nk-nav-link:hover {
+    color: var(--nk-text-primary);
+    text-decoration: none;
+  }
+
+  .nk-nav-link[aria-current="page"] {
+    color: var(--nk-mint);
+  }
+
+  .nk-caret {
+    color: var(--nk-text-muted);
+    transition: transform 0.15s ease;
+  }
+
+  .nk-nav-item {
+    position: relative;
+  }
+
+  .nk-nav-item:hover .nk-caret {
+    transform: rotate(180deg);
+  }
+
+  .nk-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 220px;
+    background: var(--nk-bg-1);
+    border: 1px solid var(--nk-surface-border);
+    border-radius: 12px;
+    padding: 8px;
+    display: none;
+    z-index: 110;
+  }
+
+  .nk-nav-item:hover .nk-dropdown,
+  .nk-nav-item:focus-within .nk-dropdown {
+    display: block;
+  }
+
+  .nk-dropdown a {
+    display: block;
+    padding: 9px 12px;
+    border-radius: 8px;
+    color: var(--nk-text-secondary);
+    font-size: 0.9375rem;
+  }
+
+  .nk-dropdown a:hover {
+    background: var(--nk-bg-2);
+    color: var(--nk-text-primary);
+    text-decoration: none;
+  }
+
+  .nk-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--nk-space-1);
+  }
+
+  .nk-header__cta {
+    display: none;
+  }
+
+  .nk-gh-link {
+    color: var(--nk-text-secondary);
+  }
+
+  .nk-gh-link:hover {
+    color: var(--nk-text-primary);
+  }
+
+  /* ---- Burger + mobile menu ---- */
+  .nk-burger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 40px;
+    height: 40px;
+    padding: 0 8px;
+    background: transparent;
+    border: 1px solid var(--nk-surface-border);
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .nk-burger__line {
+    display: block;
+    height: 1.5px;
+    width: 100%;
+    background: var(--nk-text-primary);
+    transition:
+      transform 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .nk-menu-open .nk-burger__line:nth-child(1) {
+    transform: translateY(5.5px) rotate(45deg);
+  }
+  .nk-menu-open .nk-burger__line:nth-child(2) {
+    opacity: 0;
+  }
+  .nk-menu-open .nk-burger__line:nth-child(3) {
+    transform: translateY(-5.5px) rotate(-45deg);
+  }
+
+  .nk-mobile-menu {
+    border-top: 1px solid var(--nk-surface-border);
+    background: var(--nk-bg-0);
+    padding: var(--nk-space-2) 0 var(--nk-space-3);
+    max-height: calc(100vh - var(--nk-header-h));
+    overflow-y: auto;
+  }
+
+  .nk-mobile-menu nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-inline: var(--nk-space-2);
+    max-width: var(--nk-max-w);
+    margin-inline: auto;
+  }
+
+  .nk-mm-link {
+    padding: 12px 8px;
+    color: var(--nk-text-primary);
+    font-weight: 500;
+    border-radius: 8px;
+  }
+
+  .nk-mm-link:hover {
+    background: var(--nk-bg-1);
+    text-decoration: none;
+  }
+
+  .nk-mm-link--sub {
+    font-weight: 400;
+    color: var(--nk-text-secondary);
+    font-size: 0.9375rem;
+    padding-left: 20px;
+  }
+
+  .nk-mm-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 12px;
+    border-top: 1px solid var(--nk-surface-border);
+    padding-top: 12px;
+  }
+
+  .nk-mm-label {
+    font-family: var(--nk-font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--nk-text-muted);
+    padding: 0 8px 6px;
+  }
+
+  .nk-mm-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  @media (min-width: 1024px) {
+    .nk-header__nav {
+      display: flex;
+    }
+    .nk-burger {
+      display: none;
+    }
+    .nk-header__cta {
+      display: inline-flex;
+    }
+    .nk-mobile-menu {
+      display: none;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .nk-header__brand-text {
+      display: none;
+    }
+  }
+</style>

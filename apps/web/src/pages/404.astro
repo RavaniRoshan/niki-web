@@ -1,0 +1,59 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { WEB_ROUTES, DOCS_ROUTES, docsUrl } from "@niki/theme/site";
+---
+
+<BaseLayout
+  title="404 — Page not found"
+  description="That route doesn't exist. The pipeline, however, is very much on track."
+  canonicalPath="/404"
+  noindex={true}
+>
+  <section class="nk-container nk-404">
+    <p class="nk-eyebrow nk-mono">status: 404</p>
+    <h1>Branch not found.</h1>
+    <p>This route doesn't exist. The pipeline, however, is very much on track.</p>
+    <pre
+      class="nk-code nk-404__term"
+      aria-hidden="true"><code>$ niki status
+◈ ⟠ ◉ ◆  page: not found
+✓ pipeline: healthy</code></pre>
+    <div class="nk-404__actions">
+      <a class="nk-btn nk-btn--primary" href={WEB_ROUTES.home}>Back home</a>
+      <a class="nk-btn nk-btn--secondary" href={docsUrl(DOCS_ROUTES.home)}>Read the docs</a>
+      <a class="nk-btn nk-btn--secondary" href={WEB_ROUTES.downloads}>Downloads</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nk-404 {
+    padding-block: var(--nk-space-10);
+    max-width: 640px;
+    display: grid;
+    gap: var(--nk-space-2);
+    justify-items: start;
+  }
+
+  .nk-404 p {
+    color: var(--nk-text-secondary);
+  }
+
+  .nk-404__term {
+    margin: var(--nk-space-2) 0;
+    padding: var(--nk-space-2);
+    font-size: 0.875rem;
+    color: var(--nk-text-secondary);
+  }
+
+  .nk-404__term code {
+    color: var(--nk-mint);
+  }
+
+  .nk-404__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--nk-space-1);
+    margin-top: var(--nk-space-2);
+  }
+</style>

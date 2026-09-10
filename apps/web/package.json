@@ -1,0 +1,25 @@
+{
+  "name": "@niki/web",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "format": "prettier --write \"src/**/*.{astro,ts,css,md,mdx}\" \"*.{ts,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{astro,ts,css,md,mdx}\" \"*.{ts,json,md}\""
+  },
+  "dependencies": {
+    "@niki/theme": "0.1.0",
+    "astro": "^5.16.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/sitemap": "^3.6.0",
+    "prettier": "^3.6.2",
+    "prettier-plugin-astro": "^0.14.1",
+    "typescript": "^5.9.3"
+  }
+}

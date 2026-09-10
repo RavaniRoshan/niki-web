@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.blume/
+.astro/
+.DS_Store
+*.log
+.env
+.env.*
+apps/docs/dist/
+apps/web/dist/
+.astro/

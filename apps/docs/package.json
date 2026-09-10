@@ -1,0 +1,16 @@
+{
+  "name": "@niki/docs",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "blume dev",
+    "build": "blume build",
+    "preview": "blume preview",
+    "doctor": "blume doctor"
+  },
+  "dependencies": {
+    "@niki/theme": "0.1.0",
+    "blume": "1.4.3"
+  }
+}

@@ -1,0 +1,111 @@
+---
+import PageHeader from "../components/PageHeader.astro";
+import { SITE, DOCS_ROUTES, docsUrl } from "@niki/theme/site";
+---
+
+<PageHeader
+  eyebrow="Community"
+  title="Open source, in the open."
+  description="Niki is built in public: roadmap, claims audits, eval results and every design decision happen in the repository. Here's where to plug in."
+  canonicalPath="/community"
+/>
+
+<section class="nk-section nk-container">
+  <div class="nk-grid nk-grid--3">
+    <a class="nk-card nk-comm-card" href={SITE.social.discussions} rel="noopener noreferrer">
+      <h3>Issue Tracker</h3>
+      <p>Bugs, feature requests and questions — the main support channel.</p>
+      <span class="nk-link-arrow">Open issues</span>
+    </a>
+    <a class="nk-card nk-comm-card" href={SITE.social.issues} rel="noopener noreferrer">
+      <h3>Issue Tracker</h3>
+      <p>Bugs and focused feature requests. Check the roadmap label first.</p>
+      <span class="nk-link-arrow">Browse issues</span>
+    </a>
+    <a
+      class="nk-card nk-comm-card"
+      href={`${SITE.repo}/blob/master/CONTRIBUTING.md`}
+      rel="noopener noreferrer"
+    >
+      <h3>Contributing</h3>
+      <p>Warning-free builds, tests over promises, secrets never committed. Start here.</p>
+      <span class="nk-link-arrow">Read the guide</span>
+    </a>
+    <a
+      class="nk-card nk-comm-card"
+      href={`${SITE.repo}/blob/master/CODE_OF_CONDUCT.md`}
+      rel="noopener noreferrer"
+    >
+      <h3>Code of Conduct</h3>
+      <p>Standard for participation. Enforced, not decorative.</p>
+      <span class="nk-link-arrow">Read</span>
+    </a>
+    <a
+      class="nk-card nk-comm-card"
+      href={`${SITE.repo}/blob/master/SECURITY.md`}
+      rel="noopener noreferrer"
+    >
+      <h3>Security reports</h3>
+      <p>Found something? The disclosure policy and private channel.</p>
+      <span class="nk-link-arrow">Policy</span>
+    </a>
+    <a class="nk-card nk-comm-card" href={docsUrl(DOCS_ROUTES.evals)}>
+      <h3>Evals & benchmarks</h3>
+      <p>How Niki measures itself — seeded-defect harness, disclosure manifests.</p>
+      <span class="nk-link-arrow">Methodology</span>
+    </a>
+  </div>
+</section>
+
+<section class="nk-section nk-container" aria-labelledby="commit-heading">
+  <div class="nk-oss">
+    <div>
+      <p class="nk-eyebrow">The standard</p>
+      <h2 id="commit-heading">What we commit to.</h2>
+      <p>
+        Claims map to code. Every release notes what changed; every marketing claim has an audit
+        trail in the repository. When a claim overstated reality, we've corrected the copy —
+        publicly.
+      </p>
+    </div>
+    <ul class="nk-checklist">
+      <li>Every claim backed by artifacts Niki itself produces</li>
+      <li>Evals disclose methodology, costs and maintainer judgments</li>
+      <li>CI gates: fmt, clippy warning-free, tests, supply-chain checks</li>
+      <li>Releases built by cargo-dist with checksums, never hand-rolled</li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .nk-comm-card {
+    display: grid;
+    gap: 8px;
+    align-content: start;
+  }
+
+  .nk-comm-card p {
+    margin: 0;
+  }
+
+  .nk-oss {
+    display: grid;
+    gap: var(--nk-space-3);
+  }
+
+  @media (min-width: 900px) {
+    .nk-oss {
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--nk-space-6);
+    }
+  }
+
+  .nk-oss h2 {
+    margin-bottom: var(--nk-space-2);
+  }
+
+  .nk-oss > div p {
+    margin-top: var(--nk-space-2);
+    color: var(--nk-text-secondary);
+  }
+</style>

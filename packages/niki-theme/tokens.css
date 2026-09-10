@@ -1,0 +1,65 @@
+/**
+ * Niki design tokens — canonical source for both the marketing site (apps/web)
+ * and the docs site (apps/docs). Derived from the Turso-inspired Niki visual
+ * reference. Dark-first, flat surfaces, thin borders, mint-dominant.
+ */
+
+:root {
+  /* ---- Surfaces (dark-first) ---- */
+  --nk-bg-0: #0d1318;        /* page background */
+  --nk-bg-1: #121b1f;        /* raised surface / card */
+  --nk-bg-2: #162129;        /* higher surface / code block */
+  --nk-surface-border: #283945; /* thin borders */
+
+  /* ---- Text ---- */
+  --nk-text-primary: #ffffff;
+  --nk-text-secondary: #c5cace;
+  --nk-text-muted: #86898c;
+
+  /* ---- Accents ---- */
+  --nk-mint: #4ff7d1;         /* primary accent */
+  --nk-mint-deep: #0e342d;    /* mint surface / chip bg */
+  --nk-magenta: #d946ef;       /* secondary accent, sparing */
+  --nk-magenta-deep: #a21caf; /* secondary accent deep */
+
+  /* ---- Agent role colors (semantic, distinct from brand) ---- */
+  --nk-agent-planner: #4ff7d1;
+  --nk-agent-coder: #d946ef;
+  --nk-agent-tester: #fbbf24;
+  --nk-agent-reviewer: #60a5fa;
+  --nk-agent-red: #f87171;
+  --nk-agent-security: #34d399;
+
+  /* ---- Status ---- */
+  --nk-ok: #4ff7d1;
+  --nk-warn: #fbbf24;
+  --nk-err: #f87171;
+
+  /* ---- Typography ---- */
+  --nk-font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --nk-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* ---- Spacing basis: 8px ---- */
+  --nk-space-1: 8px;
+  --nk-space-2: 16px;
+  --nk-space-3: 24px;
+  --nk-space-4: 32px;
+  --nk-space-5: 40px;
+  --nk-space-6: 48px;
+  --nk-space-7: 56px;
+  --nk-space-8: 64px;
+  --nk-space-10: 80px;   /* default section rhythm */
+  --nk-space-12: 96px;
+
+  /* ---- Radius ---- */
+  --nk-radius-card: 16px;
+  --nk-radius-code: 12px;
+  --nk-radius-pill: 9999px;
+
+  /* ---- Layout ---- */
+  --nk-max-w: 1200px;
+  --nk-header-h: 64px;
+
+  /* ---- Focus ---- */
+  --nk-focus-ring: 0 0 0 2px var(--nk-bg-0), 0 0 0 4px var(--nk-mint);
+}

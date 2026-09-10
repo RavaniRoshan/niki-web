@@ -1,0 +1,16 @@
+{
+  "name": "niki-web",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build:web": "npm run build --workspace apps/web",
+    "build:docs": "npm run build --workspace apps/docs",
+    "build": "npm run build:web && npm run build:docs",
+    "dev:web": "npm run dev --workspace apps/web",
+    "dev:docs": "npm run dev --workspace apps/docs",
+    "preview:web": "npm run preview --workspace apps/web"
+  }
+}

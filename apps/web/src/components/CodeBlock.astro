@@ -1,0 +1,80 @@
+---
+import CopyButton from "./CopyButton.astro";
+
+/**
+ * CodeBlock — single command/code display with copy button.
+ */
+interface Props {
+  code: string;
+  lang?: string;
+  label?: string;
+  class?: string;
+}
+const { code, lang = "bash", label, class: cls } = Astro.props;
+---
+
+<div class:list={["nk-codeblock", cls]} data-lang={lang}>
+  {
+    label && (
+      <span class="nk-codeblock__label" aria-hidden="true">
+        {label}
+      </span>
+    )
+  }
+  <div class="nk-codeblock__row">
+    <pre class="nk-code" tabindex="0"><code>{code}</code></pre>
+    <CopyButton text={code} label={`Copy ${label ?? "code"}`} />
+  </div>
+</div>
+
+<style>
+  .nk-codeblock {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .nk-codeblock__label {
+    font-family: var(--nk-font-mono);
+    font-size: 0.75rem;
+    color: var(--nk-text-muted);
+    letter-spacing: 0.05em;
+    overflow-wrap: break-word;
+    white-space: normal;
+    min-width: 0;
+  }
+
+  @media (min-width: 768px) {
+    .nk-codeblock pre {
+      font-size: 0.875rem;
+    }
+  }
+
+  .nk-codeblock__row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .nk-codeblock pre {
+    flex: 1;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 0.8125rem;
+    line-height: 1.65;
+    color: var(--nk-text-secondary);
+  }
+
+  .nk-codeblock pre code {
+    color: var(--nk-mint);
+    white-space: pre;
+    display: block;
+  }
+</style>

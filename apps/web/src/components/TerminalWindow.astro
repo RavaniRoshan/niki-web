@@ -1,0 +1,108 @@
+---
+/**
+ * TerminalWindow — Niki's terminal surface. Shared across pages.
+ * Children = the terminal body (lines of text). Title bar is provided.
+ */
+interface Props {
+  title?: string;
+  class?: string;
+}
+const { title = "bash", class: cls } = Astro.props;
+---
+
+<div class:list={["nk-term", cls]}>
+  <div class="nk-term__bar">
+    <span class="nk-term__dot nk-term__dot--r" aria-hidden="true"></span>
+    <span class="nk-term__dot nk-term__dot--y" aria-hidden="true"></span>
+    <span class="nk-term__dot nk-term__dot--g" aria-hidden="true"></span>
+    <span class="nk-term__title">{title}</span>
+  </div>
+  <div class="nk-term__body">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .nk-term {
+    background: var(--nk-bg-1);
+    border: 1px solid var(--nk-surface-border);
+    border-radius: var(--nk-radius-card);
+    overflow: hidden;
+    font-family: var(--nk-font-mono);
+  }
+
+  .nk-term__bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 14px;
+    background: var(--nk-bg-2);
+    border-bottom: 1px solid var(--nk-surface-border);
+  }
+
+  .nk-term__dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--nk-surface-border);
+    flex: none;
+  }
+
+  .nk-term__title {
+    margin-left: auto;
+    margin-right: auto;
+    transform: translateX(-18px);
+    font-size: 0.75rem;
+    color: var(--nk-text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  .nk-term__body {
+    padding: var(--nk-space-2) var(--nk-space-2) var(--nk-space-3);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    max-width: 100%;
+    white-space: pre;
+    scrollbar-width: thin;
+  }
+
+  @media (min-width: 768px) {
+    .nk-term__body {
+      font-size: 0.875rem;
+    }
+  }
+
+  .nk-term__body :global(.nk-t-line) {
+    display: block;
+  }
+
+  .nk-term__body :global(.nk-t-p) {
+    color: var(--nk-mint);
+  }
+
+  .nk-term__body :global(.nk-t-m) {
+    color: var(--nk-text-muted);
+  }
+
+  .nk-term__body :global(.nk-t-dim) {
+    color: var(--nk-text-muted);
+  }
+
+  .nk-term__body :global(.nk-t-brand) {
+    color: var(--nk-text-primary);
+    font-weight: 700;
+  }
+
+  .nk-term__body :global(.nk-t-ok) {
+    color: var(--nk-mint);
+  }
+
+  .nk-term__body :global(.nk-t-warn) {
+    color: var(--nk-warn);
+  }
+
+  .nk-term__body :global(.nk-t-mag) {
+    color: var(--nk-magenta);
+  }
+</style>
