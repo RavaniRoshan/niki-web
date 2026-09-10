@@ -423,7 +423,7 @@
   font-size: 0.8125rem;
   line-height: 1.75;
   padding: 16px;
-  overflow-x: auto;
+  overflow-x: clip;
   color: var(--nk-text-secondary);
 }
 
@@ -437,7 +437,8 @@
 .nx-terminal__body pre {
   margin: 0;
   font: inherit;
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 /* line classes */
@@ -497,13 +498,14 @@
   font-size: 0.8125rem;
   line-height: 1.7;
   padding: 14px 16px;
-  overflow-x: auto;
+  overflow-x: clip;
   color: var(--nk-text-secondary);
   margin: 0;
 }
 
 .nx-code__body code {
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   display: block;
 }
 
@@ -699,7 +701,7 @@
   font-size: 0.85rem;
   line-height: 1.7;
   padding: 16px;
-  overflow-x: auto;
+  overflow-x: clip;
   background: var(--nk-bg-1);
   border: 1px solid var(--nk-surface-border);
   color: var(--nk-text-secondary);
@@ -710,7 +712,8 @@
   padding: 0;
   border-radius: 0;
   color: inherit;
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .nx-prose blockquote {
@@ -1947,8 +1950,18 @@ video {
 }
 
 .nx-table-wrap {
-  overflow-x: auto;
+  overflow-x: clip;
   min-width: 0;
+}
+
+.nx-table-wrap .nx-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.nx-table-wrap .nx-table th,
+.nx-table-wrap .nx-table td {
+  overflow-wrap: anywhere;
 }
 
 /* ============ Pricing ============ */
@@ -2477,4 +2490,194 @@ video {
     U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CD-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
     U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
     U+A720-A7FF;
+}
+
+/* ============ Logo animations (CSS-only stroke draw) ============ */
+/*
+ * The N path is ~43 units long (vertical 13 + diagonal ~21.4 + vertical 13
+ * in the 32 viewBox). We pre-stroke it with a dash pattern and animate the
+ * dash offset: offset = pathLength hides it, 0 draws it fully.
+ * The frame corners "tick" in with a slight delay for a drafting-table feel.
+ */
+
+.nx-logo {
+  display: inline-block;
+  overflow: visible;
+}
+
+.nx-logo__n {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.nx-logo__ticks path {
+  opacity: 0;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.nx-logo__frame {
+  transition: stroke 0.2s ease;
+}
+
+/* Nav logo hover: draw the N from scratch, ticks pop in, frame tints */
+.nx-header__brand:hover .nx-logo__n,
+.nx-header__brand:focus-visible .nx-logo__n {
+  animation: nx-logo-draw 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.nx-header__brand:hover .nx-logo__ticks path,
+.nx-header__brand:focus-visible .nx-logo__ticks path {
+  opacity: 1;
+}
+
+.nx-header__brand:hover .nx-logo__frame {
+  stroke: color-mix(in srgb, var(--nk-mint) 55%, var(--nk-surface-border));
+}
+
+@keyframes nx-logo-draw {
+  0% {
+    stroke-dashoffset: 48;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Signature logo: draws once when it scrolls into view, replays on hover.
+   The .nx-logo--signature container gets .nx-in-view toggled by a tiny
+   intersection-observer script in the component; hover also works. */
+.nx-logo--signature .nx-logo__n {
+  stroke-dashoffset: 48;
+}
+
+.nx-logo--signature.nx-in-view .nx-logo__n,
+.nx-logo--signature:hover .nx-logo__n {
+  animation: nx-logo-draw 0.9s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.nx-logo--signature .nx-logo__ticks path {
+  transform: scale(0.4);
+  transform-origin: 16px 16px;
+}
+
+.nx-logo--signature.nx-in-view .nx-logo__ticks path,
+.nx-logo--signature:hover .nx-logo__ticks path {
+  animation: nx-logo-tick 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.nx-logo--signature.nx-in-view .nx-logo__ticks path:nth-child(1),
+.nx-logo--signature:hover .nx-logo__ticks path:nth-child(1) {
+  animation-delay: 0.65s;
+}
+
+.nx-logo--signature.nx-in-view .nx-logo__ticks path:nth-child(2),
+.nx-logo--signature:hover .nx-logo__ticks path:nth-child(2) {
+  animation-delay: 0.75s;
+}
+
+.nx-logo--signature.nx-in-view .nx-logo__ticks path:nth-child(3),
+.nx-logo--signature:hover .nx-logo__ticks path:nth-child(3) {
+  animation-delay: 0.85s;
+}
+
+.nx-logo--signature.nx-in-view .nx-logo__ticks path:nth-child(4),
+.nx-logo--signature:hover .nx-logo__ticks path:nth-child(4) {
+  animation-delay: 0.95s;
+}
+
+@keyframes nx-logo-tick {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-logo__n,
+  .nx-logo__ticks path,
+  .nx-logo--signature .nx-logo__n,
+  .nx-logo--signature .nx-logo__ticks path {
+    animation: none !important;
+    transition: none !important;
+    stroke-dashoffset: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Signature section (above the footer) */
+.nx-signature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 72px 24px 64px;
+  position: relative;
+  overflow: clip;
+}
+
+@media (min-width: 768px) {
+  .nx-signature {
+    padding: 96px 48px 88px;
+  }
+}
+
+.nx-signature__word {
+  font-family: var(--nk-font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--nk-text-muted);
+  margin: 0;
+}
+
+/* Header bar breathing room — logo and CTA never kiss the frame rails */
+.nx-header__bar {
+  padding-inline: 24px;
+}
+
+@media (max-width: 640px) {
+  .nx-header__bar {
+    padding-inline: 16px;
+  }
+}
+
+/* Signature band between the frame and the footer — dashed rails continue */
+.nx-signature-band {
+  width: 90vw;
+  max-width: 1189px;
+  margin-inline: auto;
+  border-left: 1px dashed var(--nk-surface-border);
+  border-right: 1px dashed var(--nk-surface-border);
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .nx-signature-band {
+    width: 100%;
+    border-left: none;
+    border-right: none;
+  }
+}
+
+/* The signature logo is interactive — hover replays the draw */
+.nx-signature-band .nx-logo--signature {
+  cursor: default;
+}
+
+.nx-signature-band .nx-signature__word {
+  transition: color 0.3s ease;
+}
+
+.nx-signature-band:hover .nx-signature__word {
+  color: var(--nk-mint);
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { WEB_ROUTES, DOCS_ROUTES, docsUrl, SITE } from "@/lib/site";
+import { LogoMark } from "./LogoMark";
 
 const productItems = [
   { label: "Overview", href: WEB_ROUTES.product },
@@ -19,25 +20,7 @@ const resourceItems = [
 ];
 
 function BrandMark({ size = 24 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
-      <rect
-        x="1.5"
-        y="1.5"
-        width="29"
-        height="29"
-        fill="var(--nk-bg-1)"
-        stroke="var(--nk-surface-border)"
-      />
-      <path
-        d="M9 22.5 L9 9.5 L23 22.5 L23 9.5"
-        fill="none"
-        stroke="var(--nk-mint)"
-        strokeWidth="2.6"
-        strokeLinecap="square"
-      />
-    </svg>
-  );
+  return <LogoMark size={size} />;
 }
 
 function Dropdown({
