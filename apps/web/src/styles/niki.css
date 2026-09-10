@@ -2681,3 +2681,22 @@ video {
 .nx-signature-band:hover .nx-signature__word {
   color: var(--nk-mint);
 }
+
+/* Hide the document scrollbar (scrolling stays functional) */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Same for the mobile drawer */
+.nx-mobile {
+  scrollbar-width: none;
+}
+
+.nx-mobile::-webkit-scrollbar {
+  display: none;
+}
