@@ -11,3 +11,4 @@ apps/web/dist/
 .astro/
 .next/
 out/
+tsconfig.tsbuildinfo

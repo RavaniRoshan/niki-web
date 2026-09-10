@@ -4,6 +4,7 @@ import Script from "next/script";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SignatureLogo from "@/components/SignatureLogo";
+import GsapProvider from "@/components/GsapProvider";
 import { pageMetadata, softwareAppJsonLd } from "@/lib/meta";
 import "@niki/theme/tokens.css";
 import "@/styles/niki.css";
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Script id="niki-software-jsonld" type="application/ld+json" strategy="beforeInteractive">
           {JSON.stringify(softwareAppJsonLd)}
         </Script>
+        <GsapProvider />
       </body>
     </html>
   );

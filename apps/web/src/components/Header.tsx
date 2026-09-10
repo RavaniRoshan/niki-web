@@ -6,22 +6,26 @@ import { WEB_ROUTES, DOCS_ROUTES, docsUrl, SITE } from "@/lib/site";
 import { LogoMark } from "./LogoMark";
 
 const productItems = [
-  { label: "Overview", href: WEB_ROUTES.product },
-  { label: "Multi-Agent Pipeline", href: WEB_ROUTES.agents },
-  { label: "Security & Sandboxing", href: WEB_ROUTES.security },
-  { label: "Integrations", href: WEB_ROUTES.integrations },
+  { label: "Overview", href: WEB_ROUTES.product, desc: "What Niki is" },
+  {
+    label: "Multi-Agent Pipeline",
+    href: WEB_ROUTES.agents,
+    desc: "Planner → Coder → Tester → Reviewer",
+  },
+  {
+    label: "Security & Sandboxing",
+    href: WEB_ROUTES.security,
+    desc: "Hermetic, rootless, fail-closed",
+  },
+  { label: "Integrations", href: WEB_ROUTES.integrations, desc: "MCP, providers, ACP/IDE" },
 ];
 
 const resourceItems = [
-  { label: "Blog", href: WEB_ROUTES.blog },
-  { label: "Changelog", href: WEB_ROUTES.changelog },
-  { label: "Guides", href: WEB_ROUTES.guides },
-  { label: "Examples", href: WEB_ROUTES.examples },
+  { label: "Blog", href: WEB_ROUTES.blog, desc: "Architecture & design reasoning" },
+  { label: "Changelog", href: WEB_ROUTES.changelog, desc: "Every release" },
+  { label: "Guides", href: WEB_ROUTES.guides, desc: "Step-by-step walkthroughs" },
+  { label: "Examples", href: WEB_ROUTES.examples, desc: "Real tasks with real output" },
 ];
-
-function BrandMark({ size = 24 }: { size?: number }) {
-  return <LogoMark size={size} />;
-}
 
 function Dropdown({
   label,
@@ -31,7 +35,7 @@ function Dropdown({
 }: {
   label: string;
   href: string;
-  items: { label: string; href: string }[];
+  items: { label: string; href: string; desc: string }[];
   active: boolean;
 }) {
   const [open, setOpen] = useState(false);
@@ -72,21 +76,29 @@ function Dropdown({
           <path d="M2 3.5 L5 6.5 L8 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" />
         </svg>
       </Link>
-      {open && (
-        <div className="nx-dropdown" role="menu">
-          {items.map((item) => (
-            <Link key={item.href} role="menuitem" href={item.href}>
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      )}
+      <div className={`nx-dropdown ${open ? "nx-dropdown--open" : ""}`} role="menu">
+        <span className="nx-dropdown__rail" aria-hidden="true" />
+        {items.map((item) => (
+          <Link key={item.href} role="menuitem" href={item.href} className="nx-dropdown__item">
+            <span className="nx-dropdown__label">{item.label}</span>
+            <span className="nx-dropdown__desc">{item.desc}</span>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
 
 export default function Header({ currentPath = "/" }: { currentPath?: string }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -96,10 +108,10 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
   }, [mobileOpen]);
 
   return (
-    <header className="nx-header">
+    <header className={`nx-header ${scrolled ? "nx-header--scrolled" : ""}`}>
       <div className="nx-header__bar">
         <Link className="nx-header__brand" href={WEB_ROUTES.home} aria-label="Niki home">
-          <BrandMark />
+          <LogoMark />
           <span className="nx-header__brand-text">niki</span>
         </Link>
 
@@ -145,10 +157,11 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
             GitHub
           </a>
           <Link
-            className="nx-btn nx-btn--primary nx-btn--sm nx-header__cta"
+            className="nx-header__cta nx-btn nx-btn--primary nx-btn--sm"
             href={WEB_ROUTES.downloads}
           >
             Get Started
+            <kbd className="nx-kbd">⌘K</kbd>
           </Link>
           <button
             type="button"

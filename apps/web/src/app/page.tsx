@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Frame, Box, Strip, BoxHeader } from "@/components/Frame";
 import CodeBlock from "@/components/CodeBlock";
 import { Terminal, T } from "@/components/Terminal";
+import { HeroShader } from "@/components/HeroShader";
 import { SITE, WEB_ROUTES, DOCS_ROUTES, docsUrl } from "@/lib/site";
 
 const stages = [
@@ -101,12 +102,15 @@ export default function HomePage() {
       {/* ============== HERO ============== */}
       <Box first>
         <div className="nx-hero">
+          <div className="nx-hero__shader" aria-hidden="true">
+            <HeroShader className="nx-hero__shader-canvas" />
+          </div>
           <div className="nx-hero__grid-lines" aria-hidden="true">
             {Array.from({ length: 10 }, (_, i) => (
               <i key={i} />
             ))}
           </div>
-          <div className="nx-hero__inner">
+          <div className="nx-hero__inner" data-hero-seq>
             <Link className="nx-hero__kicker" href={WEB_ROUTES.changelog}>
               <span className="nx-dot nx-dot--pulse" aria-hidden="true" />v{SITE.release.version}{" "}
               shipped — plan mode, spend caps, headless CI contract
@@ -145,8 +149,8 @@ export default function HomePage() {
       <Strip />
 
       {/* ============== TERMINAL DEMO ============== */}
-      <Box>
-        <div className="nx-demo-split">
+      <Box data-anim="draw">
+        <div className="nx-demo-split" data-anim="stagger">
           <div className="nx-demo-copy">
             <h2>Watch one sentence become a reviewable branch.</h2>
             <p>
@@ -214,7 +218,7 @@ export default function HomePage() {
       <Strip />
 
       {/* ============== PIPELINE ============== */}
-      <Box>
+      <Box data-anim="draw">
         <BoxHeader
           comment="the multi-agent pipeline"
           heading="The multi-agent pipeline"
@@ -224,7 +228,7 @@ export default function HomePage() {
             </span>
           }
         />
-        <div className="nx-pipeline">
+        <div className="nx-pipeline" data-anim="stagger">
           {stages.map((stage) => (
             <div key={stage.role} className="nx-stage" data-role={stage.role}>
               <div className="nx-stage__glyph" aria-hidden="true">
@@ -257,9 +261,9 @@ export default function HomePage() {
       <Strip />
 
       {/* ============== WHY NIKI (feature cells) ============== */}
-      <Box>
+      <Box data-anim="draw">
         <BoxHeader comment="why niki" heading="Why Niki" />
-        <div className="nx-grid nx-grid--3">
+        <div className="nx-grid nx-grid--3" data-anim="stagger">
           {features.map((f) => (
             <div key={f.idx} className="nx-cell">
               <span className="nx-index">{f.idx}</span>
@@ -273,8 +277,8 @@ export default function HomePage() {
       <Strip />
 
       {/* ============== VERIFIED OUTPUT ============== */}
-      <Box>
-        <div className="nx-demo-split">
+      <Box data-anim="draw">
+        <div className="nx-demo-split" data-anim="stagger">
           <div className="nx-demo-copy">
             <h2>Proof, not promises.</h2>
             <p>
@@ -329,7 +333,7 @@ export default function HomePage() {
       <Strip />
 
       {/* ============== SECURITY ============== */}
-      <Box>
+      <Box data-anim="draw">
         <BoxHeader
           comment="hermetic by default"
           heading="Security and sandboxing"
@@ -339,7 +343,7 @@ export default function HomePage() {
             </Link>
           }
         />
-        <div className="nx-split">
+        <div className="nx-split" data-anim="stagger">
           <div>
             <h2 style={{ marginTop: 0, fontSize: "1.375rem" }}>Sandboxed. Isolated. Auditable.</h2>
             <p>
@@ -401,7 +405,7 @@ deny = ["rm -rf /", "curl | sh"]`}
       <Strip />
 
       {/* ============== PROVIDERS TICKER ============== */}
-      <Box>
+      <Box data-anim="draw">
         <BoxHeader
           comment="byok · any provider, per agent"
           heading="Bring your own keys"
@@ -411,7 +415,12 @@ deny = ["rm -rf /", "curl | sh"]`}
             </Link>
           }
         />
-        <div className="nx-providers-grid" role="list" aria-label="Supported providers">
+        <div
+          className="nx-providers-grid"
+          role="list"
+          aria-label="Supported providers"
+          data-anim="stagger"
+        >
           {providers.map((p) => (
             <span key={p} role="listitem">
               {p}
@@ -454,7 +463,7 @@ model    = "claude-sonnet-4"`}
       {/* ============== WORKFLOW ============== */}
       <Box>
         <BoxHeader comment="terminal-native · ide-ready" heading="Developer workflow" />
-        <div className="nx-grid nx-grid--3">
+        <div className="nx-grid nx-grid--3" data-anim="stagger">
           <div className="nx-cell">
             <span className="nx-index">tui</span>
             <h3>Interactive TUI</h3>
@@ -485,25 +494,25 @@ model    = "claude-sonnet-4"`}
       <Strip />
 
       {/* ============== STATS ============== */}
-      <Box>
+      <Box data-anim="draw">
         <BoxHeader comment="verified output, honest numbers" heading="Verified output" />
         <div
           className="nx-stats"
           style={{ gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}
         >
-          <div className="nx-stat">
+          <div className="nx-stat" data-anim="count">
             <p className="nx-stat__value">
               <em>4</em> agents
             </p>
             <p className="nx-stat__label">Independent Planner → Coder → Tester → Reviewer</p>
           </div>
-          <div className="nx-stat">
+          <div className="nx-stat" data-anim="count">
             <p className="nx-stat__value">
               <em>1</em> branch
             </p>
             <p className="nx-stat__label">Reviewable niki/&lt;id&gt; output per run</p>
           </div>
-          <div className="nx-stat">
+          <div className="nx-stat" data-anim="count">
             <p className="nx-stat__value">
               <em>0</em> telemetry
             </p>
@@ -521,8 +530,8 @@ model    = "claude-sonnet-4"`}
       <Strip />
 
       {/* ============== OPEN SOURCE / PRICING ============== */}
-      <Box>
-        <div className="nx-split">
+      <Box data-anim="draw">
+        <div className="nx-split" data-anim="stagger">
           <div>
             <h2 style={{ marginTop: 0, fontSize: "1.375rem" }}>Free software, honest claims.</h2>
             <p>
@@ -574,7 +583,7 @@ model    = "claude-sonnet-4"`}
 
       {/* ============== FINAL CTA ============== */}
       <Box last>
-        <div className="nx-cta">
+        <div className="nx-cta" data-anim="rise">
           <h2>Delegate the task. Review the branch.</h2>
           <p>
             First verified branch in under five minutes — no container runtime required to start.

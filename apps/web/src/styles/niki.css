@@ -2700,3 +2700,299 @@ html::-webkit-scrollbar {
 .nx-mobile::-webkit-scrollbar {
   display: none;
 }
+
+/* ============ Hero shader layer ============ */
+/* The WebGL silk sits under the grid lines: dark field, mint creases,
+   fading to page bg at every edge so it never fights the frame rails. */
+.nx-hero__shader {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.nx-hero__shader-canvas {
+  width: 100%;
+  height: 100%;
+  mask-image: radial-gradient(120% 90% at 50% 42%, #000 30%, transparent 78%);
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 42%, #000 30%, transparent 78%);
+  opacity: 0.9;
+}
+
+/* content stays above the shader */
+.nx-hero__inner {
+  z-index: 3;
+}
+
+.nx-hero__grid-lines {
+  z-index: 1;
+}
+
+/* Fallback: when WebGL is unavailable or reduced-motion kills the canvas,
+   a static mint radial hint keeps the hero from being flat empty. */
+@media (prefers-reduced-motion: reduce) {
+  .nx-hero__shader {
+    background: radial-gradient(
+      80% 60% at 50% 40%,
+      color-mix(in srgb, var(--nk-mint-deep) 55%, var(--nk-bg-0)),
+      var(--nk-bg-0) 75%
+    );
+  }
+  .nx-hero__shader-canvas {
+    display: none !important;
+  }
+}
+
+/* ============ Header v2 — scroll-reactive, rich dropdowns ============ */
+/* Scrolled state: denser, more opaque blur, hairline progress feel */
+.nx-header {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.nx-header--scrolled {
+  background: color-mix(in srgb, var(--nk-bg-0) 88%, transparent);
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow: 0 1px 0 0 color-mix(in srgb, var(--nk-mint) 8%, transparent);
+}
+
+/* Animated underline on nav links */
+.nx-nav-link {
+  position: relative;
+  padding-block: 4px;
+}
+
+.nx-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: 0;
+  height: 1px;
+  background: var(--nk-mint);
+  transition: right 0.28s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.nx-nav-link:hover::after,
+.nx-nav-link[aria-current="page"]::after {
+  right: 0;
+}
+
+.nx-nav-link[aria-current="page"] {
+  color: var(--nk-text-primary);
+}
+
+/* Rich dropdown with descriptions */
+.nx-dropdown {
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  visibility: hidden;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s cubic-bezier(0.34, 1.2, 0.64, 1),
+    visibility 0.22s;
+}
+
+.nx-dropdown--open {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  visibility: visible;
+}
+
+.nx-dropdown__item {
+  display: flex !important;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 18px !important;
+  border-bottom: 1px solid var(--nk-surface-border) !important;
+}
+
+.nx-dropdown__item:hover {
+  background: color-mix(in srgb, var(--nk-surface-border) 16%, transparent) !important;
+}
+
+.nx-dropdown__label {
+  font-size: 0.875rem;
+  color: var(--nk-text-primary) !important;
+  font-weight: 500;
+}
+
+.nx-dropdown__desc {
+  font-size: 0.75rem;
+  color: var(--nk-text-muted) !important;
+  font-family: var(--nk-font-mono);
+  letter-spacing: 0.01em;
+}
+
+.nx-dropdown__rail {
+  display: block;
+  height: 2px;
+  background: linear-gradient(to right, var(--nk-mint), transparent 60%);
+  animation: nx-rail-in 0.3s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@keyframes nx-rail-in {
+  from {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  to {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+/* kbd hint in CTA */
+.nx-kbd {
+  font-family: var(--nk-font-mono);
+  font-size: 0.625rem;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--nk-bg-0) 35%, transparent);
+  background: color-mix(in srgb, var(--nk-bg-0) 14%, transparent);
+  margin-left: 2px;
+  letter-spacing: 0.04em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-nav-link::after {
+    transition: none;
+  }
+  .nx-dropdown {
+    transition: none;
+  }
+}
+
+/* ============ Footer v2 — mast + hairline columns + term strip ============ */
+.nx-footer__mast {
+  border-bottom: 1px solid var(--nk-surface-border);
+  padding: 56px 24px 40px;
+  text-align: center;
+  position: relative;
+  overflow: clip;
+}
+
+@media (min-width: 768px) {
+  .nx-footer__mast {
+    padding: 72px 48px 48px;
+  }
+}
+
+.nx-footer__word {
+  margin: 0;
+  font-size: clamp(4.5rem, 16vw, 11rem);
+  font-weight: 600;
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--nk-mint) 45%, var(--nk-surface-border));
+  user-select: none;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.nx-footer__word-tag {
+  margin: 18px 0 0;
+  font-size: 0.875rem;
+  color: var(--nk-text-muted);
+  font-family: var(--nk-font-mono);
+  letter-spacing: 0.08em;
+}
+
+/* link columns on a hairline mesh */
+.nx-footer__grid {
+  max-width: 1189px;
+  width: 90vw;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--nk-surface-border);
+  border-bottom: 1px solid var(--nk-surface-border);
+  border-left: 1px solid var(--nk-surface-border);
+  border-right: 1px solid var(--nk-surface-border);
+}
+
+@media (max-width: 1023px) {
+  .nx-footer__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .nx-footer__brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .nx-footer__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .nx-footer__grid {
+    width: 100%;
+    border-left: none;
+    border-right: none;
+  }
+}
+
+.nx-footer__grid > * {
+  background: var(--nk-bg-1);
+  padding: 32px 24px;
+}
+
+@media (min-width: 768px) {
+  .nx-footer__grid > * {
+    padding: 40px 32px;
+  }
+}
+
+/* easter-egg terminal strip */
+.nx-footer__term {
+  border-bottom: 1px solid var(--nk-surface-border);
+  background: var(--nk-bg-0);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.nx-footer__term-line {
+  font-size: 0.75rem;
+  color: var(--nk-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nx-footer__term-cursor {
+  width: 8px;
+  height: 14px;
+  background: var(--nk-mint);
+  flex: none;
+  animation: nx-caret 1.1s steps(1) infinite;
+}
+
+@keyframes nx-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-footer__term-cursor {
+    animation: none;
+    opacity: 1;
+  }
+}
