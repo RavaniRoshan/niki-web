@@ -4,6 +4,7 @@ import CodeBlock from "@/components/CodeBlock";
 import { Terminal, T } from "@/components/Terminal";
 import { HeroShader } from "@/components/HeroShader";
 import PipelineLive from "@/components/PipelineLive";
+import ProviderMarquee from "@/components/ProviderMarquee";
 import { SITE, WEB_ROUTES, DOCS_ROUTES, docsUrl } from "@/lib/site";
 
 const features = [
@@ -37,21 +38,6 @@ const features = [
     title: "BYOK & provider-mixing",
     body: "Bring your own keys. Give each agent a different provider — a strong reasoner for Planner, a cheap model for Tester.",
   },
-];
-
-const providers = [
-  "Anthropic",
-  "OpenAI",
-  "Google",
-  "Ollama",
-  "OpenRouter",
-  "OpenCode Zen",
-  "Kimi Code",
-  "KiloCode",
-  "NVIDIA",
-  "Groq",
-  "Together",
-  "DeepSeek",
 ];
 
 export default function HomePage() {
@@ -352,18 +338,7 @@ deny = ["rm -rf /", "curl | sh"]`}
             </Link>
           }
         />
-        <div
-          className="nx-providers-grid"
-          role="list"
-          aria-label="Supported providers"
-          data-anim="stagger"
-        >
-          {providers.map((p) => (
-            <span key={p} role="listitem">
-              {p}
-            </span>
-          ))}
-        </div>
+        <ProviderMarquee />
         <div className="nx-split" style={{ borderBottom: "1px solid var(--nk-surface-border)" }}>
           <div>
             <p style={{ margin: 0 }}>

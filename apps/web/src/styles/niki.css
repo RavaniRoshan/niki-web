@@ -3394,3 +3394,312 @@ html::-webkit-scrollbar {
   letter-spacing: 0.06em;
   overflow-wrap: anywhere;
 }
+
+/* ============ Provider logo marquee ============ */
+.nx-marquee {
+  position: relative;
+  border-bottom: 1px solid var(--nk-surface-border);
+  background: var(--nk-bg-0);
+  overflow: hidden;
+  padding: 26px 0;
+}
+
+.nx-marquee__track {
+  display: flex;
+  gap: 0;
+  width: max-content;
+  animation: nx-marquee-scroll 56s linear infinite;
+}
+
+.nx-marquee:hover .nx-marquee__track {
+  animation-play-state: paused;
+}
+
+@keyframes nx-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.nx-marquee-tile {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 28px;
+  margin: 0 8px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+  white-space: nowrap;
+}
+
+/* In-place highlight when the paused cursor lands on a tile — no translate,
+   which would slide the tile out from under the cursor. */
+.nx-marquee-tile:hover {
+  border-color: var(--nk-surface-border);
+  background: var(--nk-bg-1);
+}
+
+.nx-marquee-tile img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+  filter: grayscale(0.35);
+  opacity: 0.82;
+  transition:
+    filter 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.nx-marquee-tile:hover img {
+  filter: grayscale(0);
+  opacity: 1;
+}
+
+.nx-marquee-name {
+  font-size: 0.8125rem;
+  color: var(--nk-text-secondary);
+  transition: color 0.18s ease;
+}
+
+.nx-marquee-tile:hover .nx-marquee-name {
+  color: var(--nk-text-primary);
+}
+
+/* edge fades into the section borders */
+.nx-marquee__fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 72px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.nx-marquee__fade--l {
+  left: 0;
+  background: linear-gradient(to right, var(--nk-bg-0), transparent);
+}
+
+.nx-marquee__fade--r {
+  right: 0;
+  background: linear-gradient(to left, var(--nk-bg-0), transparent);
+}
+
+/* Pause when the cursor is anywhere in the marquee strip. The track
+   spans the full height, so gaps between tiles pause too. Tiles also
+   pause themselves so a caught tile stops dead for its lift effect. */
+.nx-marquee:hover .nx-marquee__track,
+.nx-marquee__track:hover,
+.nx-marquee-tile:hover {
+  animation-play-state: paused;
+}
+
+/* keep the track hoverable across its whole area */
+.nx-marquee__track {
+  padding-block: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-marquee__track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    row-gap: 10px;
+  }
+  .nx-marquee__fade {
+    display: none;
+  }
+}
+
+/* ============ Subtle hover polish across the site ============ */
+
+/* Hairline cells: border + glyph tint on hover */
+.nx-cell {
+  position: relative;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.nx-cell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease;
+  pointer-events: none;
+}
+
+.nx-cell:hover {
+  background: color-mix(in srgb, var(--nk-bg-1) 60%, var(--nk-bg-0));
+}
+
+.nx-cell:hover::after {
+  border-color: color-mix(in srgb, var(--nk-mint) 35%, transparent);
+}
+
+.nx-cell .nx-index {
+  transition: color 0.2s ease;
+}
+
+.nx-cell:hover .nx-index {
+  color: var(--nk-text-primary);
+}
+
+/* Terminal window: corner ticks light on hover */
+.nx-terminal {
+  position: relative;
+  transition: border-color 0.22s ease;
+}
+
+.nx-terminal:hover {
+  border-color: color-mix(in srgb, var(--nk-mint) 30%, var(--nk-surface-border));
+}
+
+/* Terminal dots: traffic-light blush on hover */
+.nx-terminal__dots i {
+  transition: background-color 0.2s ease;
+}
+
+.nx-terminal:hover .nx-terminal__dots i:nth-child(1) {
+  background: #f87171;
+}
+
+.nx-terminal:hover .nx-terminal__dots i:nth-child(2) {
+  background: #fbbf24;
+}
+
+.nx-terminal:hover .nx-terminal__dots i:nth-child(3) {
+  background: #4ff7d1;
+}
+
+/* Stat tiles: mint sweep underline on hover */
+.nx-stat {
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.nx-stat::after {
+  content: "";
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 12px;
+  height: 1px;
+  background: linear-gradient(to right, var(--nk-mint), transparent 65%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.nx-stat:hover::after {
+  transform: scaleX(1);
+}
+
+/* Post cards: rail marker slides in */
+.nx-post {
+  position: relative;
+}
+
+.nx-post::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--nk-mint);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.25s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.nx-post:hover::before {
+  transform: scaleY(1);
+}
+
+/* Badges: mint border breathe on hover */
+.nx-badge {
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+a:hover > .nx-badge,
+.nx-badge:hover {
+  border-color: color-mix(in srgb, var(--nk-mint) 50%, transparent);
+}
+
+/* Code block label: copy button reveal */
+.nx-code__label > .nx-copy {
+  opacity: 0.55;
+  transition:
+    opacity 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.nx-code:hover .nx-code__label > .nx-copy {
+  opacity: 1;
+}
+
+/* Strips between sections: mint scan line on hover (desktop easter egg) */
+@media (min-width: 768px) {
+  .nx-strip {
+    overflow: hidden;
+  }
+
+  .nx-strip::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -30%;
+    width: 12%;
+    background: linear-gradient(
+      100deg,
+      transparent,
+      color-mix(in srgb, var(--nk-mint) 14%, transparent),
+      transparent
+    );
+    transform: translateX(-120%);
+    transition: none;
+    pointer-events: none;
+  }
+
+  .nx-strip:hover::after {
+    animation: nx-strip-scan 0.9s ease-out;
+  }
+
+  @keyframes nx-strip-scan {
+    from {
+      transform: translateX(-120%);
+    }
+    to {
+      transform: translateX(1200%);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-cell,
+  .nx-cell::after,
+  .nx-terminal,
+  .nx-terminal__dots i,
+  .nx-stat::after,
+  .nx-post::before,
+  .nx-badge,
+  .nx-marquee-tile {
+    transition: none !important;
+  }
+  .nx-strip::after {
+    display: none;
+  }
+}
