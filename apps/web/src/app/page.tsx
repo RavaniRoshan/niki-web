@@ -4,6 +4,7 @@ import CodeBlock from "@/components/CodeBlock";
 import { Terminal, T } from "@/components/Terminal";
 import { HeroShader } from "@/components/HeroShader";
 import PipelineLive from "@/components/PipelineLive";
+import TaskRunnerHero from "@/components/TaskRunnerHero";
 import ProviderMarquee from "@/components/ProviderMarquee";
 import { SITE, WEB_ROUTES, DOCS_ROUTES, docsUrl } from "@/lib/site";
 
@@ -67,6 +68,9 @@ export default function HomePage() {
               Describe a task. Niki plans, codes, tests and reviews it across four independent
               agents — then hands you a reviewable branch with the full decision trail.
             </p>
+            <div className="nx-hero-runner-wrap">
+              <TaskRunnerHero />
+            </div>
             <div className="nx-hero__actions">
               <Link className="nx-btn nx-btn--primary" href={docsUrl(DOCS_ROUTES.quickstart)}>
                 Get Started

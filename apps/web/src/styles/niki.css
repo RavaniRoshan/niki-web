@@ -3748,3 +3748,279 @@ a:hover > .nx-badge,
   height: 18px;
   display: block;
 }
+
+/* ============ Living Task hero ============ */
+/* The editable task field + inline pipeline simulation. Sits between the
+   headline and the CTAs; the whole thing is one bordered console strip. */
+
+.nx-hero-runner {
+  margin-top: 8px;
+  border: 1px solid var(--nk-surface-border);
+  background: color-mix(in srgb, var(--nk-bg-1) 70%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* task input row */
+.nx-hero-inputwrap {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--nk-surface-border);
+  min-width: 0;
+}
+
+.nx-hero-inputlabel {
+  display: none;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--nk-yellow);
+  border-right: 1px solid var(--nk-surface-border);
+  background: color-mix(in srgb, var(--nk-yellow-deep) 55%, var(--nk-bg-0));
+  white-space: nowrap;
+  flex: none;
+}
+
+@media (min-width: 640px) {
+  .nx-hero-inputlabel {
+    display: inline-flex;
+  }
+}
+
+.nx-hero-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--nk-text-primary);
+  font-family: var(--nk-font-mono);
+  font-size: 0.875rem;
+  padding: 14px 16px;
+  caret-color: var(--nk-yellow);
+}
+
+.nx-hero-input::placeholder {
+  color: var(--nk-text-muted);
+}
+
+.nx-hero-input:disabled {
+  opacity: 0.65;
+}
+
+.nx-hero-runbtn {
+  flex: none;
+  font-family: var(--nk-font-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0 20px;
+  border: none;
+  border-left: 1px solid var(--nk-surface-border);
+  background: var(--nk-yellow);
+  color: var(--nk-bg-0);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.nx-hero-runbtn:hover:not(:disabled) {
+  background: var(--nk-yellow-soft);
+}
+
+.nx-hero-runbtn:disabled {
+  cursor: wait;
+  background: color-mix(in srgb, var(--nk-yellow) 40%, var(--nk-bg-1));
+  color: var(--nk-text-muted);
+}
+
+/* pipeline chips row */
+.nx-hero-pipe {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nx-hero-pipe::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .nx-hero-pipe {
+    overflow-x: visible;
+    flex-wrap: wrap;
+  }
+}
+
+.nx-hero-pipeitem {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+}
+
+.nx-hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  padding: 7px 12px;
+  border: 1px solid var(--nk-surface-border);
+  background: var(--nk-bg-0);
+  color: var(--nk-text-muted);
+  white-space: nowrap;
+  transition:
+    border-color 0.25s ease,
+    color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.nx-hero-chipglyph {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  flex: none;
+}
+
+.nx-hero-chipglyph svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+.nx-hero-chip[data-state="queued"] {
+  color: var(--nk-text-secondary);
+}
+
+.nx-hero-chip[data-state="running"] {
+  color: var(--nk-yellow);
+  border-color: color-mix(in srgb, var(--nk-yellow) 55%, transparent);
+  background: color-mix(in srgb, var(--nk-yellow) 7%, var(--nk-bg-0));
+}
+
+.nx-hero-chip[data-state="running"] .nx-hero-chipglyph {
+  animation: nx-chip-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes nx-chip-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.nx-hero-chip[data-state="done"],
+.nx-hero-chip[data-state="approved"] {
+  color: var(--nk-yellow);
+  border-color: color-mix(in srgb, var(--nk-yellow) 30%, transparent);
+}
+
+.nx-hero-chipstate {
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: inherit;
+  opacity: 0.75;
+}
+
+.nx-hero-chip[data-state="idle"] .nx-hero-chipstate {
+  display: none;
+}
+
+/* branch chip — final state, yellow-dominant */
+.nx-hero-chip--branch[data-state="done"] {
+  background: var(--nk-yellow);
+  color: var(--nk-bg-0);
+  border-color: var(--nk-yellow);
+  font-weight: 600;
+}
+
+/* connectors */
+.nx-hero-conn {
+  position: relative;
+  width: 22px;
+  height: 1px;
+  background: var(--nk-surface-border);
+  flex: none;
+}
+
+.nx-hero-connfill {
+  position: absolute;
+  inset: 0;
+  background: var(--nk-yellow);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.nx-hero-connfill[data-active="true"] {
+  transform: scaleX(1);
+}
+
+/* result / honest-label line */
+.nx-hero-simnote {
+  border-top: 1px solid var(--nk-surface-border);
+  padding: 10px 16px;
+  font-size: 0.6875rem;
+  color: var(--nk-text-muted);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.nx-hero-simnote code {
+  font-family: var(--nk-font-mono);
+  color: var(--nk-text-secondary);
+  background: var(--nk-bg-2);
+  border: 1px solid var(--nk-surface-border);
+  padding: 1px 6px;
+  overflow-wrap: anywhere;
+}
+
+.nx-hero-branchname {
+  color: var(--nk-yellow);
+  font-weight: 600;
+}
+
+.nx-hero-rerun {
+  font-family: var(--nk-font-mono);
+  font-size: 0.6875rem;
+  background: none;
+  border: none;
+  color: var(--nk-yellow);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* runner phase: dim surroundings while running */
+.nx-hero-runner[data-phase="running"] ~ * {
+  transition: opacity 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-hero-chip[data-state="running"] .nx-hero-chipglyph {
+    animation: none;
+  }
+  .nx-hero-connfill {
+    transition: none;
+  }
+}
+
+/* Runner wrapper: width discipline inside the hero column */
+.nx-hero-runner-wrap {
+  margin-top: 24px;
+  margin-bottom: 4px;
+  max-width: 880px;
+}
