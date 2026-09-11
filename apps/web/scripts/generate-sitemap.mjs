@@ -5,7 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const site = (process.env.NIKI_WEB_URL || "https://niki.dev").replace(/\/$/, "");
+const site = (process.env.NIKI_WEB_URL || "https://niki-web.pages.dev").replace(/\/$/, "");
 const outDir = path.join(process.cwd(), "out");
 
 const routes = [

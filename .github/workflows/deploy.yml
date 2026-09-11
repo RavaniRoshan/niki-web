@@ -1,0 +1,50 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: cloudflare-pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build marketing site
+        run: npm run build:web
+        env:
+          NIKI_WEB_URL: ${{ vars.NIKI_WEB_URL || 'https://niki-web.pages.dev' }}
+          NIKI_DOCS_URL: ${{ vars.NIKI_DOCS_URL || 'https://niki-docs.pages.dev' }}
+
+      - name: Build docs site
+        run: npm run build:docs
+        env:
+          NIKI_WEB_URL: ${{ vars.NIKI_WEB_URL || 'https://niki-web.pages.dev' }}
+          NIKI_DOCS_URL: ${{ vars.NIKI_DOCS_URL || 'https://niki-docs.pages.dev' }}
+
+      - name: Deploy marketing to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/web/out --project-name=niki-web --branch=main
+
+      - name: Deploy docs to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/docs/dist --project-name=niki-docs --branch=main

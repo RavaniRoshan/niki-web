@@ -21,9 +21,15 @@ jobs:
 
       - name: Build marketing site
         run: npm run build:web
+        env:
+          NIKI_WEB_URL: ${{ vars.NIKI_WEB_URL || 'https://niki-web.pages.dev' }}
+          NIKI_DOCS_URL: ${{ vars.NIKI_DOCS_URL || 'https://niki-docs.pages.dev' }}
 
       - name: Build docs
         run: npm run build:docs
+        env:
+          NIKI_WEB_URL: ${{ vars.NIKI_WEB_URL || 'https://niki-web.pages.dev' }}
+          NIKI_DOCS_URL: ${{ vars.NIKI_DOCS_URL || 'https://niki-docs.pages.dev' }}
 
       - name: Prettier check
         run: npm run format:check --workspace apps/web

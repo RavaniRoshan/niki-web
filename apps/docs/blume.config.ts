@@ -12,7 +12,7 @@ export default defineConfig({
       alt: "Niki",
     },
     text: "niki",
-    href: "https://niki.dev",
+    href: "https://niki-web.pages.dev",
   },
   github: {
     owner: "RavaniRoshan",
@@ -23,7 +23,7 @@ export default defineConfig({
   banner: {
     content: "Niki v0.7.0 — plan mode, honest metering, headless CI contract.",
     link: {
-      href: "https://niki.dev/resources/changelog",
+      href: "https://niki-web.pages.dev/resources/changelog",
       text: "Read the release notes",
     },
     dismissible: true,
@@ -56,7 +56,7 @@ export default defineConfig({
       {
         label: "Product",
         path: "/product",
-        href: "https://niki.dev/product",
+        href: "https://niki-web.pages.dev/product",
         items: [
           {
             label: "Overview",
@@ -83,12 +83,12 @@ export default defineConfig({
       {
         label: "Downloads",
         path: "/downloads",
-        href: "https://niki.dev/downloads",
+        href: "https://niki-web.pages.dev/downloads",
       },
       {
         label: "Resources",
         path: "/resources",
-        href: "https://niki.dev/resources",
+        href: "https://niki-web.pages.dev/resources",
         items: [
           { label: "Blog", path: "/resources/blog" },
           { label: "Changelog", path: "/resources/changelog" },
@@ -99,7 +99,7 @@ export default defineConfig({
       {
         label: "Pricing",
         path: "/pricing",
-        href: "https://niki.dev/pricing",
+        href: "https://niki-web.pages.dev/pricing",
       },
     ],
   },

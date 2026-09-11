@@ -1,16 +1,16 @@
 /**
  * Centralized site URLs for Niki's web presence.
  *
- * Preferred production deployment:
- *   niki.dev       — marketing site (this app, apps/web)
- *   docs.niki.dev  — documentation (apps/docs, Blume)
+ * Production deployment (Cloudflare Pages):
+ *   niki-web.pages.dev  — marketing site (this app, apps/web)
+ *   niki-docs.pages.dev — documentation (apps/docs, Blume)
  *
- * Until domains are configured, these constants are the single switch that
- * retargets every cross-site link in both apps. Never hardcode a site URL
- * outside this module.
+ * These constants are the single switch that retargets every cross-site
+ * link in both apps. Never hardcode a site URL outside this module.
  *
- * Overridable at build time via env vars (see resolved below) so preview
- * deployments and local dev can point links at their counterparts.
+ * When custom domains (niki.dev / docs.niki.dev) are attached in
+ * Cloudflare, change the two origins below (or set NIKI_WEB_URL /
+ * NIKI_DOCS_URL in the Pages build environment).
  */
 
 const env = (key: string, fallback: string): string =>
@@ -18,13 +18,13 @@ const env = (key: string, fallback: string): string =>
 
 export const SITE = {
   /** Marketing site origin */
-  web: env("NIKI_WEB_URL", "https://niki.dev"),
+  web: env("NIKI_WEB_URL", "https://niki-web.pages.dev"),
   /** Documentation site origin */
-  docs: env("NIKI_DOCS_URL", "https://docs.niki.dev"),
+  docs: env("NIKI_DOCS_URL", "https://niki-docs.pages.dev"),
   /** GitHub repository */
   repo: "https://github.com/RavaniRoshan/niki",
-  /** GitHub Pages fallback for docs (current live deployment) */
-  docsFallback: "https://ravaniroshan.github.io/niki/",
+  /** Web monorepo (this repository) */
+  webRepo: "https://github.com/RavaniRoshan/niki-web",
   name: "Niki",
   tagline: "One sentence in, a verified pull request out.",
   description:
