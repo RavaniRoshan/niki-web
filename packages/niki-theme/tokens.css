@@ -1,43 +1,59 @@
 /**
- * Niki design tokens — canonical source for both the marketing site (apps/web)
- * and the docs site (apps/docs). Derived from the Turso-inspired Niki visual
- * reference. Dark-first, flat surfaces, thin borders, mint-dominant.
+ * Niki design tokens — canonical source for both the marketing site
+ * (apps/web) and the docs site (apps/docs). Derived from the Niki visual
+ * reference. Dark-first, flat surfaces, thin borders, red/yellow hazard
+ * palette on warm blacks.
+ *
+ * Brand system:
+ *   --nk-red / --nk-red-deep       primary accent (logo, CTAs, links)
+ *   --nk-yellow / --nk-yellow-deep secondary accent (active states, warn)
+ *
+ * Legacy aliases (--nk-mint*, --nk-magenta*) remain as compatibility
+ * shims: existing rules that reference them cascade to the new palette.
  */
 
 :root {
-  /* ---- Surfaces (dark-first) ---- */
-  --nk-bg-0: #0d1318;        /* page background */
-  --nk-bg-1: #121b1f;        /* raised surface / card */
-  --nk-bg-2: #162129;        /* higher surface / code block */
-  --nk-surface-border: #283945; /* thin borders */
+  /* ---- Surfaces (warm black family) ---- */
+  --nk-bg-0: #0c0b0a; /* page background — warm black */
+  --nk-bg-1: #151312; /* raised surface / card */
+  --nk-bg-2: #1d1a18; /* higher surface / code block */
+  --nk-surface-border: #2e2a27; /* thin borders */
 
   /* ---- Text ---- */
   --nk-text-primary: #ffffff;
-  --nk-text-secondary: #c5cace;
-  --nk-text-muted: #86898c;
+  --nk-text-secondary: #d6d1cc;
+  --nk-text-muted: #8f8880;
 
-  /* ---- Accents ---- */
-  --nk-mint: #4ff7d1;         /* primary accent */
-  --nk-mint-deep: #0e342d;    /* mint surface / chip bg */
-  --nk-magenta: #d946ef;       /* secondary accent, sparing */
-  --nk-magenta-deep: #a21caf; /* secondary accent deep */
+  /* ---- Brand accents ---- */
+  --nk-red: #ff2e2e; /* sharp red — primary accent */
+  --nk-red-deep: #2a0a0a; /* red surface / chip bg */
+  --nk-yellow: #ffd60a; /* sharp yellow — active/attention accent */
+  --nk-yellow-deep: #2a2205; /* yellow surface / chip bg */
+
+  /* ---- Compatibility aliases (old mint/magenta names) ---- */
+  --nk-mint: var(--nk-red);
+  --nk-mint-deep: var(--nk-red-deep);
+  --nk-magenta: var(--nk-yellow);
+  --nk-magenta-deep: var(--nk-yellow-deep);
 
   /* ---- Agent role colors (semantic, distinct from brand) ---- */
-  --nk-agent-planner: #4ff7d1;
-  --nk-agent-coder: #d946ef;
-  --nk-agent-tester: #fbbf24;
-  --nk-agent-reviewer: #60a5fa;
-  --nk-agent-red: #f87171;
-  --nk-agent-security: #34d399;
+  --nk-agent-planner: #ffd60a; /* yellow */
+  --nk-agent-coder: #ff2e2e; /* red */
+  --nk-agent-tester: #ff8c00; /* orange */
+  --nk-agent-reviewer: #ffffff; /* white */
+  --nk-agent-red: #ff2e2e;
+  --nk-agent-security: #ffd60a;
 
   /* ---- Status ---- */
-  --nk-ok: #4ff7d1;
-  --nk-warn: #fbbf24;
-  --nk-err: #f87171;
+  --nk-ok: #ffd60a;
+  --nk-warn: #ff8c00;
+  --nk-err: #ff2e2e;
 
   /* ---- Typography ---- */
-  --nk-font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --nk-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --nk-font-sans:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --nk-font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* ---- Spacing basis: 8px ---- */
   --nk-space-1: 8px;
@@ -48,7 +64,7 @@
   --nk-space-6: 48px;
   --nk-space-7: 56px;
   --nk-space-8: 64px;
-  --nk-space-10: 80px;   /* default section rhythm */
+  --nk-space-10: 80px; /* default section rhythm */
   --nk-space-12: 96px;
 
   /* ---- Radius ---- */
@@ -61,5 +77,5 @@
   --nk-header-h: 64px;
 
   /* ---- Focus ---- */
-  --nk-focus-ring: 0 0 0 2px var(--nk-bg-0), 0 0 0 4px var(--nk-mint);
+  --nk-focus-ring: 0 0 0 2px var(--nk-bg-0), 0 0 0 4px var(--nk-red);
 }

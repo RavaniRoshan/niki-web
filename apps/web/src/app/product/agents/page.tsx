@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Frame, Box, Strip, BoxHeader } from "@/components/Frame";
+import { AgentGlyph } from "@/components/AgentIcons";
 import { WEB_ROUTES, DOCS_ROUTES, docsUrl } from "@/lib/site";
 import { pageMetadata } from "@/lib/meta";
 
@@ -132,7 +133,7 @@ export default function AgentsPage() {
             <div key={agent.id} className="nx-agentflow__agent" data-agent={agent.id}>
               <div className="nx-agentflow__head">
                 <span className="nx-agentflow__glyph" aria-hidden="true">
-                  {agent.step}
+                  <AgentGlyph role={agent.id} />
                 </span>
                 <span className="nx-agentflow__name">{agent.name}</span>
                 <span className="nx-agentflow__step">stage {agent.step}</span>

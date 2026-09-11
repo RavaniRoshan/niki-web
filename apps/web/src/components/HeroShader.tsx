@@ -3,7 +3,8 @@
 /**
  * Niki hero shader — Silk-style animated WebGL background.
  * Adapted from the 21st.dev Shader Builder ("Silk") component, retuned to
- * the Niki palette: deep bg #0d1318 → mint-deep #0e342d → mint #4ff7d1.
+ * the Niki hazard palette: warm black #0c0b0a with sharp red #ff2e2e
+ * creases and occasional yellow #ffd60a glints.
  * Low intensity + heavy vignette fade keeps hero text legible.
  * Render loop pauses off-screen / on hidden tabs; disabled entirely under
  * prefers-reduced-motion.
@@ -144,17 +145,18 @@ void main() {
   gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
 }`;
 
-/* Niki palette: bg #0d1318 → deep #162129 → mint-deep #0e342d → mint #4ff7d1.
-   First two stops dominate the field; mint only creases the waves. */
+/* Niki hazard palette: warm black #0c0b0a dominates the field; red
+   #ff2e2e creases the waves; yellow #ffd60a appears at the brightest
+   ridge — a hazard-tape shimmer. */
 const COLORS: [number, number, number][] = [
-  [0x0d / 255, 0x13 / 255, 0x18 / 255],
-  [0x0d / 255, 0x13 / 255, 0x18 / 255],
-  [0x16 / 255, 0x21 / 255, 0x29 / 255],
-  [0x0e / 255, 0x34 / 255, 0x2d / 255],
-  [0x1a / 255, 0x5c / 255, 0x4c / 255],
-  [0x3a / 255, 0xc0 / 255, 0xa3 / 255],
-  [0x4f / 255, 0xf7 / 255, 0xd1 / 255],
-  [0x4f / 255, 0xf7 / 255, 0xd1 / 255],
+  [0x0c / 255, 0x0b / 255, 0x0a / 255],
+  [0x0c / 255, 0x0b / 255, 0x0a / 255],
+  [0x15 / 255, 0x13 / 255, 0x12 / 255],
+  [0x2a / 255, 0x0a / 255, 0x0a / 255],
+  [0x5c / 255, 0x14 / 255, 0x14 / 255],
+  [0xa8 / 255, 0x1f / 255, 0x1f / 255],
+  [0xff / 255, 0x2e / 255, 0x2e / 255],
+  [0xff / 255, 0xd6 / 255, 0x0a / 255],
 ];
 
 export function HeroShader({ className }: { className?: string }) {
@@ -206,7 +208,7 @@ export function HeroShader({ className }: { className?: string }) {
     gl.uniform4f(uni.shape, 1.15, 0.24, 0.5, 0.22);
     gl.uniform4f(uni.surface, 2.4, 0.94, -0.02, 1.0);
     gl.uniform4f(uni.finish, 0.0, 0.55, 0.0, 0.02);
-    gl.uniform4f(uni.transform, 107.0, 0.0, 0.06, 0.0);
+    gl.uniform4f(uni.transform, 271.0, 0.0, 0.06, 0.0);
     gl.uniform4f(uni.space, 0.0, 0.0, 0.0, 0.0);
 
     let raf = 0;

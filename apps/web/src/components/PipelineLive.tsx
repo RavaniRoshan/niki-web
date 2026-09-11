@@ -16,6 +16,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TextPlugin } from "gsap/TextPlugin";
 import { useGSAP } from "@gsap/react";
+import { AgentGlyph } from "./AgentIcons";
 
 gsap.registerPlugin(ScrollTrigger, TextPlugin, useGSAP);
 
@@ -112,6 +113,9 @@ export default function PipelineLive() {
           if (!el) return;
 
           const stages = gsap.utils.toArray<HTMLElement>(".nplv-stage", el);
+          const glyphs = stages.map((s) =>
+            Array.from(s.querySelectorAll<SVGElement>(".nplv-glyph svg :is(path, circle)"))
+          );
           const chips = gsap.utils.toArray<HTMLElement>(".nplv-chip", el);
           const bars = gsap.utils.toArray<HTMLElement>(".nplv-bar-fill", el);
           const rails = gsap.utils.toArray<HTMLElement>(".nplv-rail-fill", el);
@@ -151,12 +155,20 @@ export default function PipelineLive() {
             const isReviewer = STAGES[i]?.role === "reviewer";
             const base = 1.6 + i * 1.7;
 
-            // stage activates: card lifts in, chip appears
+            // stage activates: card lifts in, chip appears, icon strokes in
             tl.to(stage, { autoAlpha: 1, y: 0, duration: 0.3 }, base).to(
               chips[i],
               { autoAlpha: 1, duration: 0.2 },
               base
             );
+            if (glyphs[i]?.length) {
+              tl.fromTo(
+                glyphs[i],
+                { strokeDasharray: 60, strokeDashoffset: 60 },
+                { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut", stagger: 0.06 },
+                base + 0.15
+              );
+            }
 
             // queued → running
             tl.call(() => chips[i]?.setAttribute("data-state", "running"), undefined, base + 0.25);
@@ -263,7 +275,7 @@ export default function PipelineLive() {
               >
                 <div className="nplv-stage-top">
                   <span className="nplv-glyph" aria-hidden="true">
-                    {stage.glyph}
+                    <AgentGlyph role={stage.role} />
                   </span>
                   <span className="nplv-name nx-mono">{stage.name}</span>
                   <span className="nplv-chip nx-mono" data-state="queued">
@@ -287,7 +299,7 @@ export default function PipelineLive() {
               {i === STAGES.length - 1 && (
                 <div className="nplv-branch nx-mono">
                   <span className="nplv-branch-glyph" aria-hidden="true">
-                    ✓
+                    <AgentGlyph role="output" />
                   </span>
                   <span className="nplv-branch-name">niki/6d281d6d</span>
                   <span className="nplv-branch-meta">

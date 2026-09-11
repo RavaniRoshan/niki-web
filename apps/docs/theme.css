@@ -1,7 +1,8 @@
 /**
  * Niki docs — brand theme overrides on top of Blume's tokens.
  * Canonical palette: packages/niki-theme/tokens.css
- * Dark-first, flat surfaces, thin borders, mint-dominant.
+ * Dark-first, flat surfaces, thin borders. Hazard palette:
+ * warm blacks, sharp red primary, sharp yellow secondary.
  */
 
 :root {
@@ -12,91 +13,103 @@
   --blume-muted-foreground: #5a6367;
   --blume-border: #cdd6da;
 
-  /* Brand accents (light mode — deep mint for contrast) */
-  --blume-accent: #0e342d;
+  /* Brand accents (light mode — deep red for contrast) */
+  --blume-accent: #b31414;
   --blume-accent-foreground: #ffffff;
-  --blume-action: #0e342d;
+  --blume-action: #b31414;
   --blume-action-foreground: #ffffff;
 
   /* Code surfaces */
   --blume-code-background: #f0f3f5;
-  --blume-code-add: rgba(14, 52, 45, 0.12);
-  --blume-code-add-border: #0e342d;
-  --blume-code-remove: rgba(220, 38, 38, 0.12);
-  --blume-code-remove-border: #dc2626;
-  --blume-code-highlight: rgba(162, 28, 175, 0.12);
-  --blume-code-highlight-border: #a21caf;
+  --blume-code-add: rgba(179, 20, 20, 0.12);
+  --blume-code-add-border: #b31414;
+  --blume-code-remove: rgba(255, 214, 10, 0.22);
+  --blume-code-remove-border: #8a7300;
+  --blume-code-highlight: rgba(255, 140, 0, 0.14);
+  --blume-code-highlight-border: #b45309;
 
   /* Niki brand tokens (shared with the marketing site) */
-  --nk-bg-0: #0d1318;
-  --nk-bg-1: #121b1f;
-  --nk-bg-2: #162129;
-  --nk-border: #283945;
+  --nk-bg-0: #0c0b0a;
+  --nk-bg-1: #151312;
+  --nk-bg-2: #1d1a18;
+  --nk-border: #2e2a27;
   --nk-text-primary: #ffffff;
-  --nk-text-secondary: #c5cace;
-  --nk-text-muted: #86898c;
-  --nk-mint: #0e342d;
-  --nk-magenta: #a21caf;
+  --nk-text-secondary: #d6d1cc;
+  --nk-text-muted: #8f8880;
+  --nk-mint: #b31414;
+  --nk-magenta: #8a7300;
 
   /* Niki agent role tokens — semantic, kept distinct from brand system */
-  --niki-agent-planner: #0e7490;
-  --niki-agent-coder: #86198f;
+  --niki-agent-planner: #8a7300;
+  --niki-agent-coder: #b31414;
   --niki-agent-tester: #b45309;
-  --niki-agent-reviewer: #1d4ed8;
-  --niki-agent-red: #dc2626;
-  --niki-agent-security: #047857;
+  --niki-agent-reviewer: #1f2937;
+  --niki-agent-red: #b31414;
+  --niki-agent-security: #8a7300;
 }
 
 :root[data-theme="dark"] {
-  /* Surfaces */
-  --blume-background: #0d1318;
+  /* Surfaces — warm black family */
+  --blume-background: #0c0b0a;
   --blume-foreground: #ffffff;
-  --blume-muted: #121b1f;
-  --blume-muted-foreground: #86898c;
-  --blume-border: #283945;
+  --blume-muted: #151312;
+  --blume-muted-foreground: #8f8880;
+  --blume-border: #2e2a27;
 
-  /* Brand accents */
-  --blume-accent: #4ff7d1;
-  --blume-accent-foreground: #0d1318;
-  --blume-action: #4ff7d1;
-  --blume-action-foreground: #0d1318;
+  /* Brand accents — sharp red primary */
+  --blume-accent: #ff2e2e;
+  --blume-accent-foreground: #0c0b0a;
+  --blume-action: #ff2e2e;
+  --blume-action-foreground: #ffffff;
 
   /* Code surfaces */
-  --blume-code-background: #162129;
-  --blume-code-add: rgba(79, 247, 209, 0.14);
-  --blume-code-add-border: #4ff7d1;
-  --blume-code-remove: rgba(248, 113, 113, 0.15);
-  --blume-code-remove-border: #f87171;
-  --blume-code-highlight: rgba(217, 70, 239, 0.14);
-  --blume-code-highlight-border: #d946ef;
+  --blume-code-background: #1d1a18;
+  --blume-code-add: rgba(255, 46, 46, 0.14);
+  --blume-code-add-border: #ff2e2e;
+  --blume-code-remove: rgba(255, 214, 10, 0.16);
+  --blume-code-remove-border: #ffd60a;
+  --blume-code-highlight: rgba(255, 140, 0, 0.16);
+  --blume-code-highlight-border: #ff8c00;
 
   /* Niki brand tokens (dark) */
-  --nk-bg-0: #0d1318;
-  --nk-bg-1: #121b1f;
-  --nk-bg-2: #162129;
-  --nk-border: #283945;
+  --nk-bg-0: #0c0b0a;
+  --nk-bg-1: #151312;
+  --nk-bg-2: #1d1a18;
+  --nk-border: #2e2a27;
   --nk-text-primary: #ffffff;
-  --nk-text-secondary: #c5cace;
-  --nk-text-muted: #86898c;
-  --nk-mint: #4ff7d1;
-  --nk-magenta: #d946ef;
+  --nk-text-secondary: #d6d1cc;
+  --nk-text-muted: #8f8880;
+  --nk-mint: #ff2e2e;
+  --nk-magenta: #ffd60a;
 
-  /* Agent role tokens (dark) — distinct hues, readable on dark surfaces */
-  --niki-agent-planner: #4ff7d1;
-  --niki-agent-coder: #e879f9;
-  --niki-agent-tester: #fbbf24;
-  --niki-agent-reviewer: #93c5fd;
-  --niki-agent-red: #f87171;
-  --niki-agent-security: #34d399;
+  /* Agent role tokens (dark) — red/yellow family, readable on warm blacks */
+  --niki-agent-planner: #ffd60a;
+  --niki-agent-coder: #ff2e2e;
+  --niki-agent-tester: #ff8c00;
+  --niki-agent-reviewer: #ffffff;
+  --niki-agent-red: #ff2e2e;
+  --niki-agent-security: #ffd60a;
 }
 
 /* ---- Agent role badges (Blume content components) ---- */
-.blume-agent-badge-planner { color: var(--niki-agent-planner); }
-.blume-agent-badge-coder { color: var(--niki-agent-coder); }
-.blume-agent-badge-tester { color: var(--niki-agent-tester); }
-.blume-agent-badge-reviewer { color: var(--niki-agent-reviewer); }
-.blume-agent-badge-red { color: var(--niki-agent-red); }
-.blume-agent-badge-security { color: var(--niki-agent-security); }
+.blume-agent-badge-planner {
+  color: var(--niki-agent-planner);
+}
+.blume-agent-badge-coder {
+  color: var(--niki-agent-coder);
+}
+.blume-agent-badge-tester {
+  color: var(--niki-agent-tester);
+}
+.blume-agent-badge-reviewer {
+  color: var(--niki-agent-reviewer);
+}
+.blume-agent-badge-red {
+  color: var(--niki-agent-red);
+}
+.blume-agent-badge-security {
+  color: var(--niki-agent-security);
+}
 
 /* ---- Brand adjustments ---- */
 :root[data-theme="dark"] .blume-code,
@@ -105,19 +118,19 @@
   border-radius: 12px;
 }
 
-/* Inline code: mint chip, consistent with marketing site */
+/* Inline code: red chip, consistent with marketing site */
 :root[data-theme="dark"] :not(pre) > code {
-  background: rgba(79, 247, 209, 0.07);
-  border: 1px solid rgba(79, 247, 209, 0.14);
-  color: var(--nk-mint);
+  background: rgba(255, 46, 46, 0.08);
+  border: 1px solid rgba(255, 46, 46, 0.18);
+  color: #ff6b6b;
   border-radius: 6px;
   padding: 0.1em 0.35em;
 }
 
 :root:not([data-theme="dark"]) :not(pre) > code {
-  background: rgba(14, 52, 45, 0.06);
-  border: 1px solid rgba(14, 52, 45, 0.12);
-  color: var(--nk-mint);
+  background: rgba(179, 20, 20, 0.06);
+  border: 1px solid rgba(179, 20, 20, 0.14);
+  color: #b31414;
   border-radius: 6px;
   padding: 0.1em 0.35em;
 }
@@ -129,7 +142,7 @@ h3 {
   letter-spacing: -0.02em;
 }
 
-/* Links: mint in dark, deep mint in light */
+/* Links: red in dark, deep red in light */
 :root[data-theme="dark"] a {
   color: var(--nk-mint);
 }

@@ -30,13 +30,13 @@ export default defineConfig({
   },
   theme: {
     accent: {
-      dark: "#4ff7d1",
-      light: "#0e342d",
+      dark: "#ff2e2e",
+      light: "#b31414",
     },
-    action: "#4ff7d1",
+    action: "#ff2e2e",
     background: {
-      dark: "#0d1318",
-      light: "#f6f8f9",
+      dark: "#0c0b0a",
+      light: "#faf9f8",
     },
     fonts: {
       body: "inter",

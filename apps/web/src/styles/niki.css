@@ -23,7 +23,8 @@
   }
 }
 
-/* Dashed separator strip between sections — 100px tall, dashed rails */
+/* Dashed separator strip between sections — 100px tall, dashed rails,
+   with a faint hazard-stripe texture (the brand's signature). */
 .nx-strip {
   height: 100px;
   width: 90vw;
@@ -33,6 +34,13 @@
   border-left: 1px dashed var(--nk-surface-border);
   border-right: 1px dashed var(--nk-surface-border);
   flex: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 14px,
+    color-mix(in srgb, var(--nk-red) 4%, transparent) 14px 15px,
+    transparent 15px 29px,
+    color-mix(in srgb, var(--nk-yellow) 3.5%, transparent) 29px 30px
+  );
 }
 
 @media (max-width: 640px) {
@@ -459,7 +467,7 @@
 }
 
 .nx-t-ok {
-  color: var(--nk-agent-security);
+  color: var(--nk-yellow);
 }
 
 .nx-t-red {
@@ -860,8 +868,8 @@ nav :focus-visible {
 
 /* selection */
 ::selection {
-  background: var(--nk-mint);
-  color: var(--nk-bg-0);
+  background: var(--nk-red);
+  color: #ffffff;
 }
 
 /* base reset */
@@ -2702,7 +2710,7 @@ html::-webkit-scrollbar {
 }
 
 /* ============ Hero shader layer ============ */
-/* The WebGL silk sits under the grid lines: dark field, mint creases,
+/* The WebGL silk sits under the grid lines: warm black field, red creases,
    fading to page bg at every edge so it never fights the frame rails. */
 .nx-hero__shader {
   position: absolute;
@@ -2730,7 +2738,7 @@ html::-webkit-scrollbar {
 }
 
 /* Fallback: when WebGL is unavailable or reduced-motion kills the canvas,
-   a static mint radial hint keeps the hero from being flat empty. */
+   a static red radial hint keeps the hero from being flat empty. */
 @media (prefers-reduced-motion: reduce) {
   .nx-hero__shader {
     background: radial-gradient(
@@ -3570,18 +3578,18 @@ html::-webkit-scrollbar {
 }
 
 .nx-terminal:hover .nx-terminal__dots i:nth-child(1) {
-  background: #f87171;
+  background: #ff2e2e;
 }
 
 .nx-terminal:hover .nx-terminal__dots i:nth-child(2) {
-  background: #fbbf24;
+  background: #ffd60a;
 }
 
 .nx-terminal:hover .nx-terminal__dots i:nth-child(3) {
-  background: #4ff7d1;
+  background: #ffffff;
 }
 
-/* Stat tiles: mint sweep underline on hover */
+/* Stat tiles: red sweep underline on hover */
 .nx-stat {
   position: relative;
   transition: background-color 0.2s ease;
@@ -3626,7 +3634,7 @@ html::-webkit-scrollbar {
   transform: scaleY(1);
 }
 
-/* Badges: mint border breathe on hover */
+/* Badges: red border breathe on hover */
 .nx-badge {
   transition:
     border-color 0.2s ease,
@@ -3650,7 +3658,7 @@ a:hover > .nx-badge,
   opacity: 1;
 }
 
-/* Strips between sections: mint scan line on hover (desktop easter egg) */
+/* Strips between sections: red scan line on hover (desktop easter egg) */
 @media (min-width: 768px) {
   .nx-strip {
     overflow: hidden;
@@ -3702,4 +3710,41 @@ a:hover > .nx-badge,
   .nx-strip::after {
     display: none;
   }
+}
+
+/* ============ Agent glyphs (icon tiles) ============ */
+/* 24-grid line glyphs inside the tile; stroke-draws in via the GSAP
+   timeline (dashoffset from 60). Reduced-motion: fully drawn. */
+.nplv-glyph svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .nplv-glyph svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nplv-glyph svg :is(path, circle) {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Agent flow glyph: icon variant sizing */
+.nx-agentflow__glyph svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+/* Branch finale glyph: icon inside its mint-red square */
+.nplv-branch-glyph svg {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
