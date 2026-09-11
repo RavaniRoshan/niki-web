@@ -1,4 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="Niki">
-  <rect x="1.5" y="1.5" width="29" height="29" rx="7" fill="#151312" stroke="#2e2a27"/>
-  <path d="M9 22.5 L9 9.5 L23 22.5 L23 9.5" fill="none" stroke="#ff2e2e" stroke-width="2.6" stroke-linecap="square" stroke-linejoin="miter"/>
+  <rect x="1.5" y="1.5" width="29" height="29" rx="7" fill="#151312" stroke="#2b2622"/>
+  <path d="M9 22.5 L9 9.5 L23 22.5 L23 9.5" fill="none" stroke="#ffd60a" stroke-width="2.6" stroke-linecap="square" stroke-linejoin="miter"/>
 </svg>

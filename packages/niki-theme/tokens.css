@@ -1,53 +1,54 @@
 /**
  * Niki design tokens — canonical source for both the marketing site
- * (apps/web) and the docs site (apps/docs). Derived from the Niki visual
- * reference. Dark-first, flat surfaces, thin borders, red/yellow hazard
- * palette on warm blacks.
+ * (apps/web) and the docs site (apps/apps/docs). Dark-first, flat surfaces,
+ * thin borders. Palette: shades of warm black with sharp yellow as the
+ * single accent. No other hue appears in the brand system.
  *
  * Brand system:
- *   --nk-red / --nk-red-deep       primary accent (logo, CTAs, links)
- *   --nk-yellow / --nk-yellow-deep secondary accent (active states, warn)
+ *   --nk-yellow / --nk-yellow-deep  the only accent (brand, CTAs, links,
+ *                                    active states, focus, selection)
  *
- * Legacy aliases (--nk-mint*, --nk-magenta*) remain as compatibility
- * shims: existing rules that reference them cascade to the new palette.
+ * Compatibility aliases (--nk-mint*, --nk-magenta*, --nk-red*) all resolve
+ * to the yellow family so existing rules cascade to the new palette.
  */
 
 :root {
   /* ---- Surfaces (warm black family) ---- */
-  --nk-bg-0: #0c0b0a; /* page background — warm black */
-  --nk-bg-1: #151312; /* raised surface / card */
-  --nk-bg-2: #1d1a18; /* higher surface / code block */
-  --nk-surface-border: #2e2a27; /* thin borders */
+  --nk-bg-0: #0a0908; /* page background — warm black */
+  --nk-bg-1: #141210; /* raised surface / card */
+  --nk-bg-2: #1c1916; /* higher surface / code block */
+  --nk-surface-border: #2b2622; /* thin borders */
 
   /* ---- Text ---- */
   --nk-text-primary: #ffffff;
-  --nk-text-secondary: #d6d1cc;
-  --nk-text-muted: #8f8880;
+  --nk-text-secondary: #d8d3cc;
+  --nk-text-muted: #948d84;
 
-  /* ---- Brand accents ---- */
-  --nk-red: #ff2e2e; /* sharp red — primary accent */
-  --nk-red-deep: #2a0a0a; /* red surface / chip bg */
-  --nk-yellow: #ffd60a; /* sharp yellow — active/attention accent */
-  --nk-yellow-deep: #2a2205; /* yellow surface / chip bg */
+  /* ---- Brand accent ---- */
+  --nk-yellow: #ffd60a; /* sharp yellow — the only accent */
+  --nk-yellow-deep: #2a2305; /* yellow surface / chip bg */
+  --nk-yellow-soft: #ffe45c; /* hover-bright yellow */
 
-  /* ---- Compatibility aliases (old mint/magenta names) ---- */
-  --nk-mint: var(--nk-red);
-  --nk-mint-deep: var(--nk-red-deep);
-  --nk-magenta: var(--nk-yellow);
+  /* ---- Compatibility aliases (all resolve to yellow family) ---- */
+  --nk-red: var(--nk-yellow);
+  --nk-red-deep: var(--nk-yellow-deep);
+  --nk-mint: var(--nk-yellow);
+  --nk-mint-deep: var(--nk-yellow-deep);
+  --nk-magenta: var(--nk-yellow-soft);
   --nk-magenta-deep: var(--nk-yellow-deep);
 
-  /* ---- Agent role colors (semantic, distinct from brand) ---- */
+  /* ---- Agent role colors (semantic — brightness tiers of yellow/white) ---- */
   --nk-agent-planner: #ffd60a; /* yellow */
-  --nk-agent-coder: #ff2e2e; /* red */
-  --nk-agent-tester: #ff8c00; /* orange */
+  --nk-agent-coder: #ffe45c; /* soft yellow */
+  --nk-agent-tester: #e8b90a; /* deep yellow */
   --nk-agent-reviewer: #ffffff; /* white */
-  --nk-agent-red: #ff2e2e;
-  --nk-agent-security: #ffd60a;
+  --nk-agent-red: #e8b90a; /* alias: attention → deep yellow */
+  --nk-agent-security: #ffd60a; /* alias: ok → yellow */
 
-  /* ---- Status ---- */
+  /* ---- Status (brightness-tiered, no hue change) ---- */
   --nk-ok: #ffd60a;
-  --nk-warn: #ff8c00;
-  --nk-err: #ff2e2e;
+  --nk-warn: #ffe45c;
+  --nk-err: #ffffff;
 
   /* ---- Typography ---- */
   --nk-font-sans:
@@ -77,5 +78,5 @@
   --nk-header-h: 64px;
 
   /* ---- Focus ---- */
-  --nk-focus-ring: 0 0 0 2px var(--nk-bg-0), 0 0 0 4px var(--nk-red);
+  --nk-focus-ring: 0 0 0 2px var(--nk-bg-0), 0 0 0 4px var(--nk-yellow);
 }

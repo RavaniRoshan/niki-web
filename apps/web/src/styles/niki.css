@@ -37,9 +37,9 @@
   background: repeating-linear-gradient(
     -45deg,
     transparent 0 14px,
-    color-mix(in srgb, var(--nk-red) 4%, transparent) 14px 15px,
+    color-mix(in srgb, var(--nk-yellow) 4.5%, transparent) 14px 15px,
     transparent 15px 29px,
-    color-mix(in srgb, var(--nk-yellow) 3.5%, transparent) 29px 30px
+    color-mix(in srgb, var(--nk-yellow-soft) 3%, transparent) 29px 30px
   );
 }
 
@@ -868,8 +868,8 @@ nav :focus-visible {
 
 /* selection */
 ::selection {
-  background: var(--nk-red);
-  color: #ffffff;
+  background: var(--nk-yellow);
+  color: #0a0908;
 }
 
 /* base reset */
@@ -3578,7 +3578,7 @@ html::-webkit-scrollbar {
 }
 
 .nx-terminal:hover .nx-terminal__dots i:nth-child(1) {
-  background: #ff2e2e;
+  background: #e8b90a;
 }
 
 .nx-terminal:hover .nx-terminal__dots i:nth-child(2) {

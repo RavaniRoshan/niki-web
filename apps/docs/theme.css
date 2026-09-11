@@ -1,8 +1,8 @@
 /**
  * Niki docs — brand theme overrides on top of Blume's tokens.
  * Canonical palette: packages/niki-theme/tokens.css
- * Dark-first, flat surfaces, thin borders. Hazard palette:
- * warm blacks, sharp red primary, sharp yellow secondary.
+ * Dark-first, flat surfaces, thin borders. Palette: shades of warm
+ * black with sharp yellow as the single accent.
  */
 
 :root {
@@ -13,20 +13,20 @@
   --blume-muted-foreground: #5a6367;
   --blume-border: #cdd6da;
 
-  /* Brand accents (light mode — deep red for contrast) */
-  --blume-accent: #b31414;
+  /* Brand accents (light mode — deep yellow for contrast) */
+  --blume-accent: #8a7300;
   --blume-accent-foreground: #ffffff;
-  --blume-action: #b31414;
+  --blume-action: #8a7300;
   --blume-action-foreground: #ffffff;
 
   /* Code surfaces */
   --blume-code-background: #f0f3f5;
-  --blume-code-add: rgba(179, 20, 20, 0.12);
-  --blume-code-add-border: #b31414;
+  --blume-code-add: rgba(138, 115, 0, 0.12);
+  --blume-code-add-border: #8a7300;
   --blume-code-remove: rgba(255, 214, 10, 0.22);
   --blume-code-remove-border: #8a7300;
-  --blume-code-highlight: rgba(255, 140, 0, 0.14);
-  --blume-code-highlight-border: #b45309;
+  --blume-code-highlight: rgba(232, 185, 10, 0.16);
+  --blume-code-highlight-border: #8a7300;
 
   /* Niki brand tokens (shared with the marketing site) */
   --nk-bg-0: #0c0b0a;
@@ -36,58 +36,58 @@
   --nk-text-primary: #ffffff;
   --nk-text-secondary: #d6d1cc;
   --nk-text-muted: #8f8880;
-  --nk-mint: #b31414;
-  --nk-magenta: #8a7300;
+  --nk-mint: #8a7300;
+  --nk-magenta: #6e5d00;
 
-  /* Niki agent role tokens — semantic, kept distinct from brand system */
+  /* Niki agent role tokens — brightness tiers, no hue change */
   --niki-agent-planner: #8a7300;
-  --niki-agent-coder: #b31414;
-  --niki-agent-tester: #b45309;
+  --niki-agent-coder: #a89200;
+  --niki-agent-tester: #6e5d00;
   --niki-agent-reviewer: #1f2937;
-  --niki-agent-red: #b31414;
+  --niki-agent-red: #6e5d00;
   --niki-agent-security: #8a7300;
 }
 
 :root[data-theme="dark"] {
   /* Surfaces — warm black family */
-  --blume-background: #0c0b0a;
+  --blume-background: #0a0908;
   --blume-foreground: #ffffff;
-  --blume-muted: #151312;
-  --blume-muted-foreground: #8f8880;
-  --blume-border: #2e2a27;
+  --blume-muted: #141210;
+  --blume-muted-foreground: #948d84;
+  --blume-border: #2b2622;
 
-  /* Brand accents — sharp red primary */
-  --blume-accent: #ff2e2e;
-  --blume-accent-foreground: #0c0b0a;
-  --blume-action: #ff2e2e;
-  --blume-action-foreground: #ffffff;
+  /* Brand accents — sharp yellow, the single accent */
+  --blume-accent: #ffd60a;
+  --blume-accent-foreground: #0a0908;
+  --blume-action: #ffd60a;
+  --blume-action-foreground: #0a0908;
 
-  /* Code surfaces */
-  --blume-code-background: #1d1a18;
-  --blume-code-add: rgba(255, 46, 46, 0.14);
-  --blume-code-add-border: #ff2e2e;
-  --blume-code-remove: rgba(255, 214, 10, 0.16);
-  --blume-code-remove-border: #ffd60a;
-  --blume-code-highlight: rgba(255, 140, 0, 0.16);
-  --blume-code-highlight-border: #ff8c00;
+  /* Code surfaces — yellow-tiered, no hue change */
+  --blume-code-background: #1c1916;
+  --blume-code-add: rgba(255, 214, 10, 0.14);
+  --blume-code-add-border: #ffd60a;
+  --blume-code-remove: rgba(255, 228, 92, 0.12);
+  --blume-code-remove-border: #ffe45c;
+  --blume-code-highlight: rgba(232, 185, 10, 0.14);
+  --blume-code-highlight-border: #e8b90a;
 
   /* Niki brand tokens (dark) */
-  --nk-bg-0: #0c0b0a;
-  --nk-bg-1: #151312;
-  --nk-bg-2: #1d1a18;
-  --nk-border: #2e2a27;
+  --nk-bg-0: #0a0908;
+  --nk-bg-1: #141210;
+  --nk-bg-2: #1c1916;
+  --nk-border: #2b2622;
   --nk-text-primary: #ffffff;
-  --nk-text-secondary: #d6d1cc;
-  --nk-text-muted: #8f8880;
-  --nk-mint: #ff2e2e;
-  --nk-magenta: #ffd60a;
+  --nk-text-secondary: #d8d3cc;
+  --nk-text-muted: #948d84;
+  --nk-mint: #ffd60a;
+  --nk-magenta: #ffe45c;
 
-  /* Agent role tokens (dark) — red/yellow family, readable on warm blacks */
+  /* Agent role tokens (dark) — brightness tiers of yellow/white */
   --niki-agent-planner: #ffd60a;
-  --niki-agent-coder: #ff2e2e;
-  --niki-agent-tester: #ff8c00;
+  --niki-agent-coder: #ffe45c;
+  --niki-agent-tester: #e8b90a;
   --niki-agent-reviewer: #ffffff;
-  --niki-agent-red: #ff2e2e;
+  --niki-agent-red: #e8b90a;
   --niki-agent-security: #ffd60a;
 }
 
@@ -118,19 +118,19 @@
   border-radius: 12px;
 }
 
-/* Inline code: red chip, consistent with marketing site */
+/* Inline code: yellow chip, consistent with marketing site */
 :root[data-theme="dark"] :not(pre) > code {
-  background: rgba(255, 46, 46, 0.08);
-  border: 1px solid rgba(255, 46, 46, 0.18);
-  color: #ff6b6b;
+  background: rgba(255, 214, 10, 0.08);
+  border: 1px solid rgba(255, 214, 10, 0.2);
+  color: #ffd60a;
   border-radius: 6px;
   padding: 0.1em 0.35em;
 }
 
 :root:not([data-theme="dark"]) :not(pre) > code {
-  background: rgba(179, 20, 20, 0.06);
-  border: 1px solid rgba(179, 20, 20, 0.14);
-  color: #b31414;
+  background: rgba(138, 115, 0, 0.07);
+  border: 1px solid rgba(138, 115, 0, 0.16);
+  color: #8a7300;
   border-radius: 6px;
   padding: 0.1em 0.35em;
 }
@@ -142,7 +142,7 @@ h3 {
   letter-spacing: -0.02em;
 }
 
-/* Links: red in dark, deep red in light */
+/* Links: yellow in dark, deep yellow in light */
 :root[data-theme="dark"] a {
   color: var(--nk-mint);
 }
