@@ -48,8 +48,13 @@ export default function GsapProvider() {
              entirely when the user prefers reduced motion. */
           if (!noReducedMotion) return;
 
-          /* Hero entrance sequence */
-          const heroItems = gsap.utils.toArray<HTMLElement>("[data-hero-seq] > *");
+          /* Hero entrance sequence. The runner console and the h1 itself are
+             excluded — MotionProvider gives the h1 a char cascade and the
+             runner its own spring entrance (same-target double tweens
+             would fight otherwise). */
+          const heroItems = gsap.utils.toArray<HTMLElement>(
+            "[data-hero-seq] > *:not(.nx-hero-runner-wrap):not(.nx-hero__title)"
+          );
           if (heroItems.length) {
             gsap.from(heroItems, {
               autoAlpha: 0,
@@ -62,21 +67,20 @@ export default function GsapProvider() {
             });
           }
 
-          /* Section headers: comment heading + underline draw */
+          /* Section headers: comment heading rises in (MotionProvider owns
+             the SplitText char reveal for these same headings, so only the
+             wrapper gets a motion here) */
           gsap.utils.toArray<HTMLElement>('.nx-box[data-anim="draw"]').forEach((box) => {
             const header = box.querySelector(".nx-box-header");
             if (!header) return;
-            const comment = header.querySelector(".nx-comment");
-            if (comment) {
-              gsap.from(comment, {
-                autoAlpha: 0,
-                y: 16,
-                duration: 0.7,
-                ease: "power3.out",
-                scrollTrigger: { trigger: header, start: "top 85%", once: true },
-                clearProps: "all",
-              });
-            }
+            gsap.from(header, {
+              autoAlpha: 0,
+              y: 12,
+              duration: 0.6,
+              ease: "power3.out",
+              scrollTrigger: { trigger: header, start: "top 85%", once: true },
+              clearProps: "all",
+            });
           });
 
           /* Generic rise-in for flagged elements */

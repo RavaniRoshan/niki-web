@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SignatureLogo from "@/components/SignatureLogo";
 import GsapProvider from "@/components/GsapProvider";
+import MotionProvider from "@/components/MotionProvider";
 import { pageMetadata, softwareAppJsonLd } from "@/lib/meta";
 import "@niki/theme/tokens.css";
 import "@/styles/niki.css";
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           {JSON.stringify(softwareAppJsonLd)}
         </Script>
         <GsapProvider />
+        <MotionProvider />
       </body>
     </html>
   );

@@ -5,6 +5,7 @@ import { Terminal, T } from "@/components/Terminal";
 import { HeroShader } from "@/components/HeroShader";
 import PipelineLive from "@/components/PipelineLive";
 import TaskRunnerHero from "@/components/TaskRunnerHero";
+import FeatureWalk from "@/components/FeatureWalk";
 import ProviderMarquee from "@/components/ProviderMarquee";
 import { SITE, WEB_ROUTES, DOCS_ROUTES, docsUrl } from "@/lib/site";
 
@@ -190,15 +191,7 @@ export default function HomePage() {
       {/* ============== WHY NIKI (feature cells) ============== */}
       <Box data-anim="draw">
         <BoxHeader comment="why niki" heading="Why Niki" />
-        <div className="nx-grid nx-grid--3" data-anim="stagger">
-          {features.map((f) => (
-            <div key={f.idx} className="nx-cell">
-              <span className="nx-index">{f.idx}</span>
-              <h3>{f.title}</h3>
-              <p>{f.body}</p>
-            </div>
-          ))}
-        </div>
+        <FeatureWalk features={features} />
       </Box>
 
       <Strip />
