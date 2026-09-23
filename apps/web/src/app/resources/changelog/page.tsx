@@ -12,6 +12,8 @@ export const metadata = pageMetadata({
 });
 
 export default function ChangelogPage() {
+  const isUnreleased = (version: string) => version.toLowerCase() === "unreleased";
+  const latestStableIdx = RELEASES.findIndex((rel) => !isUnreleased(rel.version));
   return (
     <Frame>
       <Box first>
@@ -50,14 +52,22 @@ export default function ChangelogPage() {
         />
         <div className="nx-changelog">
           {RELEASES.map((rel, idx) => (
-            <article key={rel.version} className="nx-ch-release" id={`v${rel.version}`}>
+            <article
+              key={rel.version}
+              className="nx-ch-release"
+              id={isUnreleased(rel.version) ? "unreleased" : `v${rel.version}`}
+            >
               <header className="nx-ch-release__head">
                 <h2>
                   <a href={rel.url} rel="noopener noreferrer" target="_blank">
-                    v{rel.version}
+                    {isUnreleased(rel.version) ? rel.version : `v${rel.version}`}
                   </a>
                 </h2>
-                {idx === 0 && <span className="nx-badge nx-badge--mint">latest</span>}
+                {isUnreleased(rel.version) ? (
+                  <span className="nx-badge">unreleased · master HEAD</span>
+                ) : (
+                  idx === latestStableIdx && <span className="nx-badge nx-badge--mint">latest</span>
+                )}
                 <time className="nx-mono" dateTime={rel.date}>
                   {rel.date}
                 </time>

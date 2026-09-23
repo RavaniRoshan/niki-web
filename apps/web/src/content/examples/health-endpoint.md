@@ -15,9 +15,9 @@ niki run "Add a GET /health endpoint returning { status: 'ok', uptime }" --proje
 What happens per stage:
 
 - **Planner** — reads the repo, emits a TaskSpec: which file to touch, the approach.
-- **Coder** — emits a unified diff against a sandboxed copy of the workspace.
+- **Coder** — emits a unified diff against the sandboxed workspace.
 - **Tester** — generates and runs tests for the endpoint, each with oracle provenance.
 - **Reviewer** — scores correctness, quality and coverage; bounces back if below bar.
 
 Output: a `niki/<id>` branch, `changes.patch`, `report.md` and per-agent JSON artifacts.
-Nothing touched your working tree, and nothing lands on `main` until you merge.
+Committed branches are never rewritten — the finished diff is applied to your working tree for review, and nothing lands on `main` until you merge.

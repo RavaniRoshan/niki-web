@@ -47,7 +47,7 @@ const STAGES: Stage[] = [
     glyph: "C",
     name: "Coder",
     state: "done",
-    desc: "Implements the plan inside a hermetic sandbox copy of your project. Never touches your working tree.",
+    desc: "Implements the plan inside the run's execution sandbox. Committed branches are never rewritten; the finished diff is applied for review.",
     artifact: "artifact",
     artifactValue: "changes.patch",
   },

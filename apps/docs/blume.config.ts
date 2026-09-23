@@ -21,9 +21,10 @@ export default defineConfig({
     dir: "docs",
   },
   banner: {
-    content: "Niki v0.7.0 — plan mode, honest metering, headless CI contract.",
+    content:
+      "Niki v0.8.0 — agent runtime rework, repo intelligence, risk-gated Critic.",
     link: {
-      href: "https://niki-web.pages.dev/resources/changelog",
+      href: "https://niki-web.pages.dev/resources/changelog#v0.8.0",
       text: "Read the release notes",
     },
     dismissible: true,

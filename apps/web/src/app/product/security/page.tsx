@@ -8,7 +8,7 @@ import { pageMetadata } from "@/lib/meta";
 export const metadata = pageMetadata({
   title: "Hermetic by default",
   description:
-    "Agents execute inside rootless containers with dropped capabilities, a read-only root filesystem, and blocked network egress. Your working tree is never touched mid-run. Fail-closed posture when you can't be there to answer.",
+    "Agents execute inside rootless containers with dropped capabilities, network-disabled egress, and an optional read-only rootfs. Committed branches are never rewritten; the finished diff is applied to your working tree for review.",
   path: "/product/security",
 });
 
@@ -93,9 +93,10 @@ export default function SecurityPage() {
           </nav>
           <h1>Hermetic by default.</h1>
           <p>
-            Agents execute inside rootless containers with dropped capabilities, a read-only root
-            filesystem, and blocked network egress. Your working tree is never touched mid-run.
-            Fail-closed posture when you can&apos;t be there to answer.
+            Agents execute inside rootless containers with dropped capabilities, network-disabled
+            egress, and an optional read-only rootfs. Committed branches are never rewritten; the
+            finished diff is applied to your working tree for review. Fail-closed posture when you
+            can&apos;t be there to answer.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "24px" }}>
             <a className="nx-btn nx-btn--primary" href={docsUrl(DOCS_ROUTES.security)}>
@@ -111,9 +112,11 @@ export default function SecurityPage() {
       <Box>
         <BoxHeader
           comment="sandboxing · three backends"
-          heading="A container per run. A copy of your repo."
+          heading="One sandbox per run. Your repo, bind-mounted."
           aside={
-            <span className="nx-badge">the pipeline never mutates your working tree mid-run</span>
+            <span className="nx-badge">
+              branches are never rewritten; the finished diff is applied for review
+            </span>
           }
         />
         <div className="nx-grid nx-grid--3">
@@ -134,7 +137,7 @@ export default function SecurityPage() {
 backend   = "podman"          # or "docker", "worktree"
 image     = "niki-sandbox:24.04"
 cap_drop  = "ALL"             # drop every Linux capability
-rootfs    = "read-only"       # read-only root filesystem
+readonly_rootfs = false       # optional; workspace bind mount stays writable
 
 [general]
 network_disabled = true       # egress blocked unless allowlisted`}
@@ -146,7 +149,10 @@ network_disabled = true       # egress blocked unless allowlisted`}
               <li>
                 <code className="nx-inline">CapDrop ALL</code> — every Linux capability dropped
               </li>
-              <li>Read-only root filesystem; workspace is the only writable bind mount</li>
+              <li>
+                Optional read-only rootfs (off by default); the bind-mounted workspace stays
+                writable
+              </li>
               <li>
                 Command deny-lists — <code className="nx-inline">rm -rf /</code>,{" "}
                 <code className="nx-inline">curl | sh</code> blocked by policy

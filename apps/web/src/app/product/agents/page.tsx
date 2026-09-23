@@ -52,7 +52,7 @@ const agents = [
     one: "Emits a unified diff, applied to the sandboxed workspace.",
     artifact: "unified diff, applied inside the sandbox",
     detail:
-      "The Coder works from the TaskSpec alone — it never sees the Planner's conversation. It emits a unified diff that Niki applies to the bind-mounted copy of your repo inside the container. Parallel coder topologies and a Synthesizer agent are available in `[pipeline]` config.",
+      "The Coder works from the TaskSpec alone — it never sees the Planner's conversation. It emits a unified diff that Niki applies to the bind-mounted workspace inside the sandbox. Sequential stages intentionally share one execution sandbox so the diff persists; independence is at the LLM-session layer. Parallel coder topologies and a Synthesizer agent are available in `[pipeline]` config.",
   },
   {
     id: "tester",
@@ -124,7 +124,7 @@ export default function AgentsPage() {
           heading="Isolated at two layers."
           aside={
             <span className="nx-badge">
-              filesystem isolation + context isolation — validated against JSON schemas
+              sandboxed execution + context isolation — validated against JSON schemas
             </span>
           }
         />

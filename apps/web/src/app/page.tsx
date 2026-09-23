@@ -158,7 +158,7 @@ export default function HomePage() {
                 color: "var(--nk-text-muted)",
               }}
             >
-              // real output from niki 0.7.0 — smoke-test task
+              // real output from niki 0.8.0 — smoke-test task
             </p>
           </div>
         </div>
@@ -267,12 +267,12 @@ export default function HomePage() {
           <div>
             <h2 style={{ marginTop: 0, fontSize: "1.375rem" }}>Sandboxed. Isolated. Auditable.</h2>
             <p>
-              Agents work inside a rootless container with dropped capabilities and a read-only root
-              filesystem. Egress is blocked unless you allow it. Your working tree is never touched
-              mid-run.
+              Agents work inside a rootless container with dropped capabilities and network-disabled
+              egress (read-only rootfs optional). Committed branches are never rewritten; the
+              finished diff is applied to your working tree for review.
             </p>
             <ul className="nx-checklist" style={{ marginTop: "10px" }}>
-              <li>Rootless Podman or Docker, CapDrop ALL, read-only rootfs</li>
+              <li>Rootless Podman or Docker, CapDrop ALL, network disabled</li>
               <li>Network egress blocked by default — allowlist to open it</li>
               <li>
                 Command deny-lists: <code className="nx-inline">rm -rf /</code> and{" "}
@@ -287,7 +287,7 @@ export default function HomePage() {
               <T tone="mint">$ niki doctor</T>
               <T>
                 <span className="nx-t-mint">install&#9;&#9;</span>
-                <span className="nx-t-ok">ok</span>&#9;niki 0.7.0
+                <span className="nx-t-ok">ok</span>&#9;niki 0.8.0
               </T>
               <T>
                 <span className="nx-t-mint">config&#9;&#9;</span>

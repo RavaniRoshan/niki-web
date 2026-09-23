@@ -53,8 +53,8 @@ const capabilities: { id: string; title: string; body: ReactNode }[] = [
     title: "Hermetic sandboxing",
     body: (
       <>
-        Rootless Podman or Docker with <code className="nx-inline">CapDrop ALL</code>, read-only
-        rootfs, blocked egress. Or the no-container worktree backend.
+        Rootless Podman or Docker with <code className="nx-inline">CapDrop ALL</code>,
+        network-disabled egress (read-only rootfs optional). Or the no-container worktree backend.
       </>
     ),
   },
@@ -202,7 +202,7 @@ export default function ProductPage() {
           <div style={{ display: "grid", gap: "16px", alignContent: "start" }}>
             <Terminal title="one command">
               <T tone="mint">$ niki run "Add a /health endpoint" --project ./my-app</T>
-              <T tone="dim"># … four agents run in their own sandboxes …</T>
+              <T tone="dim"># … four agents, one execution sandbox …</T>
               <T tone="ok">✓ Branch: niki/6d281d6d · Verdict: Approved</T>
             </Terminal>
           </div>
