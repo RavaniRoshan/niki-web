@@ -558,7 +558,7 @@ test("a successful landing load has no runtime failures and decodes its real med
         };
       })
     )
-    .toEqual({ hasMetadata: true, hasDuration: true, videoWidth: 1808, videoHeight: 958 });
+    .toEqual({ hasMetadata: true, hasDuration: true, videoWidth: 1920, videoHeight: 1080 });
 
   const providerGrid = page.getByTestId("provider-grid");
   await providerGrid.scrollIntoViewIfNeeded();
@@ -640,7 +640,7 @@ test("the recording exposes local sources, stable framing, and keyboard controls
       objectFit: getComputedStyle(player).objectFit,
     };
   });
-  expect(media).toEqual({ videoWidth: 1808, videoHeight: 958, objectFit: "cover" });
+  expect(media).toEqual({ videoWidth: 1920, videoHeight: 1080, objectFit: "cover" });
 
   const frameBox = await frame.boundingBox();
   expect(frameBox).not.toBeNull();

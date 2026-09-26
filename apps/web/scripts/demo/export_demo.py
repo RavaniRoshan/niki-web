@@ -29,17 +29,11 @@ from PIL import Image  # noqa: E402
 
 from render_demo import CANVAS_H, CANVAS_W, FPS, SCALE, WIN_H, WIN_W, WIN_X, WIN_Y  # noqa: E402
 
-# The full composition keeps the baked macOS title bar; that is what the GIF
-# deliverable ships. The video crop starts *below* it, because the landing's own
-# RunWindow already supplies the window chrome. Cropping with the bar included
-# would render a window inside a window.
-TITLEBAR = 28
-CROP = (
-    WIN_X * SCALE,
-    (WIN_Y + TITLEBAR) * SCALE,
-    (WIN_X + WIN_W) * SCALE,
-    (WIN_Y + WIN_H) * SCALE,
-)
+# The hero now uses the whole composition. The desktop IS the product shot:
+# wallpaper, menu bar, Terminal window, dock. Cropping any of it away would cut
+# the menu bar or the dock off the frame.
+CROP = (0, 0, CANVAS_W, CANVAS_H)
+
 # GIF stores delays in hundredths of a second, so quantise to that grid.
 GIF_DELAY_CS = max(2, round(100 / FPS))
 

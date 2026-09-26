@@ -42,7 +42,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 # Design grid is half the export, matching the reference's 776x496 -> 1552x992
 # convention. Ours is 960x600 -> 1920x1200.
-DESIGN_W, DESIGN_H = 960, 600
+DESIGN_W, DESIGN_H = 960, 540
 SCALE = 2
 CANVAS_W, CANVAS_H = DESIGN_W * SCALE, DESIGN_H * SCALE
 
@@ -51,13 +51,18 @@ PACE = 1.95  # scales authored holds up to the reference's 42s running time
 FPS = 12
 FRAME_MS = 1000 // FPS  # 83ms, quantised to GIF's 10ms grid on export
 
-# Window geometry in design units, matching the reference's proportions.
-WIN_X, WIN_Y = 28, 67
-WIN_W, WIN_H = DESIGN_W - 56, DESIGN_H - 67 - 26
-WIN_R = 7
+# Canvas geometry in design units. The canvas *is* the card: a light textured
+# plate with a Terminal window on it, running past the bottom edge so the
+# content is cropped rather than fitted. That crop is what makes it read as
+# footage of a terminal rather than a diagram of one.
+WIN_W = 740
+WIN_X = (DESIGN_W - WIN_W) // 2
+WIN_Y = 88
+WIN_H = DESIGN_H - WIN_Y + 168  # deliberately past the bottom edge
+WIN_R = 8
 
-TITLEBAR_H = 28
-PAD_X = 12
+TITLEBAR_H = 32
+PAD_X = 18
 
 # ----------------------------------------------------------------- colour ---
 # Sampled from the reference capture, then warmed to sit with Niki's palette.
@@ -66,7 +71,7 @@ PAD_X = 12
 # reads as a foreign object pasted into the page, so the panel takes the site's
 # own canvas and every text role is re-picked to clear WCAG AA against it.
 # Structure, grammar and motion are the reference's; the colour is ours.
-BG = (0x14, 0x12, 0x0B)  # --landing-canvas
+BG = (0x12, 0x12, 0x12)  # terminal surface
 SURFACE = (0x1B, 0x19, 0x13)  # --landing-surface, for the submit block
 INK = (0xE8, 0xEE, 0xF0)  # bold action text  15.98:1
 INK_SOFT = (0x83, 0x94, 0x9B)  # prompt + body  5.95:1
@@ -84,22 +89,32 @@ HEADER_DIM = (0x8A, 0x84, 0x78)  # version, model and path lines
 SUBMIT_BLOCK = (0x24, 0x20, 0x18)
 CURSOR = (0x93, 0xA1, 0xA4)  # static block cursor  7.02:1
 
-CHROME_BG = (0xF5, 0xF2, 0xF5)
-CHROME_TEXT = (0x1D, 0x1D, 0x1F)
+# macOS chrome. The window bar is a warm off-white rather than the system
+# default, so it sits with Niki rather than shouting.
+CHROME_BG = (0x17, 0x17, 0x19)
+CHROME_TEXT = (0xD6, 0xD6, 0xDA)
+CHROME_DIM = (0x8A, 0x8A, 0x90)
+MENUBAR_BG = (0x24, 0x1E, 0x17)
+MENUBAR_INK = (0xE8, 0xE4, 0xDE)
+DOCK_BG = (0x2A, 0x26, 0x20)
+DOCK_EDGE = (0x46, 0x40, 0x37)
+PROMPT_USER = (0x7F, 0xC9, 0x8F)
+PROMPT_PATH = (0x8A, 0xC7, 0xE8)
 DOT_RED = (0xFB, 0x60, 0x5B)
 DOT_YELLOW = (0xFE, 0xBC, 0x2F)
 DOT_GREEN = (0x27, 0xC8, 0x40)
 
-# Wallpaper. Niki's warm-dusk field, so the demo belongs to the site rather
-# than reading as someone else's screenshot.
-WALL_TOP = (0x2E, 0x24, 0x1C)
-WALL_MID = (0x53, 0x3E, 0x2A)
-WALL_LOW = (0x22, 0x1C, 0x17)
-WALL_GLOW = (0x9A, 0x6C, 0x3E)
+# Card texture. A cool, light paper, sampled off the reference: the plate reads
+# as a physical surface the terminal is sitting on, which is why the dark window
+# separates from it so cleanly.
+CARD_HI = (0xD4, 0xE1, 0xF2)
+CARD_MID = (0xC3, 0xD3, 0xE8)
+CARD_LO = (0xAE, 0xC0, 0xD8)
+CARD_WARM = (0xD8, 0xDD, 0xE4)
 
 # ------------------------------------------------------------------- type ----
 
-PROMPT = 'niki run "Add a /health endpoint"'
+RUN_COMMAND = 'niki run "Add a /health endpoint"'
 
 MONO_CANDIDATES = [
     "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf",
@@ -162,6 +177,8 @@ class Beat:
     submitted: bool = False  # prompt block highlight on
     step: str = "1/8"
 
+
+# ---------------------------------------------------------------- desktop ----
 
 # ------------------------------------------------------------------ story ----
 # Niki's actual product: four independent agents turn one sentence into a
@@ -325,53 +342,82 @@ def wrap(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, max
     return lines
 
 
-def draw_wallpaper(w: int, h: int) -> Image.Image:
-    """Niki's warm-dusk field, composited as gradients plus a soft bloom.
+def _value_noise(w: int, h: int, cells: int, seed: int):
+    """Smooth value noise on a coarse lattice, bilinearly interpolated."""
+    import random
 
-    Cheaper and sharper than a bitmap: it stays smooth at any export size and
-    costs nothing to ship.
-    """
-    base = Image.new("RGB", (w, h), WALL_LOW)
-    px = base.load()
-
-    # Vertical ramp.
+    rng = random.Random(seed)
+    grid = [[rng.random() for _ in range(cells + 1)] for _ in range(cells + 1)]
+    out = [[0.0] * w for _ in range(h)]
     for y in range(h):
-        t = y / max(1, h - 1)
-        if t < 0.55:
-            k = t / 0.55
-            col = tuple(
-                int(WALL_TOP[i] + (WALL_MID[i] - WALL_TOP[i]) * k) for i in range(3)
-            )
-        else:
-            k = (t - 0.55) / 0.45
-            col = tuple(
-                int(WALL_MID[i] + (WALL_LOW[i] - WALL_MID[i]) * k) for i in range(3)
-            )
+        fy = y / (h - 1) * cells
+        y0 = int(fy)
+        y1 = min(y0 + 1, cells)
+        sy = fy - y0
+        sy = sy * sy * (3 - 2 * sy)
+        row0, row1 = grid[y0], grid[y1]
+        target = out[y]
         for x in range(w):
-            px[x, y] = col
+            fx = x / (w - 1) * cells
+            x0 = int(fx)
+            x1 = min(x0 + 1, cells)
+            sx = fx - x0
+            sx = sx * sx * (3 - 2 * sx)
+            a = row0[x0] * (1 - sx) + row0[x1] * sx
+            b = row1[x0] * (1 - sx) + row1[x1] * sx
+            target[x] = a * (1 - sy) + b * sy
+    return out
 
-    # Two off-centre blooms so the field is lit rather than flat.
-    bloom = Image.new("L", (w, h), 0)
-    bd = ImageDraw.Draw(bloom)
-    bd.ellipse(
-        (int(w * 0.04), int(h * 0.30), int(w * 0.56), int(h * 1.15)), fill=150
-    )
-    bd.ellipse(
-        (int(w * 0.52), int(h * 0.02), int(w * 1.10), int(h * 0.86)), fill=86
-    )
-    bloom = bloom.filter(ImageFilter.GaussianBlur(radius=int(w * 0.16)))
-    glow = Image.new("RGB", (w, h), WALL_GLOW)
-    base = Image.composite(glow, base, bloom)
 
-    # Vignette, so the window reads as the subject.
-    vig = Image.new("L", (w, h), 0)
-    vd = ImageDraw.Draw(vig)
-    vd.ellipse(
-        (int(-w * 0.18), int(-h * 0.18), int(w * 1.18), int(h * 1.18)), fill=255
-    )
-    vig = vig.filter(ImageFilter.GaussianBlur(radius=int(w * 0.13)))
-    base = Image.composite(base, Image.new("RGB", (w, h), (0x10, 0x0D, 0x0A)), vig)
-    return base
+def draw_wallpaper(w: int, h: int) -> Image.Image:
+    """The light card texture the terminal sits on.
+
+    Multi-octave value noise plus a ridged layer for the veining that gives the
+    plate its stone-paper look, then a soft vertical wash so the top of the card
+    is a touch lighter than the bottom. Sampled from the reference's cool
+    blue-grey rather than the site's warm neutrals, because a warm plate makes a
+    dark window look muddy instead of crisp.
+    """
+    # Weighted toward the fine scales. The reference's plate is a paper or
+    # stone surface, and without high-frequency detail it reads as a blur.
+    octaves = [
+        (_value_noise(w, h, 3, 11), 0.34),
+        (_value_noise(w, h, 7, 29), 0.22),
+        (_value_noise(w, h, 17, 47), 0.18),
+        (_value_noise(w, h, 41, 53), 0.15),
+        (_value_noise(w, h, 97, 59), 0.11),
+    ]
+    ridge = _value_noise(w, h, 9, 71)
+    ridge_fine = _value_noise(w, h, 23, 83)
+
+    import random
+
+    rng = random.Random(101)
+    grain = [rng.random() - 0.5 for _ in range(4096)]
+
+    img = Image.new("RGB", (w, h))
+    px = img.load()
+    for y in range(h):
+        # Light at the top, cooler and a shade deeper toward the bottom.
+        wash = y / (h - 1)
+        base = [CARD_HI[i] * (1 - wash) + CARD_MID[i] * wash for i in range(3)]
+        row = [0.0] * w
+        for layer, weight in octaves:
+            src = layer[y]
+            for x in range(w):
+                row[x] += src[x] * weight
+        for x in range(w):
+            # The reference plate is a fine paper: soft low-frequency mottle and
+            # a visible grain, and nothing that reads as a pattern. Ridged noise
+            # was tried here and produced contour outlines, so it is gone.
+            g = grain[(y * 131 + x * 7) & 4095]
+            k = (row[x] - 0.5) * 0.20 + g * 0.055
+            px[x, y] = (
+                max(0, min(255, int(base[0] + k * 66))),
+                max(0, min(255, int(base[1] + k * 66))),
+                max(0, min(255, int(base[2] + k * 58))),
+            )
+    return img
 
 
 def draw_niki_mark(draw: ImageDraw.ImageDraw, x: int, y: int, size: int) -> None:
@@ -399,12 +445,12 @@ def draw_niki_mark(draw: ImageDraw.ImageDraw, x: int, y: int, size: int) -> None
 
 class Renderer:
     def __init__(self) -> None:
-        self.f_mono = load_font(MONO_CANDIDATES, 13 * SCALE)
-        self.f_mono_b = load_font(MONO_BOLD_CANDIDATES, 13 * SCALE)
-        self.f_mono_sm = load_font(MONO_CANDIDATES, 11 * SCALE)
-        self.f_mono_sm_b = load_font(MONO_BOLD_CANDIDATES, 11 * SCALE)
-        self.f_mono_lg = load_font(MONO_CANDIDATES, 15 * SCALE)
-        self.f_title = load_font(SANS_BOLD_CANDIDATES, 12 * SCALE)
+        self.f_mono = load_font(MONO_CANDIDATES, 15 * SCALE)
+        self.f_mono_b = load_font(MONO_BOLD_CANDIDATES, 15 * SCALE)
+        self.f_mono_sm = load_font(MONO_CANDIDATES, 13 * SCALE)
+        self.f_mono_sm_b = load_font(MONO_BOLD_CANDIDATES, 13 * SCALE)
+        self.f_mono_lg = load_font(MONO_CANDIDATES, 16 * SCALE)
+        self.f_title = load_font(MONO_CANDIDATES, 12 * SCALE)
         self.f_wallpaper = None
         self._measure = ImageDraw.Draw(Image.new("RGB", (8, 8)))
 
@@ -438,7 +484,7 @@ class Renderer:
 
     def draw_row(self, draw: ImageDraw.ImageDraw, row: Row, y: int) -> int:
         """Draw one logical row; return the y of the next row."""
-        pitch = 19 * SCALE
+        pitch = 22 * SCALE
         lines = self.measure(row)
         x0 = PAD_X * SCALE
         for i, line in enumerate(lines):
@@ -524,18 +570,46 @@ class Renderer:
     # -- pills --------------------------------------------------------------
 
     def draw_pill(self, draw: ImageDraw.ImageDraw, glyph: str) -> None:
-        w, h = 128 * SCALE, 56 * SCALE
+        """A keystroke overlay: a dark keycap with a drawn symbol.
+
+        Drawn rather than typed, so it reads as a key press instead of a text
+        box. The reference does the same with a thin white glyph on near-black.
+        """
+        w, h = 78 * SCALE, 54 * SCALE
         cx = WIN_W * SCALE // 2
-        cy = WIN_H * SCALE - 62 * SCALE
+        cy = WIN_H * SCALE - 66 * SCALE
+
         draw.rounded_rectangle(
             (cx - w // 2, cy - h // 2, cx + w // 2, cy + h // 2),
-            radius=14 * SCALE,
+            radius=12 * SCALE,
             fill=(0x11, 0x15, 0x19),
         )
-        gw = text_width(draw, glyph, self.f_mono_lg)
-        draw.text(
-            (cx - gw // 2, cy - 10 * SCALE), glyph, font=self.f_mono_lg, fill=(0xFF, 0xFF, 0xFF)
+        # A hairline top edge catches the light the way a physical keycap does.
+        draw.line(
+            (cx - w // 2 + 6 * SCALE, cy - h // 2 + 1, cx + w // 2 - 6 * SCALE, cy - h // 2 + 1),
+            fill=(0x3A, 0x36, 0x30),
+            width=SCALE,
         )
+
+        ink = (0xFF, 0xFF, 0xFF)
+        lw = 3 * SCALE
+        a = 16 * SCALE  # glyph half-extent
+        if glyph == "return":
+            # Up-and-back: a vertical stem with a hook to the left, arrowhead on
+            # the left end. This is the return/enter symbol.
+            draw.line(
+                [(cx + a, cy - a), (cx + a, cy), (cx - a, cy)],
+                fill=ink,
+                width=lw,
+                joint="curve",
+            )
+            draw.line([(cx - a, cy), (cx - a + 8 * SCALE, cy - 8 * SCALE)], fill=ink, width=lw)
+            draw.line([(cx - a, cy), (cx - a + 8 * SCALE, cy + 8 * SCALE)], fill=ink, width=lw)
+        else:
+            # Right arrow, for a forward step.
+            draw.line([(cx - a, cy), (cx + a, cy)], fill=ink, width=lw)
+            draw.line([(cx + a, cy), (cx + a - 8 * SCALE, cy - 8 * SCALE)], fill=ink, width=lw)
+            draw.line([(cx + a, cy), (cx + a - 8 * SCALE, cy + 8 * SCALE)], fill=ink, width=lw)
 
     # -- frame --------------------------------------------------------------
 
@@ -582,14 +656,17 @@ class Renderer:
         )
 
         self._draw_body(wd, beat, h)
-        canvas.paste(win, (sx, sy))
+        # The window is taller than the card, so pasting it crops its bottom edge
+        # and the transcript runs off the frame the way real footage does.
+        canvas.paste(win.crop((0, 0, sw, min(win.size[1], canvas.size[1] - sy))), (sx, sy))
+
         out.write(canvas)
 
     def _draw_body(self, draw: ImageDraw.ImageDraw, beat: Beat, titlebar_h: int) -> None:
         sw = WIN_W * SCALE
         sh = WIN_H * SCALE
         x0 = PAD_X * SCALE
-        y = titlebar_h + 18 * SCALE
+        y = titlebar_h + 14 * SCALE
 
         # --- header: mark, name/version, model, path ---
         mark = 30 * SCALE
@@ -621,23 +698,37 @@ class Renderer:
         y += 14 * SCALE
 
         # --- prompt row ---
-        draw.text((x0, y), ">", font=self.f_mono_lg, fill=INK_SOFT)
-        prompt = PROMPT
-        text_x = x0 + 16 * SCALE
-        pw = text_width(draw, prompt, self.f_mono_lg)
+        # A shell prompt, so the window reads as a real Terminal rather than a
+        # mock UI. Host and path are coloured the way a real prompt is.
+        font = self.f_mono
+        cx = x0
+        for chunk, colour in (
+            ("niki", PROMPT_USER),
+            ("@", INK_SOFT),
+            ("flawed-app", PROMPT_USER),
+            ("  ~/flawed-app  ", PROMPT_PATH),
+        ):
+            draw.text((cx, y), chunk, font=font, fill=colour)
+            cx += text_width(draw, chunk, font) + 2 * SCALE
+        draw.text((cx, y), "$", font=font, fill=INK_SOFT)
+        cx += text_width(draw, "$", font) + 4 * SCALE
+
+        command_x = cx
+        command = RUN_COMMAND
+        cw = text_width(draw, command, font)
         if beat.submitted:
             # The reference paints a highlight block behind the submitted line.
             draw.rectangle(
-                (text_x - 3 * SCALE, y - 3 * SCALE, text_x + pw + 5 * SCALE, y + 20 * SCALE),
+                (command_x - 3 * SCALE, y - 3 * SCALE, command_x + cw + 5 * SCALE, y + 18 * SCALE),
                 fill=SUBMIT_BLOCK,
             )
-        else:
-            # Static block cursor in its own column, so it never sits on a glyph.
+        draw.text((command_x, y), command, font=font, fill=INK)
+        if not beat.submitted:
+            # Cursor trails the command, the way a shell leaves it.
             draw.rectangle(
-                (x0 + 30 * SCALE, y - 1 * SCALE, x0 + 40 * SCALE, y + 17 * SCALE),
+                (command_x + cw + 4 * SCALE, y - 1 * SCALE, command_x + cw + 13 * SCALE, y + 15 * SCALE),
                 fill=CURSOR,
             )
-        draw.text((text_x, y), prompt, font=self.f_mono_lg, fill=INK_SOFT)
         y += 26 * SCALE
 
         draw.line((x0, y, sw - x0, y), fill=DIVIDER, width=SCALE)
@@ -657,7 +748,7 @@ class Renderer:
                 measured = self.measure(row)
                 lines.append((row, measured[0] if measured else ""))
 
-        pitch = 19 * SCALE
+        pitch = 22 * SCALE
         status_h = 22 * SCALE
         input_h = 30 * SCALE
         avail = sh - y - (status_h + input_h + 12 * SCALE)

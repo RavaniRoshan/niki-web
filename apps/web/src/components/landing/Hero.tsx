@@ -1,9 +1,14 @@
 import Link from "next/link";
 import { HERO } from "./content";
 import PipelineVideo from "./PipelineVideo";
-import RunWindow from "./RunWindow";
 import styles from "./sections.module.css";
 
+/* The hero media is a full macOS desktop: wallpaper, menu bar, a Terminal
+ * window running the demo, and a dock. The asset supplies all of it, so there is
+ * deliberately no RunWindow wrapper here. Wrapping a window that already
+ * contains a window draws a second frame around the first, which is exactly the
+ * canvas boundary this section is trying not to have. The RunWindow primitive
+ * still carries every other product surface on the page. */
 export default function Hero() {
   return (
     <section
@@ -31,16 +36,8 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className={styles.heroMedia}>
-        <RunWindow
-          title="niki run"
-          tabs={["run"]}
-          variant="offset"
-          backdrop="dusk"
-          testId="hero-window"
-        >
-          <PipelineVideo />
-        </RunWindow>
+      <div className={styles.heroMedia} data-testid="hero-window">
+        <PipelineVideo />
       </div>
     </section>
   );
