@@ -676,6 +676,53 @@ test("the real recording and every provider mark are served locally with correct
   }
 });
 
+test("the hero wash paints once, animates only in view, and never loops offscreen", async ({
+  page,
+}) => {
+  const state = () =>
+    page.evaluate(() => {
+      const canvas = document.querySelector<HTMLCanvasElement>(
+        '[data-testid="landing-hero"] canvas'
+      );
+      return canvas?.dataset.animating ?? "no-canvas";
+    });
+
+  // Reduced motion: one static frame, never a running loop.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openLanding(page);
+  await expect.poll(() => state()).toBe("false");
+
+  const box = await page.getByTestId("landing-hero").evaluate((el) => {
+    const canvas = el.querySelector("canvas");
+    const host = canvas?.parentElement as HTMLElement;
+    if (!canvas || !host) return null;
+    const c = canvas.getBoundingClientRect();
+    const h = host.getBoundingClientRect();
+    return {
+      painted: Number(getComputedStyle(canvas).opacity) > 0.9,
+      width: Math.round(c.width),
+      // The wash sits behind the copy and never intercepts a click.
+      pointerEvents: getComputedStyle(host).pointerEvents,
+      coversTop: h.top <= 80,
+    };
+  });
+  expect(box).not.toBeNull();
+  expect(box!.painted).toBe(true);
+  expect(box!.width).toBeGreaterThan(0);
+  expect(box!.pointerEvents).toBe("none");
+  expect(box!.coversTop).toBe(true);
+
+  // Motion allowed: it runs while visible and stops the moment it leaves.
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await openLanding(page);
+  await expect.poll(() => state()).toBe("true");
+  await page.evaluate(() => window.scrollTo(0, 6000));
+  await expect.poll(() => state()).toBe("false");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(() => state()).toBe("true");
+});
+
 test("the recording exposes local sources, stable framing, and keyboard controls", async ({
   page,
 }) => {

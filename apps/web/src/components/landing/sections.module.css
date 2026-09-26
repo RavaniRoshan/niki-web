@@ -35,13 +35,65 @@
    scrolling to reach them pauses the recording, so the first click lands on a
    paused video and resumes it instead. */
 .hero {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   gap: 36px;
   padding-top: 64px;
 }
 
+/* The wash sits behind the hero and fades out through the lower half, so the
+   page returns to a flat canvas before the next section. A mask rather than a
+   gradient stop, because a stop leaves a visible edge where the fill ends. */
+/* The wash's palette lives here, not in the component, so the theme stays the one
+   source of colour truth. `strength` is the only knob that matters: at 1 the
+   ember bloom dominates the hero and the page stops looking like this site. */
+.heroWash {
+  --wash-deep: var(--landing-canvas);
+  --wash-mid: #1d1710;
+  --wash-glow: #f54e00;
+  --wash-strength: 0.2;
+
+  position: absolute;
+  /* Runs up behind the header rather than starting below it. Otherwise the top
+     of the wash lands exactly where the header ends and reads as a seam. */
+  top: calc(-1 * (var(--landing-header-height) + 12px));
+  left: 0;
+  right: 0;
+  z-index: 0;
+  height: calc(82% + var(--landing-header-height) + 12px);
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.55) 0%,
+    #000 10%,
+    rgb(0 0 0 / 0.82) 34%,
+    rgb(0 0 0 / 0.38) 62%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.55) 0%,
+    #000 10%,
+    rgb(0 0 0 / 0.82) 34%,
+    rgb(0 0 0 / 0.38) 62%,
+    transparent 100%
+  );
+}
+
+/* Light theme: a warm lift off the parchment, not a dark ground behind light
+   text. A shade of a wash here reads as a dirty band, so it stays very low. */
+:global(html.light) .heroWash {
+  --wash-deep: #f7f7f4;
+  --wash-mid: #e9e2d6;
+  --wash-glow: #f0a878;
+  --wash-strength: 0.12;
+}
+
 .heroInner {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -96,6 +148,8 @@
 }
 
 .heroMedia {
+  position: relative;
+  z-index: 1;
   width: min(100%, var(--landing-container));
   margin-inline: auto;
   padding-inline: var(--landing-gutter);

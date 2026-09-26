@@ -77,6 +77,26 @@ shrunk state tightens the nav gap and link padding to make it fit. Widening the 
 cluster means either raising that cap or lowering the collapse breakpoint, which is 1279. The
 tests assert the header never overlaps itself at 1440, 1280, 1200, 1024, 834 or 390.
 
+## The hero wash
+
+The hero background is a WebGL gradient wash. Its palette lives in CSS on `.heroWash` as
+`--wash-deep`, `--wash-mid`, `--wash-glow`, `--wash-strength`; the component reads those
+properties, so change the colours there and not in the component.
+
+**`--wash-strength` is the knob that matters.** Dark is `0.2`, light is `0.12`. At `1` the ember
+bloom takes over the hero and the page stops looking like this site. If the wash looks wrong, that
+value is almost always why.
+
+Do not make it more expensive without measuring:
+
+- Keep the 30 fps cap. Do not tie it to the display refresh rate.
+- Keep the `IntersectionObserver`. Without it the loop runs on the main thread forever, and this
+  page also carries a video.
+- Keep the reduced-motion branch. It paints one frame and never starts.
+- Keep the CSS gradient under the canvas. It is the first paint and the fallback when WebGL is
+  missing or the context is lost.
+- `data-animating` on the canvas reflects the loop state and is asserted by a test. Keep it.
+
 ## The hero recording
 
 The hero media is a rendered asset, not a screen recording. Regenerate it with:

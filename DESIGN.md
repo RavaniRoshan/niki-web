@@ -214,6 +214,38 @@ Two measurements shaped this, and both are asserted in the tests:
 - The desktop nav **already overlapped the action cluster between 1024px and 1280px** before this
   change, because the collapse breakpoint was at 1023. It is now 1279.
 
+## The hero wash
+
+One gradient, confined to the hero, masked so it fades out through the lower half before the next
+section begins. It is a shader rather than a bitmap, but it is deliberately restrained: at full
+strength the ember bloom dominates the hero and the page stops looking like this site. Dark runs
+at `0.2`, light at `0.12`.
+
+Its palette is declared in CSS, on `.heroWash`, as `--wash-deep`, `--wash-mid`, `--wash-glow` and
+`--wash-strength`. The component reads those custom properties rather than taking colours as
+props, so the theme stays the single source of colour truth and a theme flip repaints the wash
+without a re-render.
+
+**What this is allowed to cost.** A background wash is easy to make expensive by accident, so:
+
+- One full-screen quad, two triangles. The wave is computed per fragment, so the geometry never
+  changes and a resize only touches the viewport. It does not rebuild a vertex grid.
+- The frame rate is capped at 30 fps rather than pinned to the display.
+- An `IntersectionObserver` stops the loop when the hero leaves the viewport, and
+  `visibilitychange` stops it when the tab is hidden. It does not run on the main thread forever.
+- `prefers-reduced-motion` renders exactly one frame and never starts the loop.
+- `antialias: false`, `alpha: false`, `powerPreference: "low-power"`, and a device-pixel-ratio
+  cap of 1.5. A smooth gradient gains nothing from multisampling.
+- The resize listener is removed, the observers are disconnected, and the WebGL context is
+  explicitly lost on unmount.
+- A CSS gradient is painted underneath the canvas as the first paint and the permanent fallback,
+  so there is no empty box if WebGL is missing, no flash before the first frame, and a visible
+  surface if the context is lost.
+- The host is `pointer-events: none`, so the wash never intercepts a click on the copy above it.
+
+The loop's state is reflected as `data-animating` on the canvas, so "does it actually stop when
+scrolled away" is asserted by a test rather than assumed.
+
 ## The hero recording
 
 The hero media is a flat macOS-style canvas: a light textured card with a dark Terminal window
@@ -264,8 +296,11 @@ One header and one footer for the whole site. `SiteChrome` renders `LandingHeade
 no second navigation, and adding an entry means adding it once to `NAV_LINKS`.
 
 Removed during the unification, and not to be reintroduced: a site-specific header and footer, the
-gradient hairline under the header, the WebGL arc under the footer, the hero shader, and every
+gradient hairline under the header, the WebGL arc under the footer, the old hero shader, and every
 gradient wash in `globals.css`. Depth comes from hairline borders and one level of surface change.
+
+The one deliberate exception is the hero wash, below. It is the only gradient in the system, it is
+confined to the hero, and it is masked out before the next section.
 
 ### Inner-page primitives
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HERO } from "./content";
+import GradientWash from "./GradientWash";
 import PipelineVideo from "./PipelineVideo";
 import styles from "./sections.module.css";
 
@@ -17,6 +18,10 @@ export default function Hero() {
       data-reveal
       aria-labelledby="landing-hero-title"
     >
+      {/* Background wash. Decorative, behind everything, and masked so it fades
+          out across the lower half of the hero rather than ending on a line. */}
+      <GradientWash className={styles.heroWash} />
+
       <div className={styles.heroInner}>
         <h1 id="landing-hero-title" className={styles.heroTitle}>
           {HERO.title}

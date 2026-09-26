@@ -20,6 +20,13 @@ no-reference-assets boundary.
     real run artifacts, the provider strip carries the twelve real integrations, the changelog and
     highlights rows read from live data modules.
 
+- [x] One gradient, in one place
+  - The hero background is a WebGL wash, masked to fade out through the lower half of the hero.
+  - 30 fps cap, an IntersectionObserver that stops the loop off-screen, a reduced-motion branch
+    that paints one frame, a DPR cap of 1.5, no antialiasing, and a CSS gradient underneath as
+    first paint and fallback. Its palette lives in CSS so the theme stays the source of colour.
+  - Asserted by test: it paints, never animates under reduced motion, and stops when scrolled away.
+
 - [x] One window primitive across every product surface
   - `RunWindow` supplies backdrop, optional offset window, traffic lights, title, and tab strip.
 
@@ -91,7 +98,7 @@ gradient decoration. They now resolve to the same palette as the landing.
 - [x] `npm run lint`
 - [x] `npm run typecheck`
 - [x] `npm run build` for both apps
-- [x] `npm run test:e2e:web`, 79 passing, including Axe at 1440 and 390 in both themes across the
+- [x] `npm run test:e2e:web`, 82 passing, including Axe at 1440 and 390 in both themes across the
       landing and the inner routes, and 12 screenshot baselines at `maxDiffPixels: 0`
 
 ## Still open
