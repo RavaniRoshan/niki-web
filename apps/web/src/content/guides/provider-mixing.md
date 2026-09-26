@@ -1,14 +1,13 @@
 ---
 title: "Mixing providers per agent"
-description: "Give the Planner a strong reasoner and the Tester a cheap model — per-agent provider configuration in niki.toml."
+description: "Per-agent provider and model configuration in niki.toml."
 pubDate: "2026-09-01"
-updated: "2026-09-06"
+updated: "2026-09-23"
 difficulty: "intermediate"
-time: "~10 min"
 ---
 
-Each pipeline stage is independently configurable. The pattern most teams converge on: strong
-reasoners where judgment matters, cheap models where volume matters.
+Each stage in the full multiagent path can bind its own provider and model. Choose a provider for
+the work each stage needs; auto topology may skip some stages for low-complexity tasks.
 
 ## The config
 
@@ -32,7 +31,7 @@ model    = "claude-sonnet-4-20250514"
 
 ## Keys
 
-Set per-provider keys via environment — env vars override `niki.toml`, so secrets never
+Set per-provider keys via environment: env vars override `niki.toml`, so secrets never
 touch the repo:
 
 ```bash
@@ -43,9 +42,9 @@ export OPENAI_API_KEY=sk-...
 ## Check and tune
 
 ```bash
-niki providers    # verify every configured provider responds
-niki recommend    # per-agent suggestions from your own observed spend
+niki providers check
+niki recommend
 ```
 
-`niki recommend` reads your run history — it suggests models based on what actually worked
-and what it actually cost, not marketing.
+`niki recommend` uses static provider/model pairings. It does not rank models from your observed
+spend.

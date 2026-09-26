@@ -1,44 +1,55 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import Script from "next/script";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import SignatureLogo from "@/components/SignatureLogo";
-import GsapProvider from "@/components/GsapProvider";
-import MotionProvider from "@/components/MotionProvider";
-import { pageMetadata, softwareAppJsonLd } from "@/lib/meta";
-import "@niki/theme/tokens.css";
-import "@/styles/niki.css";
+import { Geist, JetBrains_Mono } from "next/font/google";
+import { softwareAppJsonLd } from "@/lib/meta";
+import "@/styles/globals.css";
+
+const sans = Geist({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700"],
+  variable: "--font-geist",
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  ...pageMetadata({
-    title: "Niki — One sentence in, a verified pull request out.",
-    description:
-      "Niki is the open-source multi-agent coding pipeline that plans, codes, tests, and reviews — then hands you a verified git branch. Four independent agents, hermetic sandboxes, full audit trail.",
-    path: "/",
-  }),
+  title: "Niki",
+  description: "Open-source tools for reviewable coding changes.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`antialiased ${sans.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script
+          // Pre-hydration theme: stored choice, else OS preference. Dark is the default.
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("niki-theme");if(t==="light"||(!t&&matchMedia("(prefers-color-scheme: light)").matches)){document.documentElement.classList.add("light")}}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body>
-        <a className="nx-skip-link" href="#main">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:bg-gray-12 focus:text-gray-1 focus:px-3 focus:py-2"
+        >
           Skip to content
         </a>
-        <Header />
-        <main id="main" style={{ paddingTop: "64px" }}>
-          {children}
-        </main>
-        <div className="nx-signature-band">
-          <SignatureLogo size={192} />
-        </div>
-        <Footer />
         <Script id="niki-software-jsonld" type="application/ld+json" strategy="beforeInteractive">
           {JSON.stringify(softwareAppJsonLd)}
         </Script>
-        <GsapProvider />
-        <MotionProvider />
+        {children}
       </body>
     </html>
   );

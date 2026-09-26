@@ -1,16 +1,20 @@
 ---
 title: Welcome to NIKI
-description: Turn a sentence into a verified pull request. Hermetic multi-agent coding engine.
+description: Open-source multi-agent coding engine with reviewable diffs and run artifacts.
 ---
 
 ## NIKI
 
-**Turn a sentence into a verified pull request.**
+**Turn a sentence into a reviewable code change.**
 
-NIKI is an open-source, hermetic multi-agent coding engine written in Rust. Four specialized LLM agents — **Planner → Coder → Tester → Reviewer** — collaborate inside a rootless Podman or Docker container to produce a verified git branch (`niki/<id>`), a unified diff, and a full audit trail.
+NIKI v0.8.0 is an open-source multi-agent coding engine written in Rust. Its default `auto` topology uses **Planner + solo Coder** for low-complexity tasks and **Planner → Coder → Tester → Reviewer** for higher-complexity runs. The default container backend executes against the repository bind-mounted at `/workspace`; a git-worktree backend is also available.
 
 <Callout type="tip">
-  **Your working tree is never touched mid-run.** NIKI clones your workspace into an isolated container sandbox, debates the implementation, executes real test suites, and hands you a clean branch ready for human review.
+  **Your working tree is modified during eligible runs.** The container backend
+  bind-mounts the repository at `/workspace`. The worktree backend isolates changes
+  under `.niki-worktrees/<id>` and applies the final diff afterward. A branch is
+  created only for a non-empty diff with no blocked test failure; `--force`
+  records a forced branch as unverified.
 </Callout>
 
 ```bash
@@ -21,11 +25,11 @@ niki run "Add a GET /health endpoint returning { status: 'ok', uptime }" --proje
  ◈ ⟠ ◉ ◆   NIKI
    "Add a GET /health endpoint…"
 
- [Planner]   Done — Spec: 1 file to modify
- [Coder]     Done — Changed 1 file · src/api.rs [modified]
- [Tester]    Done — 8/8 tests passed
- [Reviewer]  Done — Approved · correctness 10/10 · quality 9/10 · coverage 10/10
- [NIKI]      Task complete — Branch: niki/6d281d6d · Verdict: Approved · Revisions: 0
+ [Planner]   Done · Spec: 1 file to modify
+ [Coder]     Done · Changed 1 file · src/api.rs [modified]
+ [Tester]    Done · 8/8 tests passed
+ [Reviewer]  Done · Approved · correctness 10/10 · quality 9/10 · coverage 10/10
+ [NIKI]      Task complete · Branch: niki/6d281d6d · Verdict: Approved · Revisions: 0
 ```
 
 ---
@@ -34,16 +38,20 @@ niki run "Add a GET /health endpoint returning { status: 'ok', uptime }" --proje
 
 <CardGroup cols={2}>
   <Card title="Multi-Agent Pipeline" icon="bot">
-    Separation of concerns across dedicated agents. Planner maps the scope, Coder writes diffs, Tester validates behavior, and Reviewer audits quality.
+    The `auto` topology can collapse low-complexity work to Planner + solo Coder,
+    while full runs add independent Tester and Reviewer sessions.
   </Card>
-  <Card title="Hermetic Sandboxing" icon="shield-check">
-    Rootless Docker or Podman containers with dropped capabilities (`CapDrop ALL`), PID limits, and blocked network egress by default.
+  <Card title="Sandboxed Execution" icon="shield-check">
+    Docker/Podman containers bind-mount the project at `/workspace`. By default,
+    socket discovery tries rootless before rootful; worktree runs use host processes.
   </Card>
   <Card title="BYOK & Multi-Provider" icon="key">
-    Bring your own keys across Anthropic, OpenAI, OpenRouter, NVIDIA NIM, Together, Groq, DeepSeek, Google Gemini, or local Ollama.
+    Twelve user-facing slugs: Anthropic, OpenAI, OpenRouter, NVIDIA, Together,
+    Groq, DeepSeek, Zen, Kimi, Kilo, Google, and Ollama.
   </Card>
   <Card title="Auditable & Verifiable" icon="file-text">
-    Every run produces `changes.patch`, `report.md`, and typed JSON artifacts (`artifacts/*.json`) for full inspection.
+    Completed pipeline runs write `changes.patch`, `report.md`, and typed JSON
+    artifacts under `.niki/tasks/<id>/` for inspection.
   </Card>
 </CardGroup>
 
@@ -52,18 +60,18 @@ niki run "Add a GET /health endpoint returning { status: 'ok', uptime }" --proje
 ## How NIKI Works
 
 ```mermaid
-flowchart LR
+flowchart TD
     U(["niki run 'task'"]) --> P
 
     subgraph Sandbox["Podman/Docker Sandbox · /workspace mount"]
-        direction LR
+        direction TD
         P["◈ Planner"] -->|TaskSpec| C["⟠ Coder"]
         C -->|CodeDiff| T["◉ Tester"]
         T -->|TestReport| R["◆ Reviewer"]
         R -.->|Request Changes| C
     end
 
-    R -->|Approved| G[["git branch niki/<id>"]]
+    R -->|Loop complete; eligible diff| G[["git branch niki/‹id›"]]
     G --> A["changes.patch · report.md · artifacts/*.json"]
 ```
 
@@ -73,12 +81,22 @@ flowchart LR
 
 <CardGroup cols={3}>
   <Card title="Quickstart" href="/overview/quickstart" icon="zap">
-    Set up NIKI, configure your provider keys, and run your first automated task in 5 minutes.
+    Set up NIKI, configure your provider keys, and run your first automated task
+    in 5 minutes.
   </Card>
-  <Card title="Agent Pipeline" href="/agent-pipeline/pipeline-overview" icon="git-pull-request">
+  <Card
+    title="Agent Pipeline"
+    href="/agent-pipeline/pipeline-overview"
+    icon="git-pull-request"
+  >
     Learn how Planner, Coder, Tester, and Reviewer interact and debate changes.
   </Card>
-  <Card title="CLI Reference" href="/cli-reference/cli-overview" icon="terminal">
-    Explore all 16 CLI commands, flags, subcommands, and interactive TUI options.
+  <Card
+    title="CLI Reference"
+    href="/cli-reference/cli-overview"
+    icon="terminal"
+  >
+    Explore all 28 CLI commands, flags, subcommands, and interactive TUI
+    options.
   </Card>
 </CardGroup>

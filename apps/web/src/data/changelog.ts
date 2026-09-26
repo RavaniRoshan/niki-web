@@ -17,7 +17,7 @@ export const RELEASES: ChangelogRelease[] = [
     version: "0.8.0",
     date: "2026-09-23",
     summary:
-      "Agent-harness + runtime release (36 commits since 0.7.0): repo intelligence, risk-gated Critic pipeline, provenance/KB/history/structural index, agent runtime rework with sessions/checkpoints/resume, converged store + project skills, unified run budget, TUI performance/search/input hardening, five ready gateways, reliability/honesty fixes, and CI/visual gate repairs. Claims below are backed by tests, mock-LLM e2e, or the VHS visual gate unless noted as docs/launch material.",
+      "Agent-harness + runtime release (36 commits since 0.7.0): repo intelligence, risk-gated Critic pipeline, provenance/KB/history/structural index, agent runtime rework with sessions/checkpoints/resume, converged store + project skills, unified run budget, TUI performance/search/input hardening, five ready gateways, reliability/honesty fixes, and CI/visual gate repairs. Entries below describe code behavior; launch material is labeled as such.",
     categories: [
       {
         name: "Added",
@@ -26,28 +26,28 @@ export const RELEASES: ChangelogRelease[] = [
           "Run provenance (`[snapshot]`, `manifest.json` per task, `niki status [id] --with-provenance`): repo HEAD/branch/remote, config content hash, toolchain versions, result branch + costs.",
           "Project KB (`niki architecture build`, `.niki/kb/`): snapshot-stamped Markdown + provenance-wrapped JSON sidecars, rebuilt from scratch.",
           "History miner (`.niki/history/`, cache-as-truth with rewrite detection): keyword-classified commit learnings rebuilt from cache every run.",
-          "Structural index (`niki index build|query`, `.niki/kb/structural_index/`): content-addressed per-file units, AST→regex→coverage backend ladder (tree-sitter behind the default-on `ast` Cargo feature; `--no-default-features` keeps the regex baseline). Advisory only — grep stays authoritative.",
+          "Structural index (`niki index build|query`, `.niki/kb/structural_index/`): content-addressed per-file units, AST→regex→coverage backend ladder (tree-sitter behind the default-on `ast` Cargo feature; `--no-default-features` keeps the regex baseline). Advisory only, grep stays authoritative.",
           "Bounded Planner context (`[general] max_context_chars`, default 48000): manifest + KB + symbol excerpts + learnings, priority-ordered with an explicit truncation marker.",
           "Risk-based pipeline (`[risk]`, `[critic]`): deterministic TaskSpec classifier (low/normal/high/security) injects the Critic after the Reviewer on Normal+ and forces a SecurityAuditor on High/Security. Explicit `[pipeline].stages` topologies are never rewritten.",
           "Critic stage: narrow verdict-grounding checker (`prompts/critic.md`, `schemas/critique.schema.json`); a Reject forces exactly one Reviewer retry, then a closing judgment. Recorded, never a gate of its own.",
           "Post-run reflection (`src/orchestrator/reflect.rs`): `verification_failure`, `review_correction`, and `security_fix` learnings into `.niki/learnings.jsonl`, flowing back to the Planner via the KB.",
-          "Reviewer test-evidence gate: failures/skips (or zero executed tests) on business-logic tests must yield `revision_needed`, never `approved`.",
+          "Reviewer test-evidence gate: when a Tester stage produces failures, skips, or zero executed tests, its verdict must be `revision_needed` rather than `approved`.",
           "Agent runtime rework (`src/runtime/`): `AgentSession` / `AgentTurn` / `AgentStep` execution loop, bounded priority-sorted `ContextStore` with compaction, typed `AgentEvent` stream, `ToolPolicy` + tool registry split, cancellation tokens, and session checkpoints under `.niki/sessions/`.",
           "`niki resume &lt;session-id&gt;`: resume an interrupted agent session from a checkpoint (role/turn/step, artifacts, context fragments, active branch).",
-          "`niki skills` (`list|candidates|promote|retire|show|diff`): two-step distillation — an approved green run stages a candidate, a human promotes it to a versioned skill (`SKILL.md` + `metadata.json` + `skills-lock.json`). Nothing auto-activates; stale snapshots are flagged, never served as fresh.",
-          "Converged store (`src/store/`, ADR-002): rebuildable hybrid index over learnings + role/user memory + run records — keyword (0.45) + trigram vector cosine (0.35) + recency (0.10) + authority (0.10). File-backed, zero new deps; deleting `<output_dir>/store/` is always safe (live-scan fallback).",
+          "`niki skills` (`list|candidates|promote|retire|show|diff`): two-step distillation, an approved green run stages a candidate, a human promotes it to a versioned skill (`SKILL.md` + `metadata.json` + `skills-lock.json`). Nothing auto-activates; stale snapshots are flagged, never served as fresh.",
+          "Converged store (`src/store/`, ADR-002): rebuildable hybrid index over learnings + role/user memory + run records, keyword (0.45) + trigram vector cosine (0.35) + recency (0.10) + authority (0.10). File-backed, zero new deps; deleting `<output_dir>/store/` is always safe (live-scan fallback).",
           "Unified run hysteresis budget (`[budget]` / `RunBudget`): one step/cost/wallclock ceiling across retries, repairs, revisions, tool-loop steps, and goal iterations. Exhaustion → typed `BudgetExhausted` in `task.json`. CLI overrides: `niki run --max-steps --max-usd --max-wallclock-secs`.",
           "Optional executable tool loop (`[tools] experimental_tool_loop`, default off): one bounded research step before the Planner; inherits `[permissions] mode` (Ask tools fail closed headless).",
-          "MCP end-to-end path: `from_config` loads `[[mcp.servers]]` + governance; live connections retained for `call_tool`; `annotations.readOnlyHint` → `read_only` (unmarked tools denied under default read-only governance); domain allowlist applies to web-fetch-shaped tools.",
+          "MCP client path: the client module loads `[[mcp.servers]]` and can call connected tools, but the pipeline currently constructs an empty `McpManager::new()`, so configured servers are not wired into agent tool execution for a run.",
           "Failover structured-output routing: `FailoverProvider` propagates `supports_structured_output` and routes structured requests through the chain (no more silent degradation on failover).",
           "Hook timeouts: `[hooks] timeout_seconds` (default 30); overlong hooks are killed and treated as Noop with a warning (0 = wait forever).",
           "TUI hardening: central keybinding table with `[ui.keybindings]` overrides + conflict report; transcript search (Ctrl+F); fuzzy `@files` ranking with Tab apply; shared `ScrollState`; `NIKI_TUI_DEBUG` per-frame log; headless render budgets; stage-markdown + processed-diff memos; fleet refresh throttle; mouse motion/SGR with Ctrl+E toggle; width-aware tables; OSC-8 hyperlinks gated by terminal caps. Optional `[ui]`, `[ui.tips]`, `[ui.transcript]` tables.",
-          "Providers / onboarding: five ready gateways — Ollama first-class keyless (wizard option 0, live `/api/tags` probe) plus Zen / Kimi / Kilo (OpenAI-compatible, `OPENCODE`/`KIMI`/`KILO_API_KEY` wiring); single-pick init wizard rewriting all four `[agents.*]` provider lines and preselecting an installed Ollama model; headless `chat --message` plain-text reply.",
+          "Providers / onboarding: five ready gateways, Ollama first-class keyless (wizard option 0, live `/api/tags` probe) plus Zen / Kimi / Kilo (OpenAI-compatible, `OPENCODE`/`KIMI`/`KILO_API_KEY` wiring); single-pick init wizard rewriting all four `[agents.*]` provider lines and preselecting an installed Ollama model; headless `chat --message` plain-text reply.",
           "`niki smoke --backend`: local smoke path selectable without a container runtime (Ollama + worktree, no key/container).",
           "Cinematic README demo: deterministic frame-rendered 80s TUI walkthrough; theme `sand()` fixed to warm SAND_500 (was cyan).",
           "Launch material (docs/launch material, not shipped code): PH kit checklist, maker first-comment, gallery assets, launch playbook with trust-boundary-aligned copy; TUI extraction plan status.",
-          "Eval grades: four seeded defect cases graded (100% maintainer agreement).",
-          "CI gates: MSRV (1.85) + `--no-default-features` jobs; clippy `-D warnings`; artifact-contract + run-lifecycle tests required before the full suite; `STATE_LAYOUT.md` file contract; agent-harness plan docs (ADRs 001/002).",
+          "Eval material includes four seeded defect cases; consult the disclosed methodology and judgments for results.",
+          "CI gates: MSRV (1.88) + `--no-default-features` jobs; clippy `-D warnings`; artifact-contract + run-lifecycle tests required before the full suite; `STATE_LAYOUT.md` file contract; agent-harness plan docs (ADRs 001/002).",
         ],
       },
       {
@@ -61,7 +61,7 @@ export const RELEASES: ChangelogRelease[] = [
           "`providers check`: all OpenAI-compatible slugs use named constructors; Ollama health check resolves an installed model (was permanent 400 + empty model).",
           "Init wizard rewrites all four `[agents.*]` provider lines to the picked provider; Ollama pick preselects an installed coding model (was hardcoded `qwen2.5-coder`, which 404s when only tagged variants exist).",
           "Solo coder gets one bounded repair attempt on patch-apply failure (same spend-cap/hooks/metrics accounting); `code_diff` search/replace schema bans regex/anchors/paraphrase.",
-          "Artifacts writer keeps every attempt (`coder.json`, `coder-2.json`, …) instead of overwriting — failed attempts stay inspectable.",
+          "Artifacts writer keeps every attempt (`coder.json`, `coder-2.json`, …) instead of overwriting, failed attempts stay inspectable.",
           "Failover no longer reports `supports_structured_output = false`; structured output routed through the chain with circuit breakers.",
           "VHS/visual CI: onboarding tapes force the modal via `NIKI_FORCE_ONBOARDING`; ttyd + ffmpeg installed for tape rendering; render engine tests headless (no TTY on runners).",
           "Release/CI plumbing: manifests pinned with real sha256; artifact actions aligned; `cargo dist` `allow-dirty` for hand-maintained pins; `@niki` review workflow `needs-keys` gate fixed; `audit` job restored; VHS/pillow install order fixed.",
@@ -72,8 +72,8 @@ export const RELEASES: ChangelogRelease[] = [
         name: "Changed",
         items: [
           "README / trust copy: sequential stages intentionally share one execution sandbox so the diff persists Coder → Tester → Reviewer; independence is at the LLM-session layer. Committed branches are never repointed or rewritten; the host working tree receives the finished diff for review. `readonly_rootfs` documented as optional and off by default.",
-          "`extra_packages` clarified: despite the name, nothing is installed — entries extend the startup command `-v` checklist against the pre-baked image.",
-          "`network_allowlist` honesty: per-domain filtering is NOT implemented — container egress is all-or-nothing; only `&quot;*&quot;` opens egress; a non-empty domain list warns at startup and behaves as block-all.",
+          "`extra_packages` clarified: despite the name, nothing is installed, entries extend the startup command `-v` checklist against the pre-baked image.",
+          "`network_allowlist` honesty: per-domain filtering is NOT implemented, container egress is all-or-nothing; only `&quot;*&quot;` opens egress; a non-empty domain list warns at startup and behaves as block-all.",
           "Init wizard rewritten as a single-pick menu (was 11 sequential prompts).",
           "Config examples: `[ui]` tips/transcript nested tables; `[compaction]` default threshold 80% + auto_compact; pipeline topology values lowercased.",
           "Launch copy aligned with trust boundaries (`docs/launch-audit.md`, first-comment).",
@@ -86,7 +86,7 @@ export const RELEASES: ChangelogRelease[] = [
           "Diffs scoped to agent-produced changes: pre-existing dirty/untracked host files stay out of `changes.patch` and the commit; new agent files appear via scoped intent-to-add (both backends); edit-format application is all-or-nothing per stage.",
           "Same-task worktree collision fails loudly instead of deleting a concurrent run&apos;s directory; stale prune never removes a live worktree.",
           "Failed runs create no `niki/*` branch and leave `task.json` Failed with the error; conflict markers abort branch creation instead of committing.",
-          "MCP: unmarked tools denied under default read-only governance (deny-by-default); web-fetch tools gated by domain allowlist; untrusted servers error instead of connecting implicitly.",
+          "MCP client governance: unmarked tools are denied under default read-only governance; web-fetch tools are gated by a domain allowlist; untrusted servers error instead of connecting implicitly.",
           "Hooks timeout kills overlong processes so a hung hook cannot stall or mask a Block decision forever.",
         ],
       },
@@ -98,7 +98,7 @@ export const RELEASES: ChangelogRelease[] = [
     version: "0.7.0",
     date: "2026-09-08",
     summary:
-      "Mega-plan execution (30 commits): plan-mode approval gates, oracle integrity, honest cost metering, independence hardening, session control plane, headless CI contract, trust posture, automation, and TUI unification. All user-facing claims below are covered by tests, mock-LLM end-to-end runs, or the VHS visual gate (`tests/visual/`, 12 reference frames at 0.00% self-diff).",
+      "Mega-plan execution (30 commits): plan-mode approval gates, oracle metadata, honest cost metering, independence hardening, session control plane, headless CI contract, trust posture, automation, and TUI unification. The release notes and repository contain the supporting code and documentation.",
     categories: [
       {
         name: "Added",
@@ -106,7 +106,7 @@ export const RELEASES: ChangelogRelease[] = [
           "Plan mode: `niki plan` researches without executing and writes reviewable",
           "Session CLI: `niki session list/show/checkpoints/undo/rewind` with",
           "User slash commands: `.niki/commands/*.md` (filename → `/name`) with",
-          "Headless contract: `niki run --bare` (no memory/MCP/knowledge-URLs),",
+          'Headless contract: `niki run "<description>" --bare` (no memory/MCP/knowledge-URLs),',
           "Oracle integrity: `oracle_source` (spec/derived/property) on every test",
           "Independence hardening: Red receives evidence-only diffs, isolation records",
           "Honest meter: cached-input/reasoning token splits, unpriced-model warnings",
@@ -115,9 +115,9 @@ export const RELEASES: ChangelogRelease[] = [
           "GitHub automation: keyless nightly eval gate, human-gated `@niki` review",
           "Eval credibility: per-case costs, disclosure manifest on every run,",
           "Observability: `trace.jsonl` spans per run (honestly derived timeline),",
-          "MCP Streamable-HTTP remote transport (JSON + SSE, session affinity).",
+          "MCP client Streamable-HTTP remote transport (JSON + SSE, session affinity).",
           "Onboarding: `niki init` alias, `init --scan` AGENTS.md drafter,",
-          "TUI unification: one status grammar, 100% theme-token production code,",
+          "TUI unification: one status grammar and shared theme tokens,",
           "TUI motion system: primitives + caret blink, Done slide-in, notice",
         ],
       },
@@ -140,7 +140,7 @@ export const RELEASES: ChangelogRelease[] = [
         name: "Changed",
         items: [
           "`safety_proof.json`, spend-cap, and deny-list copy narrowed to match code.",
-          "`niki recommend` static-pairings truth in docs (history-driven per-project",
+          "`niki recommend` uses static provider/model pairings; it does not rank a project's observed spend.",
         ],
       },
     ],
@@ -150,7 +150,7 @@ export const RELEASES: ChangelogRelease[] = [
   {
     version: "0.6.0",
     date: "2026-08-21",
-    summary: "Claude Code parity — interaction, trust, and ecosystem surface.",
+    summary: "Claude Code parity, interaction, trust, and ecosystem surface.",
     categories: [
       {
         name: "Added",
@@ -234,14 +234,14 @@ export const RELEASES: ChangelogRelease[] = [
       {
         name: "Added",
         items: [
-          "**Distribution narrowed to the three platforms we build and verify:** Linux (x86_64)",
-          "`docs/claims-audit.md`: every headline marketing claim traced to the code that backs it.",
+          "Distribution covered Linux x86_64, macOS Intel, and macOS Apple Silicon at this release.",
+          "`docs/claims-audit.md`: maps documented product claims to supporting code where available.",
         ],
       },
       {
         name: "Changed",
         items: [
-          "Homebrew formula now installs the release `.tar.gz` archives (with SHA256) for the three",
+          "Homebrew formula installs release archives with SHA256 verification for supported targets.",
           "Honesty pass on sandbox claims: the deny-list blocks `git push --force`/`-f`, `rm -rf /`,",
         ],
       },
@@ -263,7 +263,7 @@ export const RELEASES: ChangelogRelease[] = [
       {
         name: "Changed",
         items: [
-          "Release assets are now per-target `.tar.gz` archives plus a `checksums.txt` (SHA256) —",
+          "Release assets included per-target archives plus a SHA256 checksum manifest.",
           "CI caches `cargo-audit` / `cargo-deny` binaries instead of re-installing each run.",
         ],
       },
@@ -295,14 +295,14 @@ export const RELEASES: ChangelogRelease[] = [
       {
         name: "Added",
         items: [
-          "**Verification in the loop is now real.** The Tester actually executes your test",
+          "Tester executes a resolved test suite inside the sandbox and records its result.",
           "Sandbox image now includes a Rust toolchain (`cargo`/`rustc`) so Rust projects",
         ],
       },
       {
         name: "Changed",
         items: [
-          "`[docker] network_disabled` is the default (egress blocked by default) — this",
+          "`[docker] network_disabled` is the default (egress blocked by default), this",
           "`role_glyph` now renders a distinct glyph for the Planner so it no longer",
         ],
       },
@@ -318,13 +318,13 @@ export const RELEASES: ChangelogRelease[] = [
     version: "0.3.0",
     date: "2026-08-13",
     summary:
-      "Launch cut. Focus: distribution, onboarding, and trust — the agent engine is unchanged.",
+      "Launch cut. Focus: distribution, onboarding, and trust, the agent engine is unchanged.",
     categories: [
       {
         name: "Added",
         items: [
           "Multi-provider support: configure different LLM providers per agent role",
-          "`general.spend_cap_usd` — a per-run spend ceiling. Exceeding it prints a clear",
+          "`general.spend_cap_usd`, a per-run spend ceiling. Exceeding it prints a clear",
           "Explicit config-trust warnings: `[session]`, `[compaction]`, `[mcp]`, `[permissions]`",
           "`assets/logo.svg` recolored to the teal brand (`#0d9488`) to match the TUI.",
           "`docs/benchmarks.md` (honest eval-harness notes).",

@@ -15,18 +15,18 @@ To protect developer machines and production codebases, NIKI enforces a strict m
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │                      Host Environment                       │
-│  - OS Keyring for credentials (never bundled in repo)       │
-│  - Spend Caps enforced mid-run ($USD ceiling)               │
-│  - Clean Git branch separation (main branch untouched)      │
+│  - OS keyring storage (not resolved by runtime providers)   │
+│  - Spend caps enforced at stage boundaries                  │
+│  - Git safety proof protects existing branch refs            │
 └──────────────────────────────┬──────────────────────────────┘
-                               │ Bind-mount copy
+                               │ Repository bind-mounted at /workspace
 ┌──────────────────────────────▼──────────────────────────────┐
-│            Rootless Podman / Docker Container               │
-│  - Dropped Linux Capabilities (`CapDrop ALL`)               │
-│  - PID Limit (512 max processes)                            │
-│  - Memory & CPU quotas (2GB RAM, 2.0 Cores)                 │
-│  - Blocked network egress by default                        │
-│  - Global command deny-list (`curl | sh`, `rm -rf /`)       │
+│             Docker / Podman Container Backend               │
+│  - Default discovery: rootless, then rootful fallback      │
+│  - Dropped Linux capabilities (`CapDrop ALL`)               │
+│  - PID, memory, and CPU limits                              │
+│  - Network egress blocked by default                        │
+│  - Narrow global command deny-list                          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -34,6 +34,7 @@ To protect developer machines and production codebases, NIKI enforces a strict m
 
 ## Security Invariants
 
-1. **Zero Telemetry:** NIKI makes zero background tracking or telemetry requests. Network outbound calls are strictly limited to your designated LLM endpoints.
-2. **Secret Redaction:** API keys, passwords, and sensitive environment variables are automatically masked and redacted from logs, JSON artifacts, and markdown reports.
-3. **No Root Privileges:** All containerized operations run under an unprivileged, non-root user account inside rootless Podman/Docker.
+1. **Scoped Outbound Traffic:** Provider calls are the baseline, but NIKI can also pull sandbox images, contact DuckDuckGo (`niki research`), fetch configured knowledge URLs, export OTLP, or use the remote MCP client. The current pipeline constructs an empty MCP manager, so configured MCP servers are not executed by a run.
+2. **Secret Redaction:** Common API-key, bearer-token, password, and credential patterns are redacted from provider output and rendered reports.
+3. **Git Safety Is Not Sandbox Proof:** `safety_proof.json` checks branch preservation, parentage, and history rewrite/force-push signals. It does not prove container settings or isolation, and the working tree is intentionally updated with the final diff.
+4. **Backend Boundaries:** Rootless operation is a default discovery preference, not a guarantee; `DOCKER_HOST` can override socket discovery. Container runs modify the bind-mounted repository, while the worktree backend runs host-local processes without a container.

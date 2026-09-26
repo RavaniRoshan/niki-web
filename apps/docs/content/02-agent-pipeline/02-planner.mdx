@@ -8,7 +8,7 @@ sidebar:
 
 ## The Planner Agent (`◈`)
 
-The **Planner** is the architectural entry point of NIKI. Its mission is to convert an ambiguous human task description into a concrete, minimal, and deterministic engineering specification.
+The **Planner** is the architectural entry point of NIKI. Its mission is to convert an ambiguous human task description into a concrete, minimal, structured engineering specification.
 
 ---
 
@@ -17,11 +17,11 @@ The **Planner** is the architectural entry point of NIKI. Its mission is to conv
 1. **Workspace Scanning:** Inspects file trees, project configurations (`package.json`, `Cargo.toml`, `pyproject.toml`), and existing interfaces.
 2. **Knowledge Ingestion:** Reads relevant project documentation matching `[knowledge].doc_globs` and external URLs configured in `niki.toml`.
 3. **Spec Generation:** Emits a structured `TaskSpec` JSON artifact detailing:
-   * Files to create, modify, or delete.
-   * Step-by-step implementation strategy.
-   * Acceptance criteria that must be verified.
-   * Technical constraints and architectural invariants.
-   * Estimated complexity (`Low`, `Medium`, `High`, `Critical`).
+   - Files to create, modify, or delete.
+   - Step-by-step implementation strategy.
+   - Acceptance criteria that must be verified.
+   - Technical constraints and architectural invariants.
+   - Estimated complexity (`Low`, `Medium`, or `High`).
 
 ---
 

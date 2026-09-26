@@ -5,14 +5,15 @@ sidebar:
   order: 3
   label: Quickstart
 ---
-Get your first verified branch with NIKI in under five minutes.
+
+Run your first NIKI task and review the resulting branch or evidence bundle.
 
 ---
 
 ## Prerequisites
 
-1. **Rust:** Rust 1.85+ (2024 edition) installed.
-2. **Container Engine:** [Podman](https://podman.io) (recommended) or [Docker](https://docs.docker.com/get-docker/) running in rootless mode.
+1. **Rust:** Rust 1.88+ (2024 edition) installed.
+2. **Container Engine:** [Podman](https://podman.io) (preferred) or [Docker](https://docs.docker.com/get-docker/). Without `DOCKER_HOST`, socket discovery tries rootless before rootful endpoints.
 3. **LLM API Key:** At least one API key from Anthropic, OpenAI, OpenRouter, Google, or a local Ollama instance.
 
 ---
@@ -55,24 +56,26 @@ Describe what you want to implement in plain English:
 niki run "Add a GET /health endpoint returning { status: 'ok', uptime }" --project ./my-app
 ```
 
-Watch the pipeline execute across all four stages:
+A full multi-agent run with a resolved, green test command can look like this:
 
 ```text
  ◈ ⟠ ◉ ◆   NIKI
    "Add a GET /health endpoint…"
 
- [Planner]   Done — Spec: 1 file to modify
- [Coder]     Done — Changed 1 file · src/api.rs [modified]
- [Tester]    Done — 8/8 tests passed
- [Reviewer]  Done — Approved · correctness 10/10 · quality 9/10 · coverage 10/10
- [NIKI]      Task complete — Branch: niki/6d281d6d · Verdict: Approved · Revisions: 0
+ [Planner]   Done · Spec: 1 file to modify
+ [Coder]     Done · Changed 1 file · src/api.rs [modified]
+ [Tester]    Done · 8/8 tests passed
+ [Reviewer]  Done · Approved · correctness 10/10 · quality 9/10 · coverage 10/10
+ [NIKI]      Task complete · Branch: niki/6d281d6d · Verdict: Approved · Revisions: 0
 ```
 
 ---
 
 ## Step 4: Review and Merge
 
-Switch to the generated branch in your target project to inspect the code:
+NIKI creates a branch only for a non-empty diff with no failing test or mutation gate. Dry-run/plan mode creates no branch, and `--force` records a branch over failed verification as unverified.
+
+When a branch is created, switch to it in your target project to inspect the code:
 
 ```bash
 git -C ./my-app switch niki/6d281d6d

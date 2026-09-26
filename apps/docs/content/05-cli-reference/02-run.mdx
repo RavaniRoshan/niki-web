@@ -18,23 +18,50 @@ niki run <DESCRIPTION> [OPTIONS]
 
 ## Arguments
 
-* `<DESCRIPTION>`: Natural language description of the coding task, feature, or bug fix.
+- `<DESCRIPTION>`: Required natural-language description of the coding task, feature, or bug fix.
 
 ---
 
 ## Options & Flags
 
 | Flag | Type | Description | Default |
-|---|---|---|---|
-| `--project <PATH>` | Path | Path to target project repository | `.` |
-| `--branch <NAME>` | String | Explicit custom output branch name | `niki/<task-id>` |
-| `--backend <KIND>` | `docker` \| `worktree` | Sandbox execution backend | `docker` |
-| `--max-rounds <N>` | Integer | Maximum revision rounds between Reviewer and Coder | `3` |
-| `--planner-model <M>` | String | Override model for the Planner stage | Config value |
-| `--coder-model <M>` | String | Override model for the Coder stage | Config value |
-| `--tester-model <M>` | String | Override model for the Tester stage | Config value |
-| `--reviewer-model <M>` | String | Override model for the Reviewer stage | Config value |
-| `--dry-run` | Flag | Generate plan and diff without applying or committing | `false` |
-| `--tui` | Flag | Launch interactive rich terminal dashboard | `false` |
-| `--quiet` | Flag | Suppress progress output and print only final branch/verdict | `false` |
-| `--verbose` | Flag | Enable debug-level execution traces | `false` |
+| --- | --- | --- | --- |
+| `--project <PATH>` | Path | Target project repository | `.` |
+| `--branch <NAME>` | String | Explicit output branch name | `niki/<task-id>` |
+| `--backend <KIND>` | `docker` \| `worktree` | Container or host-local worktree execution | Config value (`docker`) |
+| `--max-rounds <N>` | Integer | Reviewer/Coder revision bound | `3` |
+| `--max-steps <N>` | Integer | Unified billable-step budget | `0` (unlimited) |
+| `--max-usd <N>` | Number | Unified estimated-cost budget | `0.0`, or `spend_cap_usd` when set |
+| `--max-wallclock-secs <N>` | Integer | Unified wall-clock budget | `0` (unlimited) |
+| `--planner-model <M>` | String | Override the Planner model | Config value |
+| `--coder-model <M>` | String | Override the Coder model | Config value |
+| `--tester-model <M>` | String | Override the Tester model | Config value |
+| `--reviewer-model <M>` | String | Override the Reviewer model | Config value |
+| `--dry-run` | Flag | Run Planner only and write `plan.md`; no branch | `false` |
+| `--plan <id>` | String | Reuse a reviewed `TaskSpec` and skip the Planner LLM call | None |
+| `--output-format <FORMAT>` | `text` \| `json` | Human output or one machine-readable JSON envelope | `text` |
+| `--bare` | Flag | Skip ambient memory, MCP discovery, and knowledge URL fetching | `false` |
+| `--permission-mode <MODE>` | `manual` \| `auto` \| `dontask` \| `bypass` | Override the run's permission posture | Config value |
+| `--otel-endpoint <URL>` | URL | Best-effort OTLP/HTTP trace export | None |
+| `--force` | Flag | Create an eligible branch despite a failing test or mutation gate; record it as unverified | `false` |
+| `--tui` | Flag | Render the rich terminal stage UI | `false` |
+| `--quiet` | Flag | Suppress progress output | `false` |
+
+---
+
+## Plan Approval
+
+`niki plan` creates the reviewable plan. Execute it by supplying both the required description and the plan ID:
+
+```bash
+niki plan "Add pagination" --project ./my-app
+niki run "Add pagination" --plan 6d281d6d --project ./my-app
+```
+
+`niki run --plan <id>` without a description is invalid.
+
+---
+
+## Branch Rules
+
+A branch is created only for a non-empty diff with no blocked test or mutation failure and no unresolved conflict markers. `--force` overrides a failing test gate but records the result as unverified. Dry-run and plan mode create no branch.

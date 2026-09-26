@@ -1,94 +1,118 @@
 /**
- * Niki docs — brand theme overrides on top of Blume's tokens.
+ * Niki docs: brand theme on top of Blume's tokens.
  * Canonical palette: packages/niki-theme/tokens.css
- * Dark-first, flat surfaces, thin borders. Palette: shades of warm
- * black with sharp yellow as the single accent.
+ * Editorial light by default; dark mode is the ember-on-void brand theme
+ * used by the marketing site, applied via :root[data-theme="dark"].
  */
 
 :root {
-  /* Surfaces */
-  --blume-background: #f6f8f9;
-  --blume-foreground: #12181d;
-  --blume-muted: #e8ecee;
-  --blume-muted-foreground: #5a6367;
-  --blume-border: #cdd6da;
+  /* Surfaces: Speakeasy paper */
+  --blume-background: #ffffff;
+  --blume-foreground: #000000;
+  --blume-muted: #f1f1f1;
+  --blume-muted-foreground: #545454;
+  --blume-border: #dbdbdb;
 
-  /* Brand accents (light mode — deep yellow for contrast) */
-  --blume-accent: #8a7300;
+  /* Brand accents: Obsidian CTA, not chromatic */
+  --blume-accent: #333333;
   --blume-accent-foreground: #ffffff;
-  --blume-action: #8a7300;
+  --blume-action: #333333;
   --blume-action-foreground: #ffffff;
 
   /* Code surfaces */
-  --blume-code-background: #f0f3f5;
-  --blume-code-add: rgba(138, 115, 0, 0.12);
-  --blume-code-add-border: #8a7300;
-  --blume-code-remove: rgba(255, 214, 10, 0.22);
-  --blume-code-remove-border: #8a7300;
-  --blume-code-highlight: rgba(232, 185, 10, 0.16);
-  --blume-code-highlight-border: #8a7300;
+  --blume-code-background: #f1f1f1;
+  --blume-code-add: rgba(0, 153, 102, 0.12);
+  --blume-code-add-border: #009966;
+  --blume-code-remove: rgba(255, 100, 103, 0.12);
+  --blume-code-remove-border: #ff6467;
+  --blume-code-highlight: rgba(255, 185, 0, 0.16);
+  --blume-code-highlight-border: #ffb900;
 
   /* Niki brand tokens (shared with the marketing site) */
-  --nk-bg-0: #0c0b0a;
-  --nk-bg-1: #151312;
-  --nk-bg-2: #1d1a18;
-  --nk-border: #2e2a27;
-  --nk-text-primary: #ffffff;
-  --nk-text-secondary: #d6d1cc;
-  --nk-text-muted: #8f8880;
-  --nk-mint: #8a7300;
-  --nk-magenta: #6e5d00;
+  --nk-bg-0: #ffffff;
+  --nk-bg-1: #f1f1f1;
+  --nk-bg-2: #f1f1f1;
+  --nk-border: #dbdbdb;
+  --nk-text-primary: #000000;
+  --nk-text-secondary: #545454;
+  --nk-text-muted: #969696;
+  --nk-mint: #009966;
+  --nk-magenta: #155dfc;
 
-  /* Niki agent role tokens — brightness tiers, no hue change */
-  --niki-agent-planner: #8a7300;
-  --niki-agent-coder: #a89200;
-  --niki-agent-tester: #6e5d00;
-  --niki-agent-reviewer: #1f2937;
-  --niki-agent-red: #6e5d00;
-  --niki-agent-security: #8a7300;
+  /* Niki agent role tokens */
+  --niki-agent-planner: #ffb900;
+  --niki-agent-coder: #155dfc;
+  --niki-agent-tester: #009966;
+  --niki-agent-reviewer: #000000;
+  --niki-agent-red: #ff6467;
+  --niki-agent-security: #e17100;
 }
 
+/* Dark mode: ember-on-void, matching the marketing site. */
 :root[data-theme="dark"] {
-  /* Surfaces — warm black family */
-  --blume-background: #0a0908;
-  --blume-foreground: #ffffff;
-  --blume-muted: #141210;
-  --blume-muted-foreground: #948d84;
-  --blume-border: #2b2622;
+  --blume-background: #090909;
+  --blume-foreground: #fafafa;
+  --blume-muted: #141414;
+  --blume-muted-foreground: #b4b4b4;
+  --blume-border: #262626;
+  --blume-accent: #ff7037;
+  --blume-accent-foreground: #090909;
+  --blume-action: #ff7037;
+  --blume-action-foreground: #090909;
 
-  /* Brand accents — sharp yellow, the single accent */
-  --blume-accent: #ffd60a;
-  --blume-accent-foreground: #0a0908;
-  --blume-action: #ffd60a;
-  --blume-action-foreground: #0a0908;
+  --blume-code-background: #0f0f0f;
+  --blume-code-add: rgba(61, 214, 140, 0.12);
+  --blume-code-add-border: #3dd68c;
+  --blume-code-remove: rgba(229, 72, 77, 0.14);
+  --blume-code-remove-border: #e5484d;
+  --blume-code-highlight: rgba(255, 112, 55, 0.14);
+  --blume-code-highlight-border: #ff7037;
 
-  /* Code surfaces — yellow-tiered, no hue change */
-  --blume-code-background: #1c1916;
-  --blume-code-add: rgba(255, 214, 10, 0.14);
-  --blume-code-add-border: #ffd60a;
-  --blume-code-remove: rgba(255, 228, 92, 0.12);
-  --blume-code-remove-border: #ffe45c;
-  --blume-code-highlight: rgba(232, 185, 10, 0.14);
-  --blume-code-highlight-border: #e8b90a;
+  --nk-bg-0: #090909;
+  --nk-bg-1: #111111;
+  --nk-bg-2: #0f0f0f;
+  --nk-border: #262626;
+  --nk-text-primary: #fafafa;
+  --nk-text-secondary: #b4b4b4;
+  --nk-text-muted: #7b7b7b;
+  --nk-mint: #ff7037;
+  --nk-magenta: #ff9a7a;
 
-  /* Niki brand tokens (dark) */
-  --nk-bg-0: #0a0908;
-  --nk-bg-1: #141210;
-  --nk-bg-2: #1c1916;
-  --nk-border: #2b2622;
-  --nk-text-primary: #ffffff;
-  --nk-text-secondary: #d8d3cc;
-  --nk-text-muted: #948d84;
-  --nk-mint: #ffd60a;
-  --nk-magenta: #ffe45c;
+  --niki-agent-planner: #ffa057;
+  --niki-agent-coder: #ff7037;
+  --niki-agent-tester: #3dd68c;
+  --niki-agent-reviewer: #fafafa;
+  --niki-agent-red: #e5484d;
+  --niki-agent-security: #ff9a7a;
+}
 
-  /* Agent role tokens (dark) — brightness tiers of yellow/white */
-  --niki-agent-planner: #ffd60a;
-  --niki-agent-coder: #ffe45c;
-  --niki-agent-tester: #e8b90a;
-  --niki-agent-reviewer: #ffffff;
-  --niki-agent-red: #e8b90a;
-  --niki-agent-security: #ffd60a;
+:root[data-theme="dark"] body {
+  background: var(--blume-background);
+  color: var(--blume-foreground);
+}
+
+:root[data-theme="dark"] :not(pre) > code {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--nk-border);
+  color: var(--nk-text-primary);
+}
+
+:root[data-theme="dark"] a {
+  color: var(--nk-text-primary);
+}
+
+:root[data-theme="dark"] .blume-code,
+:root[data-theme="dark"] pre {
+  border-color: var(--nk-border);
+}
+
+:root[data-theme="dark"] .astro-code,
+:root[data-theme="dark"] .astro-code span {
+  color: var(--shiki-dark, inherit) !important;
+  background-color: var(--shiki-dark-bg, transparent) !important;
+  font-style: var(--shiki-dark-font-style, inherit) !important;
+  font-weight: var(--shiki-dark-font-weight, inherit) !important;
+  text-decoration: var(--shiki-dark-text-decoration, inherit) !important;
 }
 
 /* ---- Agent role badges (Blume content components) ---- */
@@ -112,43 +136,32 @@
 }
 
 /* ---- Brand adjustments ---- */
-:root[data-theme="dark"] .blume-code,
-:root[data-theme="dark"] pre {
+.blume-code,
+pre {
   border: 1px solid var(--nk-border);
-  border-radius: 12px;
+  border-radius: 8px;
 }
 
-/* Inline code: yellow chip, consistent with marketing site */
-:root[data-theme="dark"] :not(pre) > code {
-  background: rgba(255, 214, 10, 0.08);
-  border: 1px solid rgba(255, 214, 10, 0.2);
-  color: #ffd60a;
-  border-radius: 6px;
+:not(pre) > code {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--nk-border);
+  color: var(--nk-text-primary);
+  border-radius: 4px;
   padding: 0.1em 0.35em;
 }
 
-:root:not([data-theme="dark"]) :not(pre) > code {
-  background: rgba(138, 115, 0, 0.07);
-  border: 1px solid rgba(138, 115, 0, 0.16);
-  color: #8a7300;
-  border-radius: 6px;
-  padding: 0.1em 0.35em;
-}
-
-/* Headings: tighten like the marketing site */
+/* Headings: hairline display when available */
 h1,
-h2,
-h3 {
-  letter-spacing: -0.02em;
+h2 {
+  font-weight: 100;
+  letter-spacing: -0.03em;
 }
 
-/* Links: yellow in dark, deep yellow in light */
-:root[data-theme="dark"] a {
-  color: var(--nk-mint);
+a {
+  color: var(--nk-text-primary);
 }
 
-/* Changelog / release bodies: Shiki spans must never blow out the layout.
-   The spans render inside pre > code; the pre scrolls, the code wraps no. */
+/* Changelog / release bodies: Shiki spans must never blow out the layout. */
 :where(main, article, .prose) pre {
   max-width: 100%;
   overflow-x: auto;
@@ -159,13 +172,37 @@ h3 {
   white-space: pre;
 }
 
-/* Grid children holding code must be allowed to shrink */
+/* Diagrams: render at the full measure of the prose column, never a thumbnail. */
+blume-mermaid {
+  display: block;
+  width: 100%;
+}
+
+blume-mermaid > div {
+  width: 100% !important;
+}
+
+blume-mermaid svg {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100%;
+}
+
+/* Long shell commands wrap instead of hiding content past the fold. */
+:where(main, article, .prose) pre[data-language="bash" i] code,
+:where(main, article, .prose) pre[data-language="bash" i] code .line,
+:where(main, article, .prose) pre[data-language="shell" i] code,
+:where(main, article, .prose) pre[data-language="shell" i] code .line,
+:where(main, article, .prose) pre[data-language="sh" i] code,
+:where(main, article, .prose) pre[data-language="sh" i] code .line {
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere;
+}
+
 main :where(div, article, section, li) {
   min-width: 0;
 }
 
-/* Long tokens (URLs, commands, paths) in release bodies and prose must wrap
-   instead of pushing the page wide on small screens. */
 .prose :where(li, p, code, a) {
   overflow-wrap: anywhere;
 }

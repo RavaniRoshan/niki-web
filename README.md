@@ -1,88 +1,117 @@
 # Niki Web
 
-Public web presence for [Niki](https://github.com/RavaniRoshan/niki) — the open-source
-multi-agent coding pipeline. Marketing site + documentation under one roof, sharing a single
-brand system.
+The public web presence for [Niki](https://github.com/RavaniRoshan/niki), the open-source
+multi-agent coding pipeline. A marketing site and a documentation site, built from one repository
+and sharing one brand system.
 
 ```
-niki.dev        → apps/web   (marketing, Next.js)
-docs.niki.dev   → apps/docs  (documentation, Blume)
+niki.dev        ->  apps/web    marketing, Next.js, static export
+docs.niki.dev   ->  apps/docs   documentation, Blume
 ```
 
-## Repository layout
+## What lives here
 
-```
-apps/
-  web/           # Marketing site — Next.js 15 (App Router, static export)
-  docs/          # Documentation — Blume 1.4.3, content in content/
-packages/
-  niki-theme/    # Shared design tokens + centralized site URLs (site.ts)
-.github/
-  workflows/     # CI + per-site GitHub Pages deploys
+| Path                 | What it is                                                              |
+| -------------------- | ----------------------------------------------------------------------- |
+| `apps/web`           | Marketing site. Next.js 15 App Router, `output: "export"`, 22 static pages |
+| `apps/docs`          | Documentation site. Blume, content in `content/` as MDX                   |
+| `packages/niki-theme`| The one place tokens and site URLs are defined                          |
+
+`packages/niki-theme` is load-bearing:
+
+- `tokens.css` holds the palette, spacing, and radius for **both** apps. Change a value there and
+  every page in every theme moves together.
+- `site.ts` holds the canonical URLs, the route table, and the release metadata. Nothing hardcodes
+  a site URL; everything imports from here.
+
+## Requirements
+
+- Node 22 (CI uses 22)
+- npm workspaces, so install from the repository root
+
+## Getting started
+
+```bash
+npm ci
+npm run dev:web      # marketing site on http://localhost:4321
+npm run dev:docs     # documentation site
 ```
 
-- **Marketing** (`apps/web`): homepage with the pipeline visual motif, product pages,
-  downloads (data-driven from `src/data/release.ts`), pricing, resources (blog / guides /
-  examples as content collections), community, about. Sitemap, OG images, JSON-LD built in.
-- **Docs** (`apps/docs`): all existing Niki documentation, rethemed to the brand. Local
-  search (Orama), TOC, prev/next, callouts, and a changelog generated live from GitHub
-  Releases at `/changelog`.
-- **Shared tokens** (`packages/niki-theme`): the palette, spacing, radius, and — critically —
-  `site.ts`, the single source of truth for every cross-site URL. Change `SITE.web` /
-  `SITE.docs` (or the `NIKI_WEB_URL` / `NIKI_DOCS_URL` env vars) once, and both sites
-  retarget.
+To preview the exact static output rather than the dev server:
+
+```bash
+npm run build
+npm run preview:web  # serves out/ on http://localhost:4321
+```
 
 ## Commands
 
+Run from the repository root.
+
+| Command                 | What it does                                              |
+| ----------------------- | --------------------------------------------------------- |
+| `npm run dev:web`       | Marketing site in dev mode on port 4321                    |
+| `npm run dev:docs`      | Documentation site in dev mode                             |
+| `npm run build`         | Builds both apps. Web output lands in `apps/web/out`       |
+| `npm run preview:web`   | Serves the built marketing site on port 4321               |
+| `npm run lint`          | ESLint over `apps/web`                                     |
+| `npm run typecheck`     | `tsc --noEmit` over `apps/web`                             |
+| `npm run format`        | Prettier write                                            |
+| `npm run format:check`  | Prettier check, fails on drift                             |
+| `npm run test:e2e:web`  | Builds, then runs the Playwright suite                     |
+| `npm run test:e2e:update` | Same, but rewrites screenshot baselines                   |
+| `npm run verify`        | Everything above, in the order CI runs it                 |
+
+Playwright needs a browser once per machine:
+
 ```bash
-npm install
-
-npm run dev:web        # marketing dev server (port 4321)
-npm run dev:docs        # docs dev server
-
-npm run build           # build both sites
-npm run build:web       # → apps/web/out (static export + sitemap)
-npm run build:docs      # → apps/docs/dist
-
-npm run preview:web     # serve the marketing build (port 4321)
+npx playwright install --with-deps chromium
 ```
 
-Docs also support `npm run doctor --workspace apps/docs` (Blume content diagnostics).
+## Testing
 
-## Design system
+The suite is Playwright against the **built** site, not the dev server, so what is tested is what
+deploys. It starts its own static server on port 4322.
 
-Dark-first, flat surfaces, hairline borders, mint-dominant (`#4ff7d1`), magenta reserved for
-secondary/code states. Tokens live in `packages/niki-theme/tokens.css`; typography is Inter +
-JetBrains Mono. The marketing site uses a boxy framed-column layout (max-width 1189px):
-sections stack as bordered boxes between dashed separator strips, full-bleed hairline cell
-grids (`gap-px` mesh), square corners everywhere, mono `//comment` section headings, and big
-tabular mono numerals for stats. No border-radius, no shadows on the marketing site.
+| File                            | Covers                                                          |
+| ------------------------------- | --------------------------------------------------------------- |
+| `landing.spec.ts`               | Landing content, overflow, Axe, media, navigation, theme        |
+| `landing.visual.spec.ts`        | Screenshot baselines for the landing and three inner routes     |
+| `interactive-sections.spec.ts`  | Run explorer and evidence tabs, keyboard contracts, autoplay     |
+| `proof-sections.spec.ts`        | Branch gate, model routing, install command, clipboard, changelog |
+| `routes.spec.ts`                | All 18 inner routes: status, h1, landmarks, canonical URL       |
 
-Agent role colors (planner / coder / tester / reviewer / red / security) remain semantically
-distinct in both apps — they carry meaning in the pipeline documentation and are intentionally
-separate from the primary brand accent.
+Two things about this suite are worth knowing before you change UI code.
 
-## Keeping content truthful
+**Screenshots are exact.** Baselines are compared with `maxDiffPixels: 0`, so a one-pixel shift
+fails. This is deliberate: it catches layout drift that no assertion would notice. When a change is
+intentional, run `npm run test:e2e:update` and review the diff in the image viewer before
+committing the new baselines.
 
-- Downloads are driven by `apps/web/src/data/release.ts` — update it per release, or wire it to
-  the GitHub Releases API later. The changelog page reads
-  `apps/web/src/data/changelog.ts` (generated from the repo's `CHANGELOG.md`); the docs
-  changelog is already live-generated from GitHub Releases.
-- Marketing copy is sourced from the Niki repo's `README.md`, `docs/positioning.md`, and
-  `docs/claims-audit.md`. Every claim on these pages maps to shipped functionality —
-  future-planned items (cloud execution, enterprise tier) are explicitly labeled as such.
+**Content below the fold is hidden until scrolled.** The landing reveals each section on scroll, so
+a test that reads a section, its accessibility tree, or its box must scroll first. Use the
+`revealAllSections` helper from `tests/e2e/helpers.ts` rather than sprinkling scroll calls.
 
-## Deployment
+## Deploys
 
-Two GitHub Actions workflows deploy on push to `main`:
+`main` is the deploy branch. `.github/workflows/deploy.yml` publishes `apps/web/out` and
+`apps/docs/dist` to Cloudflare Pages. `ci.yml` runs Prettier, ESLint, TypeScript, both builds, and
+the Playwright suite on every push to `main` and on every pull request.
 
-- `.github/workflows/deploy-web.yml` → GitHub Pages (marketing)
-- `.github/workflows/deploy-docs.yml` → GitHub Pages (docs)
+The Pages origins come from the `NIKI_WEB_URL` and `NIKI_DOCS_URL` repository variables. Without
+them, `site.ts` falls back to the `*.pages.dev` defaults.
 
-Site URLs come from repository variables `NIKI_WEB_URL` / `NIKI_DOCS_URL` (default
-`https://niki.dev` / `https://docs.niki.dev`). Point a custom domain at each Pages deployment
-when ready — no code changes needed.
+## Documentation
 
-## License
+- `DESIGN.md` — the design system: measured tokens, type scale, section rhythm, motion rules
+- `CONTRIBUTING.md` — how to make a change and get it through the checks
+- `docs/ARCHITECTURE.md` — how the two apps fit together and why the code is split the way it is
+- `TODO.md` — what is done and what is still open
 
-The web content is part of the Niki project ecosystem — Apache-2.0, like Niki itself.
+## Boundaries
+
+- The landing was designed against a third-party reference. Only its **layout language, spacing
+  rhythm, and colour role** were used. No reference font, logo, photograph, screenshot, or copy is
+  in this repository, and none may be added. See `DESIGN.md`.
+- Product claims on the site must trace to the Niki repository or to `apps/web/src/data/`. No
+  customer names, testimonials, adoption numbers, or invented scores.

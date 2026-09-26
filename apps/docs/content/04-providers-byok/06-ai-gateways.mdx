@@ -8,7 +8,7 @@ sidebar:
 
 ## AI Gateways: Zen, Kimi & Kilo
 
-Three single-key gateways work out of the box — one key unlocks many models
+Three single-key gateways work out of the box: one key unlocks many models
 behind an OpenAI-compatible endpoint. Any other OpenAI-compatible endpoint
 works too: point a named provider's `base_url` at it (unknown provider names
 still error, so typos can't silently route to the wrong endpoint).
@@ -53,11 +53,10 @@ default_model = "anthropic/claude-sonnet-4.5"
 ## Setup
 
 ```bash
-niki init --interactive   # pick one provider, guided, with key validation hints
-niki auth login --provider zen
-niki providers check
-niki doctor               # per-provider status (env var vs keyring)
+niki init --interactive       # pick one provider, guided, with key validation hints
+export OPENCODE_API_KEY=...   # runtime provider construction reads supported env vars
+niki providers check          # the `check` subcommand is required
+niki doctor                   # reports env/keyring status
 ```
 
-All three also work with zero config: set the env var and `niki chat`
-picks the provider up automatically.
+All three also work with zero config: set the provider's environment variable and `niki chat` auto-detects it. `niki auth` can store a keyring entry, but runtime provider construction does not currently resolve keyring values.

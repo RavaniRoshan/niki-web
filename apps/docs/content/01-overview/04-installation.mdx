@@ -5,6 +5,7 @@ sidebar:
   order: 4
   label: Installation
 ---
+
 Install NIKI using your preferred method.
 
 ---
@@ -45,6 +46,8 @@ cargo install --locked niki
 
 ## Build from Source
 
+NIKI's MSRV is Rust 1.88 with the 2024 edition.
+
 ```bash
 git clone https://github.com/RavaniRoshan/niki.git
 cd niki
@@ -56,16 +59,18 @@ sudo cp target/release/niki /usr/local/bin/
 
 ## Verifying the Installation
 
-Run `niki doctor` to verify that your system dependencies, container socket, and provider credentials are ready:
+Run `niki doctor` to inspect the installed version, local toolchain, config files, provider credential sources, container CLI, sandbox image, and security settings:
 
 ```bash
 niki doctor
 ```
 
+Illustrative output:
+
 ```text
-✓ Rust toolchain: 1.85.0
-✓ Podman / Docker socket: Connected (rootless)
-✓ Sandbox image: niki-sandbox:24.04 present
-✓ LLM Providers: Anthropic (claude-sonnet-4), OpenAI (gpt-4o-mini)
-✓ OS Keyring: Available
+✓ niki version — 0.8.0
+✓ rust toolchain — rustc 1.88.0
+✓ container runtime — podman version 5.x
+✓ git — git version 2.x
+⚠ sandbox image present — niki-sandbox:24.04 not found locally
 ```

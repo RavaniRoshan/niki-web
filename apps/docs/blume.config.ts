@@ -4,7 +4,7 @@ import { SITE } from "@niki/theme/site";
 export default defineConfig({
   title: "Niki Docs",
   description:
-    "Niki documentation — the open-source multi-agent coding pipeline that plans, codes, tests, and reviews, then hands you a verified git branch.",
+    "Niki documentation, the open-source multi-agent coding pipeline that plans, codes, tests, and reviews, then hands you a verified git branch.",
   logo: {
     image: {
       dark: "/logo-mark.svg",
@@ -22,7 +22,7 @@ export default defineConfig({
   },
   banner: {
     content:
-      "Niki v0.8.0 — agent runtime rework, repo intelligence, risk-gated Critic.",
+      "Niki v0.8.0: agent runtime rework, repo intelligence, risk-gated Critic.",
     link: {
       href: "https://niki-web.pages.dev/resources/changelog#v0.8.0",
       text: "Read the release notes",
@@ -31,20 +31,24 @@ export default defineConfig({
   },
   theme: {
     accent: {
-      dark: "#ffd60a",
-      light: "#8a7300",
+      dark: "#333333",
+      light: "#333333",
     },
-    action: "#ffd60a",
+    action: "#333333",
     background: {
-      dark: "#0a0908",
-      light: "#faf9f8",
+      dark: "#ffffff",
+      light: "#ffffff",
     },
     fonts: {
-      body: "inter",
-      display: "inter",
-      mono: "jetbrains-mono",
+      body: { name: "Geist", weights: [300, 400, 500] },
+      display: {
+        name: "Fraunces",
+        weights: [100, 300, 400],
+        fallback: "serif",
+      },
+      mono: { name: "JetBrains Mono", weights: [400, 500] },
     },
-    mode: "dark",
+    mode: "light",
     radius: "md",
   },
   navigation: {
@@ -138,7 +142,7 @@ export default defineConfig({
     og: {
       enabled: true,
       description:
-        "Niki documentation — the open-source multi-agent coding pipeline.",
+        "Niki documentation, the open-source multi-agent coding pipeline.",
     },
   },
 });

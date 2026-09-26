@@ -1,0 +1,294 @@
+.dialog {
+  position: fixed;
+  inset: var(--landing-header-height) 0 auto;
+  width: 100%;
+  max-width: none;
+  max-height: calc(100dvh - var(--landing-header-height));
+  margin: 0;
+  padding: var(--landing-space-lg) var(--landing-gutter) var(--landing-space-xl);
+  overflow-y: auto;
+  border: 0;
+  border-bottom: 1px solid var(--landing-line);
+  background: var(--landing-canvas);
+  color: var(--landing-ink);
+  opacity: 0;
+  transform: translateY(-12px);
+  transition:
+    opacity var(--landing-dialog-duration) var(--landing-drawer-ease),
+    transform var(--landing-dialog-duration) var(--landing-drawer-ease),
+    display var(--landing-dialog-duration) allow-discrete;
+}
+
+.dialog[open] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dialog::backdrop {
+  background: rgb(0 0 0 / 0.64);
+  opacity: 0;
+  transition: opacity var(--landing-dialog-duration) var(--landing-drawer-ease);
+}
+
+.dialog[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .dialog[open] {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  .dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+.dialogPanel {
+  display: grid;
+  gap: var(--landing-space-sm);
+  width: min(100%, var(--landing-container));
+  margin-inline: auto;
+}
+
+.dialogHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--landing-touch-target);
+  gap: var(--landing-space-md);
+}
+
+.dialogClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--landing-touch-target);
+  height: var(--landing-touch-target);
+  min-width: var(--landing-touch-target);
+  min-height: var(--landing-touch-target);
+  flex: 0 0 var(--landing-touch-target);
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-control-radius);
+  background: transparent;
+  color: var(--landing-ink);
+  cursor: pointer;
+  transition:
+    background-color var(--landing-hover-duration) var(--landing-ease-ui),
+    border-color var(--landing-hover-duration) var(--landing-ease-ui),
+    color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.dialogClose:hover {
+  border-color: var(--landing-muted);
+  background: var(--landing-surface);
+}
+
+.closeIcon {
+  position: relative;
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.closeIcon::before,
+.closeIcon::after {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  width: 18px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: currentColor;
+  content: "";
+}
+
+.closeIcon::before {
+  transform: rotate(45deg);
+}
+
+.closeIcon::after {
+  transform: rotate(-45deg);
+}
+
+.dialogTitle {
+  color: var(--landing-muted);
+  font-family: var(--landing-font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.dialogLinks {
+  display: grid;
+  gap: var(--landing-space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dialogLink,
+.dialogCta {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--landing-touch-target);
+  border-radius: var(--landing-control-radius);
+  font-size: 1rem;
+  transition:
+    background-color var(--landing-hover-duration) var(--landing-ease-ui),
+    color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.dialogLink {
+  padding-inline: var(--landing-space-md);
+  color: var(--landing-ink);
+}
+
+.dialogLink:hover {
+  background: var(--landing-surface);
+  color: var(--landing-link);
+}
+
+.dialogCta {
+  justify-content: center;
+  margin-top: var(--landing-space-md);
+  padding-inline: var(--landing-space-md);
+  background: var(--landing-signal);
+  color: var(--landing-on-signal);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.dialogCta:hover {
+  background: var(--landing-link);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog,
+  .dialog::backdrop {
+    transition: none;
+  }
+
+  .dialog[open] {
+    transform: none;
+  }
+}
+
+.tabRail {
+  display: grid;
+  min-width: 0;
+  align-content: stretch;
+  background: var(--landing-surface);
+}
+
+.tabButton {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: var(--landing-space-xs);
+  min-width: 0;
+  min-height: 92px;
+  padding: var(--landing-space-md) var(--landing-space-lg);
+  border-bottom: 1px solid var(--landing-line);
+  border-left: 2px solid transparent;
+  background: transparent;
+  color: var(--landing-muted);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background-color var(--landing-hover-duration) var(--landing-ease-ui),
+    border-color var(--landing-hover-duration) var(--landing-ease-ui),
+    color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.tabButton:last-child {
+  border-bottom: 0;
+}
+
+.tabButton:hover {
+  background: var(--landing-surface-strong);
+  color: var(--landing-ink);
+}
+
+.tabButton[aria-selected="true"] {
+  border-left-color: var(--landing-signal);
+  background: var(--landing-canvas);
+  color: var(--landing-ink);
+}
+
+.tabLabel {
+  color: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.tabOutput {
+  color: var(--landing-muted);
+  font-family: var(--landing-font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.tabPanel {
+  min-width: 0;
+  animation: panel-enter 180ms var(--landing-ease-out) both;
+}
+
+.liveStatus {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1023px) {
+  .tabRail {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  .tabButton {
+    flex: 0 0 auto;
+    min-width: 172px;
+    min-height: 76px;
+    padding: var(--landing-space-md) var(--landing-space-lg);
+    border-right: 1px solid var(--landing-line);
+    border-bottom: 0;
+    border-left: 0;
+    border-top: 2px solid transparent;
+    scroll-snap-align: start;
+  }
+
+  .tabButton[aria-selected="true"] {
+    border-top-color: var(--landing-signal);
+    border-left-color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tabPanel {
+    animation: none;
+  }
+}

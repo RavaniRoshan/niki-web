@@ -44,7 +44,7 @@ function parseFrontmatter(raw: string): Doc {
   const difficulty = str("difficulty");
   return {
     slug: "",
-    raw,
+    raw: body,
     frontmatter: {
       title: str("title") ?? "Untitled",
       description: str("description") ?? "",

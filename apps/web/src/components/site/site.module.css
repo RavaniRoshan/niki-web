@@ -1,0 +1,93 @@
+/* Site chrome wrapper for the (site) route group.
+ *
+ * The landing header and footer carry the measured reference values on their
+ * own `.shell` scope. This wrapper mirrors only the subset they need, so the
+ * same components render identically on either route group without the landing
+ * stylesheet leaking into the inner pages. */
+
+.chrome {
+  --landing-canvas: var(--background);
+  --landing-tile: var(--surface-ember);
+  --landing-surface: var(--card);
+  --landing-surface-strong: var(--gray-4);
+  --landing-elevated: var(--gray-4);
+  --landing-ink: var(--foreground);
+  --landing-quote-ink: var(--foreground);
+  --landing-muted: var(--muted-foreground);
+  --landing-line: var(--border);
+  --landing-signal: var(--orange-9);
+  --landing-link: var(--orange-10);
+  --landing-positive: var(--green);
+  --landing-focus: var(--orange-10);
+  --landing-selection: var(--orange-9);
+  --landing-on-signal: var(--background);
+
+  --landing-font-sans: var(--font-sans);
+  --landing-font-mono: var(--font-mono);
+
+  --landing-display-size: clamp(2.75rem, 5.2vw, 5rem);
+  --landing-display-track: -0.04em;
+  --landing-hero-size: clamp(2rem, 2.5vw, 2.625rem);
+  --landing-hero-track: -0.03em;
+  --landing-section-size: clamp(1.5rem, 1.9vw, 1.875rem);
+  --landing-section-track: -0.02em;
+  --landing-lead-size: clamp(1.0625rem, 1.3vw, 1.375rem);
+  --landing-body-size: 1rem;
+  --landing-small-size: 0.875rem;
+  --landing-meta-size: 0.75rem;
+
+  --landing-container: 1626px;
+  --landing-gutter: clamp(20px, 3.3vw, 57px);
+  --landing-section-space: clamp(64px, 6.4vw, 112px);
+  --landing-card-radius: 8px;
+  --landing-tile-radius: 4px;
+  --landing-control-radius: 999px;
+  --landing-control-height: 44px;
+  --landing-touch-target: 44px;
+  --landing-header-height: 64px;
+
+  --landing-space-xs: 4px;
+  --landing-space-sm: 8px;
+  --landing-space-md: 16px;
+  --landing-space-lg: 24px;
+  --landing-space-xl: 40px;
+
+  --landing-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --landing-ease-ui: cubic-bezier(0.77, 0, 0.175, 1);
+  --landing-drawer-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --landing-hover-duration: 150ms;
+  --landing-enter-duration: 220ms;
+  --landing-dialog-duration: 260ms;
+  --landing-focus-width: 2px;
+  --landing-focus-offset: 2px;
+  --landing-selection-ink: var(--background);
+  --landing-color-scheme: dark;
+
+  min-height: 100dvh;
+  overflow-x: clip;
+  background: var(--background);
+  color: var(--foreground);
+  color-scheme: var(--landing-color-scheme);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:global(html.light) .chrome {
+  --landing-color-scheme: light;
+}
+
+.chrome *,
+.chrome *::before,
+.chrome *::after {
+  box-sizing: border-box;
+}
+
+.main {
+  min-height: calc(100dvh - var(--landing-header-height));
+}
+
+.main:focus-visible {
+  outline: var(--landing-focus-width) solid var(--landing-focus);
+  outline-offset: -4px;
+}

@@ -14,28 +14,19 @@ Advanced operational tables in `niki.toml`.
 
 ## `[goal]` Table
 
-Autonomous multi-step goal execution:
-
-```toml
-[goal]
-max_iterations = 25
-branch_prefix  = "niki-goal/"
-state_dir      = ".niki/goals"
-fail_fast      = false
-retry_attempts = 3
-retry_delay_ms = 1000
-```
+The goal settings are parsed, but the current goal CLI does not consume this table. Use `niki goal new "<objective>" --max <iterations>` to set the iteration limit. Goal branches are currently created as `goal/<slug>-<id>`, and state directories are selected from the detected agent environment rather than `[goal].state_dir`.
 
 ---
 
 ## `[mcp]` Table
 
-Integrate external Model Context Protocol tool servers into NIKI agents:
+Configure Model Context Protocol client entries with an array of tables. The current pipeline constructs an empty `McpManager`, so configured servers are **not connected or executed by `niki run`**.
 
 ```toml
 [mcp]
-enabled    = true
-timeout_ms = 30000
+enabled    = false # Default is false
+timeout_ms = 5000
+read_only  = true
 
 [[mcp.servers]]
 name    = "github"
@@ -50,9 +41,17 @@ env     = { GITHUB_PERSONAL_ACCESS_TOKEN = "ghp_..." }
 
 ```toml
 [ui]
-theme      = "auto" # "auto" | "dark" | "light"
-tips       = true
-transcript = true
+theme = "auto" # "auto" | "dark" | "light"
+
+[ui.tips]
+enabled = true
+rotation_seconds = 30
+
+[ui.transcript]
+collapse_completed = true
+expand_failures = true
+show_intent_labels = true
+auto_collapse_turns = false
 
 [session]
 enabled      = true
@@ -61,6 +60,7 @@ auto_save    = true
 
 [compaction]
 enabled         = true
-threshold_pct   = 85 # Trigger compaction when 85% of model context is filled
+threshold_pct   = 80
 reserved_tokens = 4096
+auto_compact    = true
 ```

@@ -1,6 +1,6 @@
 ---
 title: chat, eval, verify
-description: Interactive TUI chat session, benchmarking harness, and screenshot verification.
+description: Interactive TUI chat, evaluation harness, and screenshot capture with intent logging.
 sidebar:
   order: 6
   label: chat, eval, verify
@@ -21,12 +21,13 @@ niki chat
 ```
 
 ### Supported Slash Commands
-* `/compact`: Compact session history to save token context.
-* `/model`: Switch models or providers on the fly.
-* `/cost`: Inspect session token usage and estimated spend.
-* `/memory store <fact>`: Persist context into project memory.
-* `/undo` / `/redo`: Revert or reapply previous agent steps.
-* `/export`: Export session transcript to markdown.
+
+- Session: `/help`, `/clear`, `/reset`, `/compact`, `/cost`, `/context`, `/diff`, `/undo`, `/redo`, `/rewind`, `/steer`
+- Configuration: `/config`, `/model`, `/theme`, `/terminal-setup`, `/status`, `/permissions`, `/plan`, `/effort`
+- Workflow: `/code-review`, `/security-review`, `/fork`, `/branch`, `/rename`, `/add-dir`, `/init`, `/mcp`, `/skills`, `/voice`
+- Output and metadata: `/copy`, `/export-md`, `/version`, `/usage`, `/btw`, `/loop`
+
+`/export-md` prints a Markdown rendering into the chat log. `/memory` and `/export` are not implemented. `/loop` is recognized but reports that recurring tasks are not wired.
 
 ---
 
@@ -38,15 +39,15 @@ Runs NIKI against standardized or custom defect datasets to benchmark accuracy a
 # Run evaluation harness against dataset
 niki eval --dataset evals/dataset.toml --limit 5
 
-# Output machine-readable JSON metrics
-niki eval --dataset evals/dataset.toml --format json --out results.json
+# Print JSON and write it under an output directory
+niki eval --dataset evals/dataset.toml --format json --out .niki/eval
 ```
 
 ---
 
 ## `niki verify`
 
-Performs visual UI regression testing by comparing rendered screenshots against baselines:
+Captures a screenshot with `scrot`, `gnome-screenshot`, or ImageMagick when available, then appends the description, screenshot name, baseline path, and capture status to `.niki/artifacts/verify-manifest.json`. It does not compare images or compute a visual diff.
 
 ```bash
 niki verify "Check that the navbar aligns properly on mobile screens" --baseline assets/baseline.png

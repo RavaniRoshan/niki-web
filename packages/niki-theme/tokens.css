@@ -1,82 +1,116 @@
 /**
- * Niki design tokens — canonical source for both the marketing site
- * (apps/web) and the docs site (apps/apps/docs). Dark-first, flat surfaces,
- * thin borders. Palette: shades of warm black with sharp yellow as the
- * single accent. No other hue appears in the brand system.
+ * Niki site tokens.
  *
- * Brand system:
- *   --nk-yellow / --nk-yellow-deep  the only accent (brand, CTAs, links,
- *                                    active states, focus, selection)
+ * One palette for the whole site. The values are sampled from the reference
+ * capture that the landing was built against, not chosen by eye:
  *
- * Compatibility aliases (--nk-mint*, --nk-magenta*, --nk-red*) all resolve
- * to the yellow family so existing rules cascade to the new palette.
+ *   canvas  #14120b   warm near-black, never #000
+ *   card    #1b1913   one step up, paper on paper
+ *   line    #201e19   hairline, lighter than the surface it divides
+ *   ink     #edecec   never #fff
+ *   ember   #f54e00   text accent only, never a fill
+ *
+ * Dark is the default. Light overrides under `html.light` and is the parchment
+ * half of the same system, so the two themes read as one brand.
+ *
+ * The `--gray-*` and `--orange-*` ramps are warm steps off this base. The
+ * `ax-*` primitives in apps/web consume the numbered ramps, so keeping them
+ * coherent here is what stops the inner pages from drifting cool or muddy.
  */
-
 :root {
-  /* ---- Surfaces (warm black family) ---- */
-  --nk-bg-0: #0a0908; /* page background — warm black */
-  --nk-bg-1: #141210; /* raised surface / card */
-  --nk-bg-2: #1c1916; /* higher surface / code block */
-  --nk-surface-border: #2b2622; /* thin borders */
+  --background: #14120b;
+  --foreground: #edecec;
+  --card: #1b1913;
+  --border: #201e19;
+  --ring: #f54e00;
+  --muted-foreground: #9c968a;
 
-  /* ---- Text ---- */
-  --nk-text-primary: #ffffff;
-  --nk-text-secondary: #d8d3cc;
-  --nk-text-muted: #948d84;
+  /* Band surfaces: full-bleed section plates. Warm only; there is no second
+     "ember" band, because nothing on the site is a gradient any more. */
+  --surface-warm: #1b1913;
+  --surface-ember: #1d1b15;
 
-  /* ---- Brand accent ---- */
-  --nk-yellow: #ffd60a; /* sharp yellow — the only accent */
-  --nk-yellow-deep: #2a2305; /* yellow surface / chip bg */
-  --nk-yellow-soft: #ffe45c; /* hover-bright yellow */
+  --gray-1: #14120b;
+  --gray-2: #1b1913;
+  --gray-3: #201e19;
+  --gray-4: #2a2a28;
+  --gray-5: #33312c;
+  --gray-6: #413e37;
+  --gray-7: #565149;
+  --gray-8: #7a7368;
+  --gray-9: #9c968a;
+  --gray-10: #b8b1a4;
+  --gray-11: #d6d1c8;
+  --gray-12: #edecec;
 
-  /* ---- Compatibility aliases (all resolve to yellow family) ---- */
-  --nk-red: var(--nk-yellow);
-  --nk-red-deep: var(--nk-yellow-deep);
-  --nk-mint: var(--nk-yellow);
-  --nk-mint-deep: var(--nk-yellow-deep);
-  --nk-magenta: var(--nk-yellow-soft);
-  --nk-magenta-deep: var(--nk-yellow-deep);
+  --orange-2: #2a1508;
+  --orange-8: #8a3c1a;
+  --orange-9: #f54e00;
+  --orange-10: #ff6a2a;
+  --orange-11: #ffa057;
+  --orange-12: #ffe0c2;
+  --btn-accent: #f54e00;
+  --brand-light: #f54e00;
+  --brand-dark: #c53f04;
 
-  /* ---- Agent role colors (semantic — brightness tiers of yellow/white) ---- */
-  --nk-agent-planner: #ffd60a; /* yellow */
-  --nk-agent-coder: #ffe45c; /* soft yellow */
-  --nk-agent-tester: #e8b90a; /* deep yellow */
-  --nk-agent-reviewer: #ffffff; /* white */
-  --nk-agent-red: #e8b90a; /* alias: attention → deep yellow */
-  --nk-agent-security: #ffd60a; /* alias: ok → yellow */
+  --blue-11: #6ab0f3;
+  --rose-500: #cf2d56;
+  --green: #4f9d6d;
+  --yellow: #c08532;
 
-  /* ---- Status (brightness-tiered, no hue change) ---- */
-  --nk-ok: #ffd60a;
-  --nk-warn: #ffe45c;
-  --nk-err: #ffffff;
+  /* Radius rule, stated once and followed everywhere: controls are full pill,
+     cards are 8px, tiles and inputs are 4px. */
+  --radius: 0.5rem;
+  --radius-md: 0.25rem;
+  --radius-pill: 999px;
 
-  /* ---- Typography ---- */
-  --nk-font-sans:
-    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --nk-font-mono:
-    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* ---- Spacing basis: 8px ---- */
-  --nk-space-1: 8px;
-  --nk-space-2: 16px;
-  --nk-space-3: 24px;
-  --nk-space-4: 32px;
-  --nk-space-5: 40px;
-  --nk-space-6: 48px;
-  --nk-space-7: 56px;
-  --nk-space-8: 64px;
-  --nk-space-10: 80px; /* default section rhythm */
-  --nk-space-12: 96px;
+  color-scheme: dark;
+}
 
-  /* ---- Radius ---- */
-  --nk-radius-card: 16px;
-  --nk-radius-code: 12px;
-  --nk-radius-pill: 9999px;
+html.light {
+  --background: #f7f7f4;
+  --foreground: #26251e;
+  --card: #f2f1ed;
+  --border: #dcdbd4;
+  --ring: #c53f04;
+  --muted-foreground: #6f6e68;
 
-  /* ---- Layout ---- */
-  --nk-max-w: 1200px;
-  --nk-header-h: 64px;
+  --surface-warm: #f2f1ed;
+  --surface-ember: #f7f7f4;
 
-  /* ---- Focus ---- */
-  --nk-focus-ring: 0 0 0 2px var(--nk-bg-0), 0 0 0 4px var(--nk-yellow);
+  --gray-1: #f7f7f4;
+  --gray-2: #f2f1ed;
+  --gray-3: #e6e5e0;
+  --gray-4: #dcdbd4;
+  --gray-5: #c6c5be;
+  --gray-6: #b0afa8;
+  --gray-7: #918f88;
+  --gray-8: #6f6e68;
+  --gray-9: #5c5b55;
+  --gray-10: #45443f;
+  --gray-11: #33322d;
+  --gray-12: #26251e;
+
+  /* Raw ember measures about 3.1:1 on parchment, which fails AA for body
+     text, so every text use steps down to orange-10. Fills keep the true
+     ember because a large area only needs 3:1. */
+  --orange-2: #ffe9db;
+  --orange-8: #e8a37c;
+  --orange-9: #e85a00;
+  --orange-10: #c53f04;
+  --orange-11: #9e3403;
+  --orange-12: #5c2708;
+  --btn-accent: #f54e00;
+  --brand-light: #c53f04;
+  --brand-dark: #f54e00;
+
+  --blue-11: #1d64c8;
+  --rose-500: #cf2d56;
+  --green: #34785c;
+  --yellow: #93370d;
+
+  color-scheme: light;
 }

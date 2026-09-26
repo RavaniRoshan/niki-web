@@ -5,47 +5,38 @@ sidebar:
   order: 6
   label: Enterprise Readiness
 ---
+
 Honest accounting first: NIKI has **no SSO/SAML, no SCIM provisioning, no
 VPC/on-prem control plane, and no role-based seats**. Those are major builds
 with external infrastructure, not configuration flags, and this page will say
-so until they exist. What follows is what regulated teams *can* rely on today.
+so until they exist. What follows is what regulated teams _can_ rely on today.
 
 ## What exists
 
 ### Policy controls (`[permissions]`)
 
 - **Modes** (`manual` default, `auto`, `dontask`, `bypass`) plus per-run
-  override: `niki run --permission-mode`. Unknown mode strings fail closed
-  to `manual`.
+  override: `niki run "<description>" --permission-mode <mode>`. Unknown mode strings fail closed to `manual`.
 - **`disable_worktree = true`** refuses the unisolated worktree backend
-  outright — the governance kill-switch for fleets where local-process
+  outright, the governance kill-switch for fleets where local-process
   execution is unacceptable.
 - **`fail_closed_headless = true`** turns headless Ask into Deny instead of
   Allow-with-warning, for unattended runs where silent auto-approval is
   unacceptable. Default `false` (behavior-preserving); enable it in CI.
-- **Command deny-lists** (force-push, root `rm`, `mkfs`, `curl|sh` patterns)
-  plus per-role policies and protected paths/commands. Deny always wins,
-  in every mode including bypass.
+- **Command deny-lists** cover the narrow global defaults (force-push forms, root-filesystem `rm`, `mkfs`, `dd`, pipe-to-shell patterns, and `--no-verify`) plus role-specific Git/filesystem denies. They do not generally block `git reset --hard`, `rm -rf ~`, `fdisk`, or `git branch -D main`.
 
 ### Audit trail (per run, no extra setup)
 
-Every run leaves `.niki/tasks/<id>/` with `report.md`, `changes.patch`,
-per-agent `artifacts/*.json`, `safety_proof.json` (git invariants),
-`test_execution.json` (real exit codes), `trace.jsonl` (spans), and
-`eval-manifest.json` on eval runs.
+Task output is stored under `.niki/tasks/<id>/`: `report.md`, `changes.patch`, per-agent `artifacts/*.json`, `trace.jsonl`, and `manifest.json` when snapshots are enabled. `safety_proof.json` appears only for a non-empty eligible branch, while `artifacts/test_execution.json` appears only when a test command resolves. Eval runs write `eval-manifest.json` under the eval output directory, not the task directory.
 
-- **`niki audit <task-id>`** consolidates all of the above into one JSON
-  bundle with a `complete` flag (partial trails stay inspectable, never
-  hidden). Pipe it to your SIEM, artifact store, or compliance export.
-- **`niki run --output-format json`** gives scripts the verdict/branch/cost
-  contract; **`--bare`** strips ambient inputs (memory, MCP, knowledge URLs)
-  for reproducible runs.
+- **`niki audit <task-id>`** emits partial or complete JSON bundles. Its `complete` flag checks only for a task record, `report.md`, and `safety_proof.json`; it does not require test execution, a trace, or a patch. Default snapshot retention is 14 days, after which old task directories are pruned.
+- **`niki run "<description>" --output-format json`** gives scripts the verdict/branch/cost contract; **`--bare`** strips ambient inputs (memory, MCP discovery, knowledge URLs) for reproducible runs.
 
 ### Observability
 
 - **`--otel-endpoint`** (or `OTEL_EXPORTER_OTLP_ENDPOINT`) exports run spans
   as OTLP/HTTP to any collector (Jaeger, Grafana Tempo, Honeycomb).
-  Every span carries `niki.timeline = "derived"` — offsets come from recorded
+  Every span carries `niki.timeline = "derived"`; offsets come from recorded
   latencies, never fabricated wall-clock.
 - **Nightly eval gate** (`.github/workflows/nightly-eval.yml`): keyless
   replay + disclosure manifest on every schedule, so regressions page you
@@ -54,18 +45,20 @@ per-agent `artifacts/*.json`, `safety_proof.json` (git invariants),
 ### Supply chain
 
 Tight `deny.toml` license allow-list, `cargo audit` in CI, checksum-verified
-installers, signed release channels via cargo-dist. No telemetry leaves the
-machine except your own LLM API calls (or your own OTEL endpoint).
+installers, and release channels via cargo-dist. Outbound traffic depends on
+features: provider APIs, `niki research`, knowledge URLs, optional OTLP export,
+and remote MCP client traffic can all leave the machine. The current pipeline
+does not connect configured MCP servers.
 
 ## What is missing (roadmap, not features)
 
-| Need | Status | Workaround today |
-|---|---|---|
-| SSO/SAML login | Not built | BYOK keys via env/keyring; short-lived tokens rotated externally |
-| SCIM provisioning | Not built | niki.toml is a file — manage it with your existing config management |
-| VPC / private runners | Not built | `DOCKER_HOST=ssh://…` runs containers on your own hosts (see Remote Daemon) |
-| RBAC seats | Not built | OS users + file permissions on niki.toml and `.niki/` |
-| Data residency | Provider-dependent | Use region-pinned `base_url`s; Ollama for fully local runs |
+| Need                  | Status             | Workaround today                                                            |
+| --------------------- | ------------------ | --------------------------------------------------------------------------- |
+| SSO/SAML login        | Not built          | BYOK keys via supported env vars or `niki.toml`; short-lived tokens rotated externally |
+| SCIM provisioning     | Not built          | niki.toml is a file; manage it with your existing config management         |
+| VPC / private runners | Not built          | `DOCKER_HOST=ssh://…` runs containers on your own hosts (see Remote Daemon) |
+| RBAC seats            | Not built          | OS users + file permissions on niki.toml and `.niki/`                       |
+| Data residency        | Provider-dependent | Use region-pinned `base_url`s; Ollama for fully local runs                  |
 
 ## Recommended enterprise posture today
 

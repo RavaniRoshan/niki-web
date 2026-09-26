@@ -1,6 +1,6 @@
 ---
 title: memory & goal
-description: Hierarchical cross-session memory and autonomous goal execution with drift recovery.
+description: Hierarchical cross-session memory and autonomous goal execution with drift detection.
 sidebar:
   order: 5
   label: memory & goal
@@ -14,7 +14,7 @@ Long-running autonomous workflows and cross-session knowledge persistence.
 
 ## `niki goal`
 
-Runs autonomous, multi-step engineering goals. The Goal Runner autonomously breaks down a large objective, executes tasks sequentially, monitors test stability, and recovers from drift.
+Runs autonomous, multi-step engineering goals. The Goal Runner breaks down an objective, executes tasks sequentially, checks criteria, and halts when its drift or budget guards trip.
 
 ```bash
 # Start a new autonomous goal
@@ -26,8 +26,8 @@ niki goal list
 # Inspect execution status and step history
 niki goal status <goal-id>
 
-# Pause or resume an execution
-niki goal pause <goal-id>
+# Pause the active goal; resume requires its ID
+niki goal pause
 niki goal resume <goal-id>
 ```
 
@@ -38,11 +38,14 @@ niki goal resume <goal-id>
 NIKI maintains a hierarchical project memory in `.niki/memory/` across runs so agents remember project architecture, conventions, and previous bug fixes.
 
 ```bash
-# Query memory with natural language
-niki memory query "What database conventions do we use?"
+# Query entries by an exact memory tag
+niki memory query database-conventions
 
-# Manually store a persistent architectural rule
-niki memory store --tag arch "Always use UTC timestamps in database models"
+# Store a persistent key/value fact
+niki memory store database-timestamps "Always use UTC timestamps in database models"
+
+# Natural-language recall across user and team memory
+niki memory recall "database conventions"
 
 # View all stored tags and entries
 niki memory tags

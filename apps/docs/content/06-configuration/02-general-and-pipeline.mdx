@@ -17,9 +17,10 @@ Core operational settings for pipeline limits and context ingestion.
 ```toml
 [general]
 max_revision_rounds = 3      # Maximum Reviewer -> Coder feedback iterations
-output_dir          = ".niki"# Directory where task artifacts and patches land
-spend_cap_usd       = 5.0    # Hard dollar spend ceiling per task execution
-max_diff_lines      = 200    # Soft limit to encourage tight, focused diffs
+output_dir          = ".niki" # Task output root; tasks land under tasks/<id>/
+spend_cap_usd       = 5.0    # Hard estimated-dollar ceiling per run
+max_diff_lines      = 200    # Reviewer nudge + report warning; not a hard rejection
+max_context_chars   = 48000  # Planner context budget
 ```
 
 ---
@@ -30,8 +31,8 @@ Customize the execution topology and stages:
 
 ```toml
 [pipeline]
-topology                    = "Auto" # "Auto" | "MultiAgent" | "SingleAgent"
-single_agent_max_complexity = "Low"  # Complexity threshold for single-agent fast path
+topology                    = "auto" # "auto" | "multiagent" | "singleagent"
+single_agent_max_complexity = "Low"  # At or below this level, auto uses Planner + solo Coder
 max_revision_rounds         = 3
 
 stages = [
@@ -41,6 +42,8 @@ stages = [
   { role = "reviewer", provider = "anthropic", model = "claude-sonnet-4-20250514" }
 ]
 ```
+
+`auto` is the default topology. Security/parallel configuration and High/Security risk can force `multiagent`; use `topology = "multiagent"` when an explicit stage list must always retain the full chain.
 
 ---
 

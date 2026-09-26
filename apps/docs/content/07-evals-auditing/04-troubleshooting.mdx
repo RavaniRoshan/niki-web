@@ -17,12 +17,14 @@ Common diagnostic solutions and answers to frequent questions.
 **Symptom:** `Error: Could not connect to Podman/Docker socket`
 
 **Solution:**
-* **Podman:** Ensure the user socket is running:
+
+- **Podman:** Ensure the user socket is running:
   ```bash
   systemctl --user enable --now podman.socket
   export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
   ```
-* **Docker:** Ensure Docker Desktop or dockerd is running and your user is in the `docker` group.
+- **Docker:** Ensure Docker Desktop or `dockerd` is running and your user can access its socket.
+- NIKI probes rootless Podman first, then rootful Podman and Docker; rootless operation is not guaranteed.
 
 ---
 
@@ -31,8 +33,9 @@ Common diagnostic solutions and answers to frequent questions.
 **Symptom:** `Error: Spend cap exceeded ($2.50 USD ceiling reached)`
 
 **Solution:**
-* Increase `general.spend_cap_usd` in `niki.toml`.
-* Switch high-frequency stages (like `agents.tester`) to more cost-effective models (`gpt-4o-mini`, `claude-3-5-haiku`).
+
+- Increase `general.spend_cap_usd` in `niki.toml`.
+- Switch high-frequency stages (like `agents.tester`) to more cost-effective models such as `gpt-4o-mini` or the `haiku` alias.
 
 ---
 
@@ -41,5 +44,6 @@ Common diagnostic solutions and answers to frequent questions.
 **Symptom:** `Error: Provider rate limit exceeded`
 
 **Solution:**
-* Define `fallbacks` for the agent role in `niki.toml`.
-* Configure exponential backoff and jitter options in your provider settings.
+
+- Define `fallbacks = ["provider-slug", ...]` for the agent role in `niki.toml`.
+- NIKI already uses bounded exponential backoff with jitter for retryable provider responses; those delays are not user-configurable in `niki.toml`.

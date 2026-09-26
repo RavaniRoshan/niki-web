@@ -14,16 +14,13 @@ Production agent pipelines must withstand upstream API outages, transient rate l
 
 ## Fallback Failover Chains
 
-You can define ordered fallback model lists per agent role in `niki.toml`. If the primary model returns a 5xx server error, rate limit timeout, or fails after retries, NIKI seamlessly fails over to the next configured fallback:
+You can define an ordered list of fallback **provider slugs** per agent role in `niki.toml`. Each slug must also have a `[providers.<slug>]` entry. Transient errors such as rate limits, timeouts, and connection failures try the next provider:
 
 ```toml
 [agents.planner]
 provider  = "anthropic"
 model     = "claude-sonnet-4-20250514"
-fallbacks = [
-  { provider = "openai", model = "gpt-4o" },
-  { provider = "openrouter", model = "deepseek/deepseek-r1" }
-]
+fallbacks = ["openrouter", "openai"]
 ```
 
 ---
@@ -32,7 +29,9 @@ fallbacks = [
 
 Agents frequently return markdown-wrapped JSON code fences (` ```json `), trailing commas, or unescaped quotes.
 
-NIKI includes a deterministic AST-based JSON repair engine:
-1. Strips markdown fences, preamble text, and comments.
-2. Fixes trailing commas and missing bracket closures.
-3. Attempts multi-pass schema re-parsing before triggering an agent retry prompt.
+NIKI includes deterministic string-based JSON repair and validation:
+
+1. Strips markdown fences and extracts JSON from surrounding prose.
+2. Normalizes trailing commas, quotes, control characters, and common Python literals.
+3. Makes a best-effort bracket-closure repair, then validates against the artifact schema.
+4. Re-prompts the agent with validation errors when local repair is insufficient.

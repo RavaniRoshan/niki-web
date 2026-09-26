@@ -5,8 +5,19 @@
   "type": "module",
   "main": "./tokens.css",
   "exports": {
-    ".": "./tokens.css",
-    "./css": "./tokens.css",
+    ".": {
+      "style": "./tokens.css",
+      "sass": "./tokens.css",
+      "default": "./tokens.css"
+    },
+    "./css": {
+      "style": "./tokens.css",
+      "default": "./tokens.css"
+    },
+    "./tokens.css": {
+      "style": "./tokens.css",
+      "default": "./tokens.css"
+    },
     "./site": "./site.ts",
     "./package.json": "./package.json"
   },

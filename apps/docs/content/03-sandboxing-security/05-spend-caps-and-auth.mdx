@@ -8,7 +8,7 @@ sidebar:
 
 ## Spend Caps & Authentication
 
-NIKI provides built-in cost controls and secure credential management.
+NIKI provides built-in cost controls and OS-keyring credential storage.
 
 ---
 
@@ -20,14 +20,16 @@ If the estimated cumulative cost exceeds `general.spend_cap_usd`, NIKI immediate
 
 ```toml
 [general]
-spend_cap_usd = 2.50 # Aborts run if cost exceeds $2.50 USD
+spend_cap_usd = 2.50 # Aborts run if estimated cost exceeds $2.50 USD
 ```
+
+The cap uses estimated cost from the dated table in `src/cost.rs` (currently `2026-09-06`), not an invoice. Unknown billable models are recorded as `$0.00` with a warning, so their reported cost can understate real spend.
 
 ---
 
 ## OS Keyring Credential Storage
 
-Rather than storing plaintext API keys in your repository or configuration files, use `niki auth login` to store credentials in your operating system's native secure keyring (Apple Keychain, Windows Credential Manager, Linux Secret Service):
+`niki auth login` stores credentials in the operating system's native secure keyring (Apple Keychain, Windows Credential Manager, Linux Secret Service):
 
 ```bash
 # Log in to a provider securely
@@ -39,3 +41,5 @@ niki auth status
 # Log out / remove key
 niki auth logout --provider anthropic
 ```
+
+Keyring entries are storage and status records only. Runtime provider construction currently reads `niki.toml` and supported environment variables; it does not resolve keyring values, so a key stored only with `niki auth login` is not yet a live runtime credential source.

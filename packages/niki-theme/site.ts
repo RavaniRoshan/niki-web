@@ -26,9 +26,9 @@ export const SITE = {
   /** Web monorepo (this repository) */
   webRepo: "https://github.com/RavaniRoshan/niki-web",
   name: "Niki",
-  tagline: "One sentence in, a verified pull request out.",
+  tagline: "One sentence in. A reviewable branch out.",
   description:
-    "Niki is the open-source multi-agent coding pipeline that plans, codes, tests, and reviews, then hands you a verified git branch.",
+    "Niki is the open-source multi-agent coding pipeline that can plan, code, test, and review tasks, then write a local git branch and changes.patch for review when branch creation succeeds.",
   twitter: "https://x.com/niki_dev",
   social: {
     github: "https://github.com/RavaniRoshan/niki",
@@ -38,10 +38,10 @@ export const SITE = {
   },
   /** Latest release info — data-driven; update per release or fetch dynamically later */
   release: {
-    version: "0.7.0",
-    tag: "v0.7.0",
-    date: "2026-09-08",
-    notes: "https://github.com/RavaniRoshan/niki/releases/tag/v0.7.0",
+    version: "0.8.0",
+    tag: "v0.8.0",
+    date: "2026-09-23",
+    notes: "https://github.com/RavaniRoshan/niki/releases/tag/v0.8.0",
     latest: "https://github.com/RavaniRoshan/niki/releases/latest",
   },
 } as const;

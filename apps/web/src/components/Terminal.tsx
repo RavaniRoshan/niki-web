@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-/** Boxy terminal window. Children are lines (spans/divs) styled by nx-t-* classes. */
+/** Axiom dark terminal mock. Same exports as before. */
 export function Terminal({
   title,
   children,
@@ -11,49 +11,34 @@ export function Terminal({
   className?: string;
 }) {
   return (
-    <figure className={`nx-terminal ${className ?? ""}`}>
-      <div className="nx-terminal__bar">
-        <div className="nx-terminal__dots" aria-hidden="true">
-          <i />
-          <i />
-          <i />
+    <figure
+      className={`illustration-frame-lg border border-gray-2 bg-background shadow-halo-xl shadow-black/5 ${className ?? ""}`}
+    >
+      <div className="illustration-frame-inner overflow-hidden border border-gray-3 bg-gray-1">
+        <div className="flex h-10 items-center gap-2 border-b border-gray-3 px-3 font-mono text-xs text-gray-10">
+          <span className="size-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="size-2.5 rounded-full bg-[#febc2e]" />
+          <span className="size-2.5 rounded-full bg-[#28c840]" />
+          <span className="ml-2 text-gray-12">{title}</span>
         </div>
-        <span className="nx-terminal__title">{title}</span>
-      </div>
-      <div className="nx-terminal__body">
-        <pre>{children}</pre>
+        <div className="overflow-x-auto px-4 py-3 font-mono text-xs-plus leading-6 text-gray-12">
+          <pre className="whitespace-pre-wrap break-words">{children}</pre>
+        </div>
       </div>
     </figure>
   );
 }
 
-/** One terminal line. */
-export function T({
-  children,
-  tone,
-}: {
-  children: ReactNode;
-  tone?: "dim" | "mint" | "mag" | "warn" | "ok" | "red" | "white";
-}) {
-  const cls =
-    tone === "dim"
-      ? "nx-t-dim"
-      : tone === "mint"
-        ? "nx-t-mint"
-        : tone === "mag"
-          ? "nx-t-mag"
-          : tone === "warn"
-            ? "nx-t-warn"
-            : tone === "ok"
-              ? "nx-t-ok"
-              : tone === "red"
-                ? "nx-t-red"
-                : tone === "white"
-                  ? "nx-t-white"
-                  : "";
-  return (
-    <span className={cls} style={{ display: "block" }}>
-      {children}
-    </span>
-  );
+const tones: Record<string, string> = {
+  dim: "text-gray-10",
+  mint: "text-green",
+  mag: "text-orange-11",
+  warn: "text-yellow",
+  ok: "text-green",
+  red: "text-rose-500",
+  white: "text-foreground",
+};
+
+export function T({ children, tone }: { children: ReactNode; tone?: keyof typeof tones }) {
+  return <span className={tone ? tones[tone] : undefined}>{children}</span>;
 }

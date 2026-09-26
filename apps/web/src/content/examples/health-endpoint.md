@@ -1,12 +1,12 @@
 ---
 title: "Task: add a /health endpoint"
-description: "The canonical first task — one sentence, four agents, a verified branch."
+description: "An example task: one sentence, a multiagent run, and a local branch when one is created."
 pubDate: "2026-09-08"
 difficulty: "beginner"
 stack: ["any"]
 ---
 
-The one-sentence task used across Niki's demo and smoke tests:
+An example task for a full multiagent run:
 
 ```bash
 niki run "Add a GET /health endpoint returning { status: 'ok', uptime }" --project ./my-app
@@ -14,10 +14,14 @@ niki run "Add a GET /health endpoint returning { status: 'ok', uptime }" --proje
 
 What happens per stage:
 
-- **Planner** — reads the repo, emits a TaskSpec: which file to touch, the approach.
-- **Coder** — emits a unified diff against the sandboxed workspace.
-- **Tester** — generates and runs tests for the endpoint, each with oracle provenance.
-- **Reviewer** — scores correctness, quality and coverage; bounces back if below bar.
+- **Planner**: reads the repo, emits a TaskSpec: which file to touch, the approach.
+- **Coder**: emits a unified diff against the active execution workspace.
+- **Tester**: generates a test report and runs a test command when one is available.
+- **Reviewer**: scores the evidence and can request another Coder pass within the configured revision limit.
 
-Output: a `niki/<id>` branch, `changes.patch`, `report.md` and per-agent JSON artifacts.
-Committed branches are never rewritten — the finished diff is applied to your working tree for review, and nothing lands on `main` until you merge.
+In `pipeline.topology = "auto"`, a low-complexity task can collapse to Planner plus a solo Coder.
+
+When branch creation succeeds, output includes a `niki/<id>` branch, `changes.patch`, `report.md`
+and per-agent JSON artifacts under `.niki/tasks/<id>/`. Those artifacts are excluded from the
+published diff. `safety_proof.json`, when written, covers git invariants only and is skipped on an
+empty diff. The final diff is applied to your working tree for review.

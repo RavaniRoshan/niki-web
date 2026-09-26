@@ -6,11 +6,12 @@ export function pageMetadata(opts: {
   title: string;
   description: string;
   path: string;
+  image?: string;
   noindex?: boolean;
 }): Metadata {
-  const pageTitle = opts.title.includes("Niki") ? opts.title : `${opts.title} — Niki`;
+  const pageTitle = opts.title.includes("Niki") ? opts.title : `${opts.title}, Niki`;
   const canonical = SITE.web.replace(/\/$/, "") + opts.path;
-  const ogImage = `${SITE.web.replace(/\/$/, "")}/og.png`;
+  const ogImage = `${SITE.web.replace(/\/$/, "")}${opts.image ?? "/og.png"}`;
   return {
     title: pageTitle,
     description: opts.description,

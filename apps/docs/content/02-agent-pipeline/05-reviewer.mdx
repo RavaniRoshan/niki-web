@@ -27,9 +27,9 @@ The Reviewer scores the change across 4 core dimensions on a scale from 1 to 10:
 
 The Reviewer issues one of three verdicts in its `ReviewVerdict` artifact:
 
-* **`Approved`:** The code meets quality and correctness thresholds. NIKI commits the branch and writes `report.md`.
-* **`RevisionNeeded`:** Issues were discovered. The Reviewer provides specific actionable feedback and kicks off revision round $N+1$ back to the Coder (up to `general.max_revision_rounds`).
-* **`Rejected`:** Fundamental architectural flaw or irreparable defect. The task terminates with a descriptive audit report.
+- **`Approved`:** The Reviewer accepts the change. NIKI ends the revision loop; a branch is still created only for a non-empty diff with no blocked test failure.
+- **`RevisionNeeded`:** Issues were discovered. The Reviewer provides actionable feedback and starts another Coder round, bounded by `general.max_revision_rounds`.
+- **`Rejected`:** The Reviewer ends the loop with the rejection recorded in `report.md`. Rejection alone does not create or block a branch; branch eligibility still depends on diff and verification gates.
 
 ```toml
 [agents.reviewer]

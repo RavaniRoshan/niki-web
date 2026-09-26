@@ -16,11 +16,15 @@ NIKI operates under a strict principle: **Proof, Not Promises**.
 
 ## The Audit Trail
 
-Every time NIKI runs, it produces a cryptographic and auditable record in `.niki/`:
+A normally completed task leaves an inspectable record under `.niki/tasks/<id>/`; it is not a cryptographic attestation:
 
-1. **`report.md`**: Human-readable executive summary of the decisions, scores, and revisions.
-2. **`changes.patch`**: Exact unified diff applied to the working tree.
-3. **`safety_proof.json`**: Manifest certifying post-run git invariants — the new branch was added, existing branches/history are preserved, and no rebase or force-push occurred. It does not certify sandbox flags or spend caps (those are enforced at runtime and reported in `report.md`). Skipped on empty diffs (no branch, nothing to prove).
-4. **`test_execution.json`**: In-container execution transcripts containing real exit codes and test runner outputs. Written only when a test command resolves; advisory evidence for the Reviewer verdict, not a hard gate (see `docs/benchmarks.md`).
+1. **`report.md`**: Human-readable decisions, topology, scores, revisions, cost estimates, and diff.
+2. **`changes.patch`**: Exact unified diff produced for publication.
+3. **`artifacts/*.json`**: Per-stage artifacts, including repeated attempts such as `coder-2.json`.
+4. **`safety_proof.json`**: Git-only evidence that the expected branch was added, existing branches and parentage were preserved, and no rebase or force-push signal appeared. It is not a sandbox proof and is skipped when there is no eligible non-empty branch.
+5. **`artifacts/test_execution.json`**: Real command, exit code, stdout, and stderr when a test command resolves. If none resolves, `test_execution` is `None`. A resolved failing test or mutation gate blocks the branch unless `--force` records it as unverified.
+6. **`manifest.json`**: Repository/config/toolchain provenance when snapshots are enabled.
 
-A task's audit trail is complete when `report.md` and `changes.patch` exist; `safety_proof.json` and `test_execution.json` are written whenever their preconditions hold (non-empty diff, resolvable test command).
+These task artifacts are excluded from the published diff. Default snapshot retention is 14 days, after which old task directories are pruned.
+
+`niki audit` may emit a partial bundle. Its `complete` flag means only that a task record, `report.md`, and `safety_proof.json` are present; it does not require test execution, a trace, or a patch.

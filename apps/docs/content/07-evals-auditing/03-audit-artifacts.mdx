@@ -5,18 +5,29 @@ sidebar:
   order: 3
   label: Audit Artifacts
 ---
-Every task creates a directory `.niki/tasks/<task-id>/` containing all generated artifacts:
+
+Task output is organized under `.niki/tasks/<task-id>/`. A typical completed run contains:
 
 ```text
 .niki/tasks/6d281d6d-3184-482a-89aa-403332152861/
-├── task_spec.json        # Planner output
-├── code_diff.json        # Coder hunks
-├── test_report.json      # Tester output & test runner logs
-├── review_verdict.json   # Reviewer scores & revision loops
-├── safety_proof.json     # Post-run git invariants (branch added, history preserved, no force-push)
-├── changes.patch         # Unified git patch
-└── report.md             # Rendered human report
+├── artifacts/
+│   ├── planner.json          # TaskSpec
+│   ├── coder.json            # CodeDiff and rationale
+│   ├── tester.json           # Analytical TestReport
+│   ├── reviewer.json         # Review verdict
+│   └── test_execution.json   # Only when a test command resolves
+├── changes.patch             # Published unified diff
+├── dashboard.html            # Static review dashboard
+├── manifest.json             # Provenance when snapshots are enabled
+├── report.md                 # Human-readable run report
+├── safety_proof.json         # Git invariants; only for an eligible non-empty branch
+├── task.json                 # Persisted task record
+└── trace.jsonl               # Derived run spans
 ```
+
+Repeated role attempts are retained as `coder-2.json`, `coder-3.json`, and so on. `safety_proof.json` is Git-only and is not a sandbox proof. `plan.md` is present for dry-run/plan output, which creates no branch.
+
+All files under the task directory are excluded from the published diff. Snapshot retention defaults to 14 days, then prunes old task directories.
 
 ---
 
@@ -28,6 +39,6 @@ You can inspect the generated files with any standard JSON tool, or use the buil
 # Print formatted report
 niki report <task-id>
 
-# Open visual diff dashboard
-niki dashboard <task-id>
+# Generate the static dashboard and print its path
+niki dashboard --task <task-id>
 ```

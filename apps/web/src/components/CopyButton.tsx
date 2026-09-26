@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 
 export default function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) {
   const [done, setDone] = useState(false);
@@ -20,7 +20,7 @@ export default function CopyButton({ text, label = "Copy" }: { text: string; lab
   return (
     <button
       type="button"
-      className={`nx-copy ${done ? "nx-copy--done" : ""}`}
+      className={`ax-copy ${done ? "ax-copy--done" : ""}`}
       onClick={onClick}
       aria-label={done ? "Copied" : label}
       title={label}

@@ -1,6 +1,6 @@
 ---
 title: Local Ollama
-description: Running NIKI 100% offline with local GPU inference.
+description: Running NIKI with local Ollama inference and no cloud LLM calls.
 sidebar:
   order: 4
   label: Local Ollama
@@ -8,7 +8,7 @@ sidebar:
 
 ## Local Offline Inference with Ollama
 
-Run NIKI completely offline without sending any code or prompts to external cloud providers.
+When every agent uses Ollama and optional network features are disabled, LLM prompts stay on the local machine. `niki research`, configured knowledge URLs, OTLP export, or remote MCP client use can still create outbound traffic.
 
 ---
 
@@ -25,12 +25,11 @@ ollama pull qwen2.5-coder:32b
 
 ## 2. Configure `niki.toml`
 
-Point provider configuration to your local Ollama endpoint:
+Point provider configuration to the Ollama host root. NIKI appends `/api/chat`; do not add `/v1`:
 
 ```toml
 [providers.ollama]
-base_url      = "http://localhost:11434/v1"
-api_key       = "ollama"  # placeholder string required by client
+base_url      = "http://localhost:11434"
 default_model = "qwen2.5-coder:32b"
 
 [agents.planner]

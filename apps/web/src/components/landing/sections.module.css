@@ -1,0 +1,1116 @@
+/* Landing sections. Layout values are sampled from the reference capture:
+   112px between cards, a one-third/two-thirds feature split, and a full-width
+   container that centres itself inside the page gutter. */
+
+/* ---------- Shared rhythm ---------- */
+
+.sectionTitle {
+  color: var(--landing-ink);
+  font-size: var(--landing-section-size);
+  font-weight: 400;
+  letter-spacing: var(--landing-section-track);
+  line-height: 1.15;
+}
+
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--landing-link);
+  font-size: var(--landing-body-size);
+  line-height: 1.4;
+  text-decoration: none;
+  text-underline-offset: 4px;
+}
+
+.sectionNote {
+  color: var(--landing-muted);
+  font-size: var(--landing-meta-size);
+}
+
+/* ---------- Hero ---------- */
+
+/* Sized so the whole hero, including the recording's own controls, lands
+   inside a 1440x1000 laptop viewport. Controls below the fold are a real cost:
+   scrolling to reach them pauses the recording, so the first click lands on a
+   paused video and resumes it instead. */
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding-top: 72px;
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: min(100%, var(--landing-container));
+  margin-inline: auto;
+  padding-inline: var(--landing-gutter);
+}
+
+.heroTitle {
+  /* The reference headline is two lines at desktop. 33ch puts this longer
+     headline on two as well, without letting it run the full container. */
+  max-width: 33ch;
+  color: var(--landing-ink);
+  font-size: var(--landing-hero-size);
+  font-weight: 400;
+  letter-spacing: var(--landing-hero-track);
+  line-height: 1.05;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 54px;
+  padding-inline: 24px;
+  border-radius: var(--landing-control-radius);
+  font-size: var(--landing-body-size);
+  white-space: nowrap;
+  transition:
+    background-color var(--landing-hover-duration) var(--landing-ease-ui),
+    color var(--landing-hover-duration) var(--landing-ease-ui),
+    opacity var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.primaryAction {
+  background: var(--landing-ink);
+  color: var(--landing-canvas);
+}
+
+.secondaryAction {
+  background: var(--landing-elevated);
+  color: var(--landing-ink);
+}
+
+.heroMedia {
+  width: min(100%, var(--landing-container));
+  margin-inline: auto;
+  padding-inline: var(--landing-gutter);
+}
+
+.heroMedia .videoViewport {
+  min-height: 0;
+}
+
+/* ---------- Pipeline recording ---------- */
+
+.pipelineVideo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.videoViewport {
+  position: relative;
+  flex: 1;
+  min-height: 320px;
+  border-radius: var(--landing-tile-radius);
+  background: var(--landing-surface);
+  overflow: hidden;
+}
+
+.videoElement {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Taken out of flow on purpose. In flow, the video's intrinsic size drives the
+     window height, and the page height then depends on whether metadata has
+     loaded, which makes the full-page baseline unstable. */
+  object-fit: cover;
+  object-position: top left;
+}
+
+.videoControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.videoButton {
+  /* 44px, matching every other control on the page. */
+  min-height: 44px;
+  padding-inline: 14px;
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-control-radius);
+  background: transparent;
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+  cursor: pointer;
+  transition:
+    background-color var(--landing-hover-duration) var(--landing-ease-ui),
+    border-color var(--landing-hover-duration) var(--landing-ease-ui),
+    opacity var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.videoButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.videoStatus {
+  margin-left: auto;
+  color: var(--landing-muted);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+}
+
+/* ---------- Window chrome ---------- */
+
+.windowStage {
+  position: relative;
+  border-radius: var(--landing-card-radius);
+  overflow: hidden;
+}
+
+.windowBackdrop {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.window {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 40px;
+  border: 1px solid var(--landing-line);
+  border-radius: 6px;
+  background: var(--landing-canvas);
+  box-shadow: 0 28px 70px rgb(0 0 0 / 0.28);
+  overflow: hidden;
+}
+
+.windowBackWindow {
+  position: absolute;
+  right: 40px;
+  bottom: 40px;
+  display: flex;
+  width: 46%;
+  height: 54%;
+  border: 1px solid var(--landing-line);
+  border-radius: 6px;
+  background: var(--landing-surface);
+  box-shadow: 0 18px 44px rgb(0 0 0 / 0.22);
+  box-shadow: 0 18px 44px rgb(0 0 0 / 0.34);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.windowBackBar {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  height: 30px;
+  padding-inline: 12px;
+  border-bottom: 1px solid var(--landing-line);
+  /* Mixes toward ink so the bar separates from its own surface in both themes. */
+  background: color-mix(in oklab, var(--landing-ink) 9%, var(--landing-surface));
+}
+
+.windowBackBar i {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--landing-elevated);
+}
+
+.windowStage[data-window-variant="offset"] .window {
+  width: 72%;
+  margin-right: auto;
+}
+
+.windowBar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  height: 38px;
+  padding-inline: 14px;
+  background: var(--landing-surface);
+  border-bottom: 1px solid var(--landing-line);
+}
+
+.windowLights {
+  display: inline-flex;
+  gap: 6px;
+  justify-self: start;
+}
+
+.windowLights i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--landing-elevated);
+}
+
+.windowTitle {
+  color: var(--landing-muted);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+  letter-spacing: 0.02em;
+}
+
+.windowBarSpacer {
+  display: block;
+}
+
+.windowTabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 10px;
+  background: var(--landing-surface);
+  border-bottom: 1px solid var(--landing-line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.windowTabs::-webkit-scrollbar {
+  display: none;
+}
+
+.windowTab {
+  padding: 8px 12px;
+  border-bottom: 1px solid transparent;
+  color: var(--landing-muted);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+  white-space: nowrap;
+}
+
+.windowTab[data-active="true"] {
+  border-bottom-color: var(--landing-ink);
+  color: var(--landing-ink);
+}
+
+.windowBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 20px;
+  background: var(--landing-canvas);
+}
+
+/* ---------- Provider strip ---------- */
+
+.providerSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: min(100%, var(--landing-container));
+  margin-inline: auto;
+  padding: 96px var(--landing-gutter) 0;
+}
+
+.providerLabel {
+  color: var(--landing-ink);
+  font-size: var(--landing-body-size);
+  text-align: center;
+}
+
+.providerGrid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.providerTile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 104px;
+  border-radius: var(--landing-tile-radius);
+  background: var(--landing-tile);
+}
+
+.providerLogo {
+  width: auto;
+  height: 26px;
+  max-width: 76%;
+  object-fit: contain;
+  /* The source marks carry their own brand colours and some are white-on-
+     transparent. Flatten every one to a single ink silhouette so the strip reads
+     as a monochrome wordmark row, which is what the reference does. */
+  filter: brightness(0) invert(1);
+  opacity: 0.72;
+}
+
+:global(html.light) .providerLogo {
+  filter: brightness(0);
+  opacity: 0.62;
+}
+
+/* ---------- Feature card ---------- */
+
+.featureCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  align-items: stretch;
+  gap: 48px;
+  width: min(100%, var(--landing-container));
+  margin: var(--landing-section-space) auto 0;
+  padding: 40px;
+  border-radius: var(--landing-card-radius);
+  background: var(--landing-surface);
+}
+
+.featureCard[data-reversed="true"] .featureCopy {
+  order: 2;
+}
+
+.featureCard[data-reversed="true"] .featureMedia {
+  order: 1;
+}
+
+.featureCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+  min-width: 0;
+}
+
+.featureTitle {
+  color: var(--landing-ink);
+  font-size: var(--landing-section-size);
+  font-weight: 400;
+  letter-spacing: var(--landing-section-track);
+  line-height: 1.15;
+}
+
+.featureBody {
+  color: var(--landing-ink);
+  font-size: var(--landing-lead-size);
+  line-height: 1.4;
+}
+
+.featureMedia {
+  display: flex;
+  min-width: 0;
+}
+
+.featureMedia > .windowStage {
+  display: flex;
+  flex: 1;
+  min-height: 420px;
+}
+
+.featureMedia > .windowStage > .window {
+  flex: 1;
+}
+
+/* ---------- Command bar (feature controls) ---------- */
+
+.commandBar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+}
+
+.commandRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 8px 8px 14px;
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-tile-radius);
+  background: var(--landing-canvas);
+}
+
+.commandText {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  color: var(--landing-ink);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+  line-height: 1.5;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.commandText::-webkit-scrollbar {
+  display: none;
+}
+
+.commandButton {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding-inline: 12px;
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-control-radius);
+  background: var(--landing-surface);
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--landing-hover-duration) var(--landing-ease-ui),
+    border-color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.commandStatus {
+  /* Wraps onto its own line under the command, so the bar height never changes
+     between idle and confirmed. */
+  flex: 1 0 100%;
+  min-height: 1.2em;
+  color: var(--landing-muted);
+  font-size: var(--landing-meta-size);
+  line-height: 1.4;
+}
+
+/* ---------- Run explorer (inside a window) ---------- */
+
+.runEmbedded {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
+.runFrame {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 20px;
+  min-height: 0;
+}
+
+.runControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.textControl {
+  min-height: 36px;
+  padding-inline: 14px;
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-control-radius);
+  background: transparent;
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+  cursor: pointer;
+  transition:
+    background-color var(--landing-hover-duration) var(--landing-ease-ui),
+    border-color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.runOutput {
+  color: var(--landing-muted);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+}
+
+.runStageTitle {
+  margin-top: 8px;
+  color: var(--landing-ink);
+  font-size: 1.375rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.runSummary {
+  margin-top: 10px;
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+  line-height: 1.5;
+}
+
+.runFacts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--landing-line);
+}
+
+.runFacts dt {
+  color: var(--landing-muted);
+  font-size: var(--landing-meta-size);
+}
+
+.runFacts dd {
+  margin: 4px 0 0;
+  color: var(--landing-ink);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-small-size);
+}
+
+/* ---------- Branch gates ---------- */
+
+.gateList {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.gateLede {
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+  line-height: 1.5;
+}
+
+.gateLede code {
+  font-family: var(--landing-font-mono);
+  font-size: 0.8125rem;
+}
+
+.gateRows {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--landing-line);
+}
+
+.gateRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--landing-line);
+}
+
+.gateLabel {
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+}
+
+.gateResult {
+  color: var(--landing-muted);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+  text-align: right;
+}
+
+/* ---------- Evidence (embedded) ---------- */
+
+.evidenceEmbedded {
+  min-width: 0;
+}
+
+.evidenceFrame {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 20px;
+  min-width: 0;
+}
+
+.evidenceFileHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.evidenceFileName {
+  color: var(--landing-ink);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-small-size);
+}
+
+.fileQualifier {
+  color: var(--landing-link);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+}
+
+.evidenceDescription {
+  margin-top: 14px;
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+  line-height: 1.5;
+}
+
+.evidenceNote {
+  margin-top: 14px;
+  color: var(--landing-muted);
+  font-size: var(--landing-meta-size);
+  line-height: 1.5;
+}
+
+/* ---------- Code block ---------- */
+
+.codeBlock {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-tile-radius);
+  background: var(--landing-surface);
+  color: var(--landing-ink);
+  font-family: var(--landing-font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  overflow: auto;
+}
+
+/* ---------- Receipt grid (centred, 3-up) ---------- */
+
+.receiptSection {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: min(100%, var(--landing-container));
+  margin: var(--landing-section-space) auto 0;
+  padding-inline: var(--landing-gutter);
+}
+
+.centredIntro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.centredTitle {
+  color: var(--landing-ink);
+  font-size: var(--landing-display-size);
+  font-weight: 400;
+  letter-spacing: var(--landing-display-track);
+  line-height: 1;
+}
+
+.centredBody {
+  max-width: 52ch;
+  color: var(--landing-muted);
+  font-size: var(--landing-body-size);
+  line-height: 1.5;
+}
+
+.receiptGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.receiptCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 28px;
+  border-radius: var(--landing-card-radius);
+  background: var(--landing-surface);
+}
+
+.receiptFile {
+  color: var(--landing-muted);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+}
+
+.receiptTitle {
+  color: var(--landing-quote-ink);
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.receiptBody {
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+  line-height: 1.55;
+}
+
+/* ---------- Row sections (changelog, highlights) ---------- */
+
+.rowSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+  width: min(100%, var(--landing-container));
+  margin: var(--landing-section-space) auto 0;
+  padding-inline: var(--landing-gutter);
+}
+
+.cardRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.metaCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  min-height: 104px;
+  padding: 22px;
+  border-radius: var(--landing-card-radius);
+  background: var(--landing-surface);
+  transition: background-color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.metaDate,
+.metaCategory {
+  color: var(--landing-link);
+  font-size: var(--landing-meta-size);
+}
+
+.metaTitle {
+  color: var(--landing-ink);
+  font-size: var(--landing-body-size);
+  line-height: 1.3;
+}
+
+.metaBody {
+  color: var(--landing-muted);
+  font-size: var(--landing-small-size);
+  line-height: 1.5;
+}
+
+/* ---------- Capability row (3-up with media) ---------- */
+
+.capabilityGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.capabilityCard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.capabilityCard .windowStage {
+  display: flex;
+  flex: 1;
+  min-height: 220px;
+}
+
+.capabilityCard .windowStage > .window {
+  flex: 1;
+}
+
+.capabilityCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.capabilityTitle {
+  color: var(--landing-ink);
+  font-size: 1.125rem;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.capabilityBody {
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+  line-height: 1.55;
+}
+
+.miniRows {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.miniRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--landing-line);
+  color: var(--landing-ink);
+  font-size: var(--landing-meta-size);
+}
+
+.miniRow:last-child {
+  border-bottom: 0;
+}
+
+.miniRow code {
+  color: var(--landing-muted);
+  font-family: var(--landing-font-mono);
+  font-size: 11px;
+  text-align: right;
+}
+
+/* ---------- Manifesto ---------- */
+
+.manifestoCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  align-items: center;
+  gap: 48px;
+  width: min(100%, var(--landing-container));
+  margin: var(--landing-section-space) auto 0;
+  padding: 40px;
+  border-radius: var(--landing-card-radius);
+  background: var(--landing-surface);
+}
+
+.manifestoCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.manifestoPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px;
+  border-radius: var(--landing-card-radius);
+  background: var(--landing-canvas);
+}
+
+.manifestoPanelTitle {
+  color: var(--landing-ink);
+  font-size: var(--landing-body-size);
+}
+
+.manifestoList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.manifestoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--landing-line);
+}
+
+.manifestoItem:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.manifestoItemName {
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+}
+
+.manifestoItemBody,
+.manifestoProviderLine {
+  color: var(--landing-muted);
+  font-size: var(--landing-meta-size);
+  line-height: 1.55;
+}
+
+/* ---------- Final CTA ---------- */
+
+.finalCta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: min(100%, var(--landing-container));
+  margin: var(--landing-section-space) auto 0;
+  padding: 120px var(--landing-gutter);
+  text-align: center;
+}
+
+.finalTitle {
+  color: var(--landing-ink);
+  font-size: var(--landing-display-size);
+  font-weight: 400;
+  letter-spacing: var(--landing-display-track);
+  line-height: 1;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1199px) {
+  .providerGrid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1023px) {
+  .featureCard,
+  .manifestoCard {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .featureCard[data-reversed="true"] .featureCopy {
+    order: 1;
+  }
+
+  .featureCard[data-reversed="true"] .featureMedia {
+    order: 2;
+  }
+
+  .receiptGrid,
+  .capabilityGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cardRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .windowStage[data-window-variant="offset"] .window {
+    width: 88%;
+  }
+}
+
+@media (max-width: 899px) {
+  .runFrame,
+  .evidenceFrame {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero {
+    padding-top: 56px;
+  }
+
+  .window {
+    margin: 20px;
+  }
+}
+
+@media (max-width: 639px) {
+  .providerGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .receiptGrid,
+  .capabilityGrid,
+  .cardRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .featureCard,
+  .manifestoCard {
+    padding: 24px;
+  }
+
+  .windowStage[data-window-variant="offset"] .window {
+    width: 100%;
+  }
+
+  .finalCta {
+    padding-block: 88px;
+  }
+}
+
+/* Hover motion only on a real pointer, so a tap never fires it. */
+@media (hover: hover) and (pointer: fine) {
+  .textLink:hover {
+    text-decoration: underline;
+  }
+
+  .primaryAction:hover {
+    opacity: 0.86;
+  }
+
+  .secondaryAction:hover,
+  .textControl:hover,
+  .videoButton:hover:not(:disabled) {
+    background: var(--landing-surface-strong);
+  }
+
+  .metaCard:hover {
+    background: var(--landing-surface-strong);
+  }
+
+  .primaryAction:active,
+  .secondaryAction:active,
+  .textControl:active {
+    transform: scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryAction,
+  .secondaryAction,
+  .textControl,
+  .metaCard,
+  .textLink {
+    transition-duration: 0.001ms;
+  }
+}
+
+/* ---------- Hero window ----------
+ *
+ * Declared after the responsive block on purpose. The stage owns the height
+ * through its aspect ratio and the window is pinned inside it, so media loading
+ * can never change the page height and the full-page baseline stays stable.
+ * These selectors have to outrank the generic `.window` margin and the
+ * offset-variant width rules above, so they restate both. */
+.heroMedia .windowStage {
+  position: relative;
+  aspect-ratio: 1.95;
+}
+
+.heroMedia .windowStage > .window,
+.heroMedia .windowStage[data-window-variant="offset"] > .window {
+  position: absolute;
+  inset: 40px;
+  width: auto;
+  margin: 0;
+}
+
+/* Below 900px the 16:9 letterbox leaves the video no height at all, so the stage
+   drops the ratio and the window returns to normal flow. Height stays
+   deterministic because `.videoElement` is out of flow and the viewport carries
+   a fixed minimum instead. */
+@media (max-width: 899px) {
+  .heroMedia .windowStage {
+    aspect-ratio: auto;
+  }
+
+  .heroMedia .windowStage > .window,
+  .heroMedia .windowStage[data-window-variant="offset"] > .window {
+    position: relative;
+    inset: auto;
+    width: auto;
+    margin: 20px;
+  }
+
+  .heroMedia .windowBody {
+    min-height: 0;
+  }
+
+  .heroMedia .videoViewport {
+    min-height: 260px;
+  }
+}

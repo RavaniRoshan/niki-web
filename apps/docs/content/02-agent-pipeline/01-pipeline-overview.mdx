@@ -8,7 +8,7 @@ sidebar:
 
 ## Multi-Agent Pipeline Overview
 
-At the heart of NIKI is an autonomous pipeline where each stage is handled by a specialized LLM agent.
+NIKI's default topology is `auto`: low-complexity tasks collapse to Planner + solo Coder, while higher-complexity tasks use the full chain shown below.
 
 ```mermaid
 sequenceDiagram
@@ -25,14 +25,15 @@ sequenceDiagram
     P->>C: TaskSpec (JSON)
     Note over C: Writes unified diff
     C->>T: CodeDiff (JSON)
-    Note over T: Generates & executes tests in container
+    Note over T: Produces a TestReport
     T->>R: TestReport (JSON)
     Note over R: Audits correctness, quality, coverage
+    Note over T,R: A configured or auto-detected test command runs later, before branch creation
     alt Revision Needed
         R-->>C: ReviewFeedback (JSON)
         Note over C: Adjusts diff based on reviewer feedback
-    else Approved
-        R->>Git: Commit to niki/<id> branch
+    else Loop complete
+        R->>Git: Commit to niki/<id> branch if eligible
         Git-->>User: Report, Patch & Artifacts
     end
 ```
@@ -43,12 +44,14 @@ sequenceDiagram
 
 Agents never exchange unstructured conversation logs. Every stage takes a validated JSON input and produces a validated JSON output:
 
-| Producer | Consumer | Artifact | Schema / Purpose |
-|---|---|---|---|
-| **Planner** | Coder | `TaskSpec` | Problem summary, files to touch, approach, acceptance criteria, constraints |
-| **Coder** | Tester, Sandbox | `CodeDiff` | Search/replace hunk edits, rationale, spec adherence verification |
-| **Tester** | Reviewer | `TestReport` | Synthesized tests, test execution results, pass/fail status, coverage summary |
-| **Reviewer** | Orchestrator, Coder | `ReviewVerdict` | Approved / RevisionNeeded / Rejected, quality scores, granular feedback |
+| Producer     | Consumer            | Artifact        | Schema / Purpose                                                              |
+| ------------ | ------------------- | --------------- | ----------------------------------------------------------------------------- |
+| **Planner**  | Coder               | `TaskSpec`      | Problem summary, files to touch, approach, acceptance criteria, constraints   |
+| **Coder**    | Tester, Sandbox     | `CodeDiff`      | Search/replace hunk edits, rationale, spec adherence verification             |
+| **Tester**   | Reviewer            | `TestReport`    | Proposed tests, analytical pass/fail summary, coverage assessment             |
+| **Reviewer** | Orchestrator, Coder | `ReviewVerdict` | Approved / RevisionNeeded / Rejected, quality scores, granular feedback       |
+
+Real test-runner output is separate: when a command resolves, the orchestrator writes `artifacts/test_execution.json` with the command, exit code, stdout, and stderr. If none resolves, `test_execution` is `None` and the report omits the execution section.
 
 ---
 
@@ -56,6 +59,6 @@ Agents never exchange unstructured conversation logs. Every stage takes a valida
 
 In `niki.toml`, you can configure how tasks route through the pipeline:
 
-* **`Auto` (Default):** Evaluates task complexity during the planning stage. Low-complexity, single-line or documentation fixes take a fast-path single-agent route, while multi-file or architectural changes run the full 4-agent pipeline.
-* **`MultiAgent`:** Strictly forces all tasks through the full Planner → Coder → Tester → Reviewer sequence.
-* **`SingleAgent`:** Runs Coder solo without formal Tester/Reviewer revision loops.
+- **`auto` (default):** Uses the Planner's estimated complexity. `Low` (or below `single_agent_max_complexity`) collapses to Planner + solo Coder; larger tasks use Planner → Coder → Tester → Reviewer. Security, parallel, and High/Security-risk configurations can force the full chain.
+- **`multiagent`:** Forces the full Planner → Coder → Tester → Reviewer sequence, with optional Red, Critic, Synthesizer, and Security Auditor stages.
+- **`singleagent`:** Forces Planner + solo Coder and skips independent Tester/Reviewer/Red sessions.

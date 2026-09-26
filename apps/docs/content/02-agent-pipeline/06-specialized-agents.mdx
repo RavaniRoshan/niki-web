@@ -8,7 +8,7 @@ sidebar:
 
 ## Specialized & Opt-In Agents
 
-Beyond the core 4-agent pipeline, NIKI supports advanced specialized agent stages configured in `niki.toml`.
+Beyond the full Planner → Coder → Tester → Reviewer topology, NIKI supports advanced stages configured in `niki.toml`.
 
 ---
 
@@ -43,7 +43,7 @@ coder_count = 3
 
 ## 3. Security Auditor (`[security]`)
 
-A dedicated security pass that scans diffs for hardcoded secrets, injection vectors, unauthorized file access, and memory safety issues before tests or commits execute.
+The Security Auditor is appended **after the Reviewer**. It records findings about secrets, injection risks, unauthorized access, and related issues; by default its verdict does not gate the revision loop.
 
 ```toml
 [security]

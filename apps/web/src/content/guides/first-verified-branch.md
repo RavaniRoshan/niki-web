@@ -1,14 +1,14 @@
 ---
-title: "Your first verified branch in 5 minutes"
-description: "Zero-setup path: install Niki, point it at local Ollama, run a task on the worktree backend, read the report."
+title: "Your first local branch"
+description: "Install Niki, use local Ollama with the worktree backend, and inspect the local branch and report."
 pubDate: "2026-09-05"
-updated: "2026-09-08"
+updated: "2026-09-23"
 difficulty: "beginner"
-time: "~5 min"
 ---
 
-The fastest path to a verified branch needs no container runtime and no API key — just
-[Ollama](https://ollama.com) and the worktree backend.
+A local path to a branch needs no container runtime or hosted API key: use
+[Ollama](https://ollama.com) with the worktree backend. You still need a git repository and a
+local model.
 
 ## 1. Install Niki
 
@@ -26,7 +26,7 @@ ollama pull qwen2.5-coder:3b
 
 ```bash
 cd ./my-app
-niki init --interactive   # pick Ollama when offered — it's detected automatically
+niki init --interactive
 ```
 
 ## 4. Run on the worktree backend
@@ -35,8 +35,9 @@ niki init --interactive   # pick Ollama when offered — it's detected automatic
 niki run "Add a /health endpoint" --backend worktree
 ```
 
-The worktree backend uses an isolated git worktree and local processes — no Podman or Docker
-needed. (Niki prints a host-privilege warning so the tradeoff is explicit.)
+The worktree backend uses `.niki-worktrees/<id>` with host-local processes: no Podman or Docker
+is needed. Niki prints a host-privilege warning, and the final diff is applied to the host working
+tree.
 
 ## 5. Review the result
 
@@ -44,8 +45,10 @@ needed. (Niki prints a host-privilege warning so the tradeoff is explicit.)
 niki report <id>
 ```
 
-You'll see the verdict, per-agent scores, exact token counts and cost — plus where the
-branch and artifacts live. Merge the `niki/<id>` branch when you're satisfied.
+You'll see the verdict, provider-reported token counts and estimated cost, plus where the
+branch and artifacts live. If no test command resolves, the report records no test execution. A
+For a non-dry run, a branch is created only for a non-empty diff with no blocked test failure;
+`--force` can create an unverified branch. Merge the `niki/<id>` branch when you're satisfied.
 
 ## Next steps
 

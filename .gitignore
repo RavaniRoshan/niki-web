@@ -11,4 +11,30 @@ apps/web/dist/
 .astro/
 .next/
 out/
+
+# Originkit agent + credential scratch space
+.originkit/
 tsconfig.tsbuildinfo
+
+# Test output
+apps/web/playwright-report/
+apps/web/test-results/
+test-results/
+playwright-report/
+
+# Local agent tooling directories. Not part of the site.
+.claude/
+.firecrawl/
+.opencode/
+.kimi/
+
+# Reference captures and ad-hoc screenshots. The landing was designed against a
+# full-page reference image; that image is third-party material and must never be
+# committed. The .shot-hero*.png files are stale local captures.
+*.png:Zone.Identifier
+AI-Coding-Agent-for-Building-Ambitious-Software-Cursor-*.png
+.shot-hero*.png
+
+# Scratch plan from the superseded "Axiom" landing direction. TODO.md is the
+# current status document; this was a working file for the previous one.
+plan.md

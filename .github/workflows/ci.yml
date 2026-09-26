@@ -36,3 +36,18 @@ jobs:
 
       - name: Prettier check (docs)
         run: npm run format:check --workspace apps/docs || true
+
+      - name: Lint
+        run: npm run lint --workspace apps/web
+
+      - name: Typecheck
+        run: npx tsc --noEmit --project apps/web/tsconfig.json
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Test landing page
+        run: npm run test:e2e:web
+        env:
+          NIKI_WEB_URL: ${{ vars.NIKI_WEB_URL || 'https://niki-web.pages.dev' }}
+          NIKI_DOCS_URL: ${{ vars.NIKI_DOCS_URL || 'https://niki-docs.pages.dev' }}

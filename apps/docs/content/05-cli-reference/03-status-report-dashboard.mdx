@@ -1,6 +1,6 @@
 ---
 title: status, report, dashboard
-description: Inspecting task status, reading reports, and opening review dashboards.
+description: Inspecting task status, reading reports, and generating review dashboards.
 sidebar:
   order: 3
   label: status, report, dashboard
@@ -14,10 +14,17 @@ Inspect task executions, audit decisions, and view visual diffs.
 
 ## `niki status`
 
-Displays the live or most recent task status, current active stage, revision counts, and generated branch names.
+Prints the selected or most recent task's description, status, optional branch and verdict, revision count, artifacts directory, and report path. It does not print a current stage.
 
 ```bash
+# Latest task
 niki status
+
+# Full UUID or unique short prefix
+niki status 6d281d6d
+
+# Add repository/config provenance details
+niki status --with-provenance
 ```
 
 ---
@@ -27,10 +34,10 @@ niki status
 Renders the complete `report.md` decision trail for a task. Accepts full task UUIDs or unique short prefixes.
 
 ```bash
-# View report for latest task
+# Latest task
 niki report
 
-# View report for specific task prefix
+# View report for a specific task prefix
 niki report 6d281d6d
 ```
 
@@ -38,12 +45,15 @@ niki report 6d281d6d
 
 ## `niki dashboard`
 
-Generates or opens a standalone, static HTML visual diff and review dashboard in your default browser.
+Generates a standalone `dashboard.html`, prints its path, and prints a `file://` URL for you to open manually. It does not launch a browser.
 
 ```bash
-# Open interactive diff dashboard for latest task
+# Generate for the most recent task
 niki dashboard
 
-# Output path to HTML file without opening browser
-niki dashboard --path-only
+# Generate for a specific task directory ID
+niki dashboard --task 6d281d6d-3184-482a-89aa-403332152861
+
+# Print the existing path without regenerating
+niki dashboard --task 6d281d6d-3184-482a-89aa-403332152861 --path-only
 ```

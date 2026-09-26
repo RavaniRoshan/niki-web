@@ -1,6 +1,6 @@
 /**
- * Release data — single source of truth for the Downloads page.
- * Mirrors what cargo-dist publishes to GitHub Releases.
+ * Release data, single source of truth for the Downloads page.
+ * Provides release download metadata; asset and checksum names can vary by installer.
  * Update per release, or wire to the GitHub Releases API later.
  */
 
@@ -13,16 +13,13 @@ export const RELEASE = {
   repoBase: "https://github.com/RavaniRoshan/niki",
 } as const;
 
-const asset = (name: string): string =>
-  `${RELEASE.repoBase}/releases/download/${RELEASE.tag}/${name}`;
-
 export interface Target {
   os: "macOS" | "Linux" | "Windows";
   label: string;
   triple: string;
   archive: string;
   archiveExt: "tar.xz" | "zip";
-  sha256: string;
+  releaseFiles: string;
 }
 
 export const TARGETS: Target[] = [
@@ -32,7 +29,7 @@ export const TARGETS: Target[] = [
     triple: "aarch64-apple-darwin",
     archive: "niki-aarch64-apple-darwin",
     archiveExt: "tar.xz",
-    sha256: asset("niki-aarch64-apple-darwin.tar.xz.sha256"),
+    releaseFiles: RELEASE.notes,
   },
   {
     os: "macOS",
@@ -40,7 +37,7 @@ export const TARGETS: Target[] = [
     triple: "x86_64-apple-darwin",
     archive: "niki-x86_64-apple-darwin",
     archiveExt: "tar.xz",
-    sha256: asset("niki-x86_64-apple-darwin.tar.xz.sha256"),
+    releaseFiles: RELEASE.notes,
   },
   {
     os: "Linux",
@@ -48,7 +45,7 @@ export const TARGETS: Target[] = [
     triple: "x86_64-unknown-linux-gnu",
     archive: "niki-x86_64-unknown-linux-gnu",
     archiveExt: "tar.xz",
-    sha256: asset("niki-x86_64-unknown-linux-gnu.tar.xz.sha256"),
+    releaseFiles: RELEASE.notes,
   },
   {
     os: "Linux",
@@ -56,7 +53,7 @@ export const TARGETS: Target[] = [
     triple: "aarch64-unknown-linux-gnu",
     archive: "niki-aarch64-unknown-linux-gnu",
     archiveExt: "tar.xz",
-    sha256: asset("niki-aarch64-unknown-linux-gnu.tar.xz.sha256"),
+    releaseFiles: RELEASE.notes,
   },
   {
     os: "Windows",
@@ -64,7 +61,7 @@ export const TARGETS: Target[] = [
     triple: "x86_64-pc-windows-msvc",
     archive: "niki-x86_64-pc-windows-msvc",
     archiveExt: "zip",
-    sha256: asset("niki-x86_64-pc-windows-msvc.zip.sha256"),
+    releaseFiles: RELEASE.notes,
   },
 ];
 
@@ -73,7 +70,7 @@ export const INSTALLERS = {
     label: "Linux / macOS",
     command:
       "curl -fsSL https://raw.githubusercontent.com/RavaniRoshan/niki/master/scripts/install.sh | bash",
-    note: "Checksum-verified against release checksums. Installs to ~/.local/bin.",
+    note: "The repository installer resolves the latest release and verifies the downloaded archive against checksums.txt before installing.",
   },
   powershell: {
     label: "Windows",
@@ -84,16 +81,16 @@ export const INSTALLERS = {
   homebrew: {
     label: "macOS / Linux",
     command: "brew install niki",
-    note: "Homebrew tap — maintained formula, brew upgrade to update.",
+    note: "Homebrew formula availability and version depend on the tap.",
   },
   cargo: {
     label: "Any (from source)",
     command: "cargo install niki",
-    note: "Requires Rust 1.85+ (edition 2024).",
+    note: "Requires Rust 1.88+ (edition 2024).",
   },
 } as const;
 
 export const CHECKSUMS = {
-  bundle: asset("sha256.sum"),
-  note: "Every archive ships a .sha256 sidecar; the installer verifies before installing.",
+  release: RELEASE.notes,
+  note: "Installer and web asset names have differed; use the current release page's checksum manifest and compare the archive's SHA-256 digest before use.",
 };

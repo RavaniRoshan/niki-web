@@ -1,36 +1,37 @@
 ---
-title: "Why four agents beat one"
-description: "Confirmation bias, context drift and the babysitting tax are structural failures of single-agent loops. Independence is the fix."
+title: "Why separate stages can help"
+description: "Separate sessions and typed artifacts can reduce context drift and make each stage's work inspectable."
 pubDate: "2026-08-25"
 author: "Roshan Ravani"
 tags: ["architecture"]
 ---
 
-Every single-agent coding tool — no matter how good the model — runs one long conversation.
-Three failures follow from that shape alone:
+A single-agent loop keeps one conversation around the task. That shape can create three
+recurring costs:
 
-**Confirmation bias.** An agent that wrote the code reviews its own reasoning. It never truly
-challenges its assumptions because it is its own audience.
+**Confirmation bias.** The same agent may review its own reasoning and assumptions.
 
-**Context drift.** Quality degrades as the conversation grows. Every earlier token competes
-with the task at hand.
+**Context drift.** As a conversation grows, relevant context can be harder to manage.
 
-**The babysitting tax.** You become the reviewer, steerer and verifier of a stream of edits —
-the opposite of delegation.
+**The babysitting tax.** You may still have to steer, correct, and re-verify a stream of edits.
 
 ## The artifact boundary
 
-Niki splits the work into Planner, Coder, Tester and Reviewer — agents that share no
-conversation. They exchange typed artifacts: a TaskSpec, a unified diff, a test report, a
-verdict. Each artifact is JSON-schema validated before the next stage consumes it.
+In the full multiagent path, Niki splits the work into Planner, Coder, Tester and Reviewer,
+separate sessions that exchange typed artifacts: a TaskSpec, a unified diff, a test report, and a
+verdict. Each artifact is JSON-schema validated before handoff. In auto mode, a low-complexity
+task can collapse to Planner plus a solo Coder.
 
-The result: a Tester that never saw the Coder's reasoning can only judge the change. A
-Reviewer that never saw the Planner's intent can only judge whether the spec was met. The
-biases have no channel to travel through.
+The Tester receives the spec and Coder artifact rather than a shared conversation. The Reviewer
+receives those artifacts plus the Tester evidence. Separate sessions narrow context contamination;
+they do not make a stage blind to the evidence it needs.
 
-## Independence is testable
+## What the code records
 
-This isn't philosophy — it's enforced in code. Isolation records mirror the wiring, Red
-agents receive evidence-only projections, and shared-model review raises warnings. See the
-[claims audit](https://github.com/RavaniRoshan/niki/blob/master/docs/claims-audit.md) for the
-code-level evidence.
+This isn't philosophy: isolation records mirror the wiring, Red agents receive evidence-only
+projections, and shared-model review raises warnings. Those mechanisms narrow the problem; they do
+not prove correctness. See the [claims audit](https://github.com/RavaniRoshan/niki/blob/master/docs/claims-audit.md)
+for code-level details.
+
+A completed run may produce a local `niki/<id>` branch and `changes.patch`; it does not create a
+GitHub pull request.

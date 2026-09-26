@@ -5,7 +5,8 @@ sidebar:
   order: 2
   label: Docker & Podman Sandbox
 ---
-NIKI's primary execution backend runs in rootless Podman or Docker containers.
+
+NIKI's default container backend uses Podman or Docker. Unless `DOCKER_HOST` overrides discovery, it probes the rootless Podman socket before rootful Podman and Docker sockets; rootless execution is not guaranteed.
 
 ---
 
@@ -15,14 +16,14 @@ Control memory quotas, CPU limits, capabilities, and network behavior in `niki.t
 
 ```toml
 [docker]
-backend          = "docker"              # "docker" (container) or "worktree" (git worktree, no isolation)
+backend          = "docker"              # "docker" (container) or "worktree" (host-local processes)
 base_image       = "niki-sandbox:24.04"  # base image
 memory_limit     = "2g"                  # memory limit
 cpu_limit        = 2.0                   # max CPU cores
 pids_limit       = 512                   # max child processes (fork bomb guard)
 cap_drop_all     = true                  # drops all Linux capabilities
 network_disabled = true                  # blocks all outbound network traffic
-readonly_rootfs  = false                 # enables read-only root filesystem
+readonly_rootfs  = false                 # false leaves the root filesystem writable
 extra_packages   = ["nodejs", "npm", "python3"]
 ```
 
@@ -30,24 +31,20 @@ extra_packages   = ["nodejs", "npm", "python3"]
 
 ## Network Egress Control
 
-By default, `network_disabled = true` prevents agent-generated code from sending outbound network requests or exfiltrating data.
-
-If your tests require downloading dependencies or reaching specific staging servers, configure a strict `network_allowlist`:
+By default, `network_disabled = true` gives the container no network. Egress is all-or-nothing: per-domain allowlists are **not implemented**.
 
 ```toml
 [docker]
-network_disabled  = false
-network_allowlist = ["registry.npmjs.org", "crates.io", "pypi.org"]
+network_disabled = false # wildcard-open egress
 ```
+
+`network_allowlist = ["*"]` (or `["all"]`) is equivalent. With the default `network_disabled = true`, a non-wildcard domain list such as `["registry.npmjs.org"]` warns and still behaves as block-all; it does not provide selective egress.
 
 ---
 
 ## Remote Daemon (Cloud-Adjacent Execution)
 
-NIKI honors the standard `DOCKER_HOST` environment variable when connecting
-to the container runtime. Point it at a remote daemon to execute agent
-containers on another machine (a cloud VM, a beefy workstation) instead of
-locally — no NIKI-side changes needed:
+NIKI honors `DOCKER_HOST` when connecting to the container runtime. A remote daemon can run the container only if it can access the same project path used in the bind mount:
 
 ```bash
 export DOCKER_HOST="ssh://user@build-host"
@@ -59,11 +56,10 @@ Requirements and honest limits:
 - The remote daemon must already have the sandbox image (`niki-sandbox:24.04`
   or your configured `base_image`); NIKI pulls it on demand where the daemon
   allows, but a private registry needs its own auth setup.
-- The project source is sent to the remote daemon as build/run context —
-  treat the remote host with the same trust you give your own machine.
+- The project is bind-mounted by path, not uploaded as build context. The remote host must expose that path with compatible ownership and permissions; treat it with the same trust you give your own machine.
 - Prefer SSH with key auth; unencrypted `tcp://` daemons expose root-equivalent
   API access to anyone on the path. NIKI never downgrades this for you.
-- `niki doctor` checks the *local* toolchain; remote image presence surfaces
+- `niki doctor` checks the _local_ toolchain; remote image presence surfaces
   as a mid-run error, not a doctor failure (yet).
 
 A managed NIKI cloud (hosted runners, no daemon of your own) remains roadmap,

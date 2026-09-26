@@ -14,13 +14,13 @@ Manage project settings, provider credentials, and system diagnostics.
 
 ## `niki config`
 
-Initialize a new configuration or generate JSON schema definitions for IDE auto-completion.
+Initialize configuration or write a local JSON schema for editor tooling.
 
 ```bash
 # Interactive configuration setup wizard
 niki config init --interactive
 
-# Print JSON Schema for niki.toml (useful for VS Code / JetBrains schemas)
+# Write ./niki.schema.json and print its path
 niki config schema
 ```
 
@@ -28,7 +28,7 @@ niki config schema
 
 ## `niki auth`
 
-Secure credential management integrated with your operating system keyring.
+`niki auth` stores, removes, and reports credentials in the OS keyring. Keyring values are not currently resolved into runtime provider clients, so use `niki.toml` or supported environment variables for live calls.
 
 ```bash
 # Log in to a provider
@@ -63,7 +63,7 @@ niki doctor --category providers
 
 ## `niki recommend`
 
-Analyzes your project or task and recommends the optimal model distribution across roles based on cost, reasoning, and latency preferences.
+Selects model/provider pairings from static role recommendations. `--project` history can add an observed-spend section, but observed spend does not drive the selected pairings.
 
 ```bash
 niki recommend --preference balanced

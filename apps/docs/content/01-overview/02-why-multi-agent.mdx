@@ -5,6 +5,7 @@ sidebar:
   order: 2
   label: Why Multi-Agent?
 ---
+
 > **Stop babysitting your AI. Let agents debate so you don't have to.**
 
 Traditional AI coding assistants operate inside a single conversational loop. While effective for simple snippets, this model breaks down on non-trivial, multi-file software engineering tasks.
@@ -14,24 +15,27 @@ Traditional AI coding assistants operate inside a single conversational loop. Wh
 ## The 3 Failures of Single-Agent Tools
 
 ### 1. Confirmation Bias
+
 When a single agent plans, writes, and checks its own code, it rarely challenges its own initial assumptions. If it misinterprets a requirement or introduces a subtle regression, it will happily generate tests that pass its own flawed logic.
 
 ### 2. Context Drift
+
 As conversation histories grow, LLMs suffer from attention degradation and prompt dilution. Context drift causes models to forget architectural rules, introduce hallucinated functions, or revert earlier bug fixes.
 
 ### 3. The Babysitting Tax
+
 In a single-agent loop, the human developer becomes the sole verification layer. You must read every diff, spot silent logic errors, manually execute test commands, and continually steer the agent back on track.
 
 ---
 
 ## The NIKI Approach
 
-NIKI addresses these failure modes by enforcing **structural independence**:
+NIKI addresses these failure modes by enforcing structural independence when the `multiagent` topology is selected:
 
-| Dimension | Monolithic Assistants | NIKI Multi-Agent Pipeline |
-|---|---|---|
-| **Architecture** | Single model in one conversation | 4 specialized agents (Planner, Coder, Tester, Reviewer) |
-| **Context** | Shared conversation history (drift prone) | Zero shared history; communicate only via typed JSON artifacts |
-| **Verification** | Single-pass self-review | Dedicated Reviewer agent with multi-criteria quality scoring |
-| **Execution** | Host filesystem mutation | Rootless container sandbox (`CapDrop ALL`, network isolated) |
-| **Output** | Inline diffs or unverified edits | Real Git branch (`niki/<id>`), `changes.patch`, and `report.md` |
+| Dimension        | Monolithic Assistants                     | NIKI Pipeline                                                                 |
+| ---------------- | ----------------------------------------- | ----------------------------------------------------------------------------- |
+| **Architecture** | Single model in one conversation          | Full runs use four core agents; low-complexity `auto` runs use Planner + solo Coder |
+| **Context**      | Shared conversation history (drift prone) | Separate LLM sessions exchange typed JSON artifacts                            |
+| **Verification** | Single-pass self-review                   | Dedicated Tester and Reviewer in `multiagent`; no independent review in `singleagent` |
+| **Execution**    | Host filesystem mutation                  | Docker/Podman bind-mounted sandbox, or host-local worktree processes           |
+| **Output**       | Inline diffs or unverified edits          | Eligible non-empty diffs may produce a Git branch, `changes.patch`, and `report.md` |
