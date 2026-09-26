@@ -558,7 +558,7 @@ test("a successful landing load has no runtime failures and decodes its real med
         };
       })
     )
-    .toEqual({ hasMetadata: true, hasDuration: true, videoWidth: 1120, videoHeight: 710 });
+    .toEqual({ hasMetadata: true, hasDuration: true, videoWidth: 1808, videoHeight: 958 });
 
   const providerGrid = page.getByTestId("provider-grid");
   await providerGrid.scrollIntoViewIfNeeded();
@@ -592,6 +592,10 @@ test("the real recording and every provider mark are served locally with correct
   expect(media[1].headers()["content-type"]).toContain("video/mp4");
   expect(media[2].status()).toBe(200);
   expect(media[2].headers()["content-type"]).toContain("image/webp");
+
+  const gif = await request.get("/demo/niki-demo.gif");
+  expect(gif.status()).toBe(200);
+  expect(gif.headers()["content-type"]).toContain("image/gif");
 
   for (const provider of PROVIDERS) {
     const response = await request.get(provider.logo);
@@ -636,7 +640,7 @@ test("the recording exposes local sources, stable framing, and keyboard controls
       objectFit: getComputedStyle(player).objectFit,
     };
   });
-  expect(media).toEqual({ videoWidth: 1120, videoHeight: 710, objectFit: "cover" });
+  expect(media).toEqual({ videoWidth: 1808, videoHeight: 958, objectFit: "cover" });
 
   const frameBox = await frame.boundingBox();
   expect(frameBox).not.toBeNull();
