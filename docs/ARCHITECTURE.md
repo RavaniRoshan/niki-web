@@ -64,6 +64,17 @@ tight tracking, the same 64-to-112px section rhythm) rather than rewritten, beca
 almost all their markup through three components. `landing.visual.spec.ts` pins three of them
 alongside the landing so the two systems cannot drift apart again.
 
+The header is one component for both route groups, and it is not a purely static one. Three client
+pieces sit behind it: `NavMenu` (the mega-panels, driven by `content.ts`), `HeaderBarSurface`
+(measures the notch and writes the bar's `clip-path`), and `NavShrinkSensor` (the one-pixel
+observer that sets `html[data-nav-shrunk]`). The panels and the bar surface are deliberately kept
+out of the Server Component's own subtree for the reasons in `CONTRIBUTING.md`.
+
+The landing's closing portal is a vendored third-party component, `GlyphPortal` (MIT, © 2026
+Christian Katzmann, attribution preserved in the file). `BrandPortal` is the wrapper that supplies
+the word, the focus letter, the font, and the four `--gp-*` tokens that keep it inside the landing
+palette. It is the only scroll-driven animation besides `Reveal`.
+
 ## Data flow
 
 Nothing on the site hardcodes a fact that already lives in a data file.
@@ -109,8 +120,12 @@ changes mid-session.
 Playwright runs against `out/`, the real build output, on port 4322. It is not a dev-server test,
 so what the suite exercises is what deploys.
 
-The visual baselines compare at `maxDiffPixels: 0`. That is stricter than it sounds, and it is the
+The visual baselines compare at `maxDiffPixels: 0`, which is stricter than it sounds and is the
 reason a layout regression cannot slip through: a single shifted pixel fails the run.
+
+The landing's six baselines are the one exception, at 15000 of ~11.9M pixels. The hero background
+is a live WebGL canvas and a driver's rounding when compositing one is not bit-stable between
+runs. The inner-route baselines, whose pages carry no canvas, stay at 0.
 
 ## Deploy
 

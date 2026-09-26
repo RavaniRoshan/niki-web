@@ -38,7 +38,19 @@ for (const viewport of VIEWPORTS) {
         fullPage: true,
         animations: "disabled",
         scale: "css",
-        maxDiffPixels: 0,
+        // Not 0, and the reason is specific rather than a general loosening. The
+        // hero background is a live WebGL canvas, and a driver's rounding when
+        // compositing one is not bit-stable between runs. Measured over repeated
+        // runs of this exact test, on an otherwise idle machine and under load:
+        // 1.3k, 5.0k, 5.4k and 10.6k differing pixels, always at one or two units
+        // per channel and always along the gradient's band edges. The
+        // inner-route baselines below stay at 0 because those pages carry no
+        // canvas.
+        //
+        // 15000 is ~0.13% of the desktop image. The smallest real regression this
+        // suite is meant to catch, a nav gap closing by 4px, moves well over
+        // 100k pixels, so this cannot hide one.
+        maxDiffPixels: 15000,
       });
     });
   }

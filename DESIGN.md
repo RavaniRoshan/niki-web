@@ -103,7 +103,11 @@ and no en dash.
 --landing-tile-radius: 4px;
 --landing-control-radius: 999px;
 --landing-control-height: 44px;
---landing-header-height: 64px;
+--landing-header-height: 76px;
+--landing-bar-radius: 12px;
+--landing-notch-width: 88px;
+--landing-notch-depth: 24px;
+--landing-notch-radius: 10px;
 ```
 
 **Radius rule, stated once and followed everywhere:** controls are full pill, cards are 8 px,
@@ -154,7 +158,8 @@ is reduced, and GSAP reverts it if the preference changes mid-session.
 Twelve sections. Product evidence replaces social proof throughout.
 
 1. **Hero.** Headline, two actions, and the real Niki pipeline recording inside window chrome.
-2. **Provider strip.** The twelve named integrations, presented as integrations, never customers.
+2. **Provider strip.** The twelve named integrations, each with its own name set beside its mark,
+   presented as integrations, never customers.
 3. **Feature A, copy left.** Four agents, with the live run explorer as the media.
 4. **Feature B, media left.** The branch gate: `main` untouched, one reviewed commit.
 5. **Feature C, copy left.** Run artifacts, with tab pills and the install command bar.
@@ -166,10 +171,43 @@ Twelve sections. Product evidence replaces social proof throughout.
 10. **Manifesto card.** License, no telemetry, BYOK, and the real backends and providers.
 11. **Recent highlights.** Four real documentation sections.
 12. **Closing CTA.** Centred display heading and one solid action.
+13. **Closing portal.** The wordmark, a camera that travels into one letter, and the panel that
+    opens once you are through. It sits above the footer, which keeps its own place below.
 
 Four consecutive feature cards is a deliberate deviation from the usual zigzag cap, because the
 brief is explicit reference fidelity. They are broken up by varying the media composition and by
 giving section 5 the interactive tab and command treatment.
+
+## The closing portal
+
+A scroll-driven camera through live type, vendored from `GlyphPortal` (MIT, © 2026 Christian
+Katzmann, attribution kept in the file). Three things were chosen rather than inherited:
+
+- The word is `Niki` and the focus letter is the **second `i`**. `N` and `K` are diagonals whose
+  interior ink is small and ragged, so the camera would stutter; a stem gives a clean rectangular
+  window. Pinning the letter also keeps the composition stable between font metrics, which matters
+  because the screenshot baselines compare at zero tolerance.
+- The field is the **site's palette**, not the demo's green, so the letter you fall through is the
+  brand colour.
+- The reveal is a **closing panel, not the footer**. The footer keeps its own place below, so it is
+  still reachable without a scroll dependency.
+
+It scrolls the page rather than a bounded inner scroller: nesting scroll areas on mobile is worse,
+and it destabilises full-page screenshots.
+
+Two traps are worth recording because both fail silently:
+
+- The portal measures ink through a canvas at the requested weight, and a **pending** face makes it
+  pin itself to a static poster with motion off, permanently. `next/font` resolves
+  `var(--font-geist)` to a stack containing "Geist Fallback", a metric-override face whose
+  `document.fonts` status is `error`, so the availability check fails and the portal never moves
+  again. The component is therefore given `"Geist", system-ui, sans-serif` by name, and
+  `BrandPortal` gates mounting on `document.fonts.ready` with a 1200ms fallback.
+- All four `--gp-*` tokens must be passed. `--gp-paper` defaults to `#fff`, which silently inverts
+  the dark theme into a light page.
+
+Under `prefers-reduced-motion: reduce` the runway collapses and the panel is shown statically, so
+the page never ends in 1710px of dead scroll.
 
 ## Product truth contract
 
@@ -194,42 +232,104 @@ invented file names, timings, or scores.
 
 One header for the whole site, and it has two states.
 
-At rest it is a full-width, transparent bar: the brand on the left, five links centred, and the
-action cluster on the right. It carries no fill and no shadow, so the page reads as one surface.
+At rest it is a transparent bar with no fill and no shadow, so the page reads as one surface. It
+is a single left-to-right group: brand, then the **notch**, then the links, with the action cluster
+holding the right. The links are *not* centred in the viewport. They sit directly beside the notch
+because the bite only reads as part of the bar when something is either side of it, and because a
+centred nav is what forced the bar to need 1342px in the first place.
 
-Once the page scrolls past its first screenful it becomes a **smaller floating pill**: capped at
-1200px, full pill radius, a translucent surface with backdrop blur, and a soft shadow. It is fixed
-rather than sticky so it can float clear of the content, and `main` carries the matching top
-padding so nothing hides underneath it.
+Once the page scrolls past its first screenful the bar gains a **notched surface**. It is capped at
+1200px, carries a translucent fill and a backdrop blur, and has a rounded rectangular **bite taken
+out of its bottom edge**, between the brand and the first link. It is fixed rather than sticky so it
+can float clear of the content, and `main` carries the matching top padding so nothing hides
+underneath it.
+
+The bite is a real cut, not a painted-on one. The bar's surface is a sibling element, `.barSurface`,
+and `HeaderBarSurface` measures where the notch ruler lands and writes a `clip-path: path(...)` that
+traces the bar's outline and dips into the bite. Two consequences are deliberate:
+
+- The surface is a **sibling** of the content, not the content's background, because a `clip-path`
+  would also clip the mega-panels hanging below the bar.
+- The path rounds the bar's four outer corners at the same 12px as `border-radius`, so the hairline
+  still lands on the silhouette, and the bite's ceiling is the only edge the path adds.
+
+The measurements come from the reference capture: its bite takes about two thirds of the bar's
+height, so the roof and the notch split ours evenly instead of leaving a roof too thin to read as a
+bar.
 
 The state is a single attribute, `html[data-nav-shrunk]`, set by `NavShrinkSensor`. That is an
 `IntersectionObserver` on a one-pixel sentinel, not a scroll listener: the state changes once per
-crossing rather than once per frame, so there is no per-frame work to throttle. The header itself
-stays a Server Component; the sensor is the only thing this ships to the client.
+crossing rather than once per frame, so there is no per-frame work to throttle.
 
 Two measurements shaped this, and both are asserted in the tests:
 
-- The bar needs about **1342px** at its resting spacing, so the shrunk state also tightens the nav
-  gap and link padding. 1200px is close to the real floor; going narrower collides.
+- The notch is a **fixed 88px ruler** in the flow, and the surface follows it, so the cut tracks
+  the real layout at every width and in both themes rather than being pinned to a guessed offset.
 - The desktop nav **already overlapped the action cluster between 1024px and 1280px** before this
-  change, because the collapse breakpoint was at 1023. It is now 1279.
+  change, because the collapse breakpoint was at 1023. It is now 1279, and the single-group layout
+  brought the bar's own requirement down to about 1030px.
+
+## The mega-menus
+
+Each of the five nav entries opens a panel that spans the bar's full width and hangs below it, so
+the two read as one object. A panel is three columns: the entry's own name and description with an
+"overview" link, then two labelled groups of destinations.
+
+The entry label is a `<button>`, not a link. That is what buys the width back: a link plus a chevron
+per entry would have cost 60px across the bar, and the panel carries the route to the page the
+entry names, so no trigger is a dead end.
+
+Every href in a panel is a route the site serves or a docs page the docs build. Nothing is invented
+to fill a panel. Panels open on hover **and** on focus, so keyboard parity is not an afterthought;
+they close on Escape, on an outside pointerdown, and on a route change. `aria-expanded` and
+`aria-controls` are on the trigger and the ids agree.
+
+A closed panel is `visibility: hidden`, not `aria-hidden` alone, and its inline styles are cleared
+rather than tweened back on close. The component's entrance tween leaves `visibility: inherit` on
+the element, which would beat the stylesheet and strand the panel's links in the tab order.
+
+## The provider strip
+
+Twelve integrations, presented as integrations, never customers. Each tile carries **the brand's
+name as visible text** next to its mark, because a bare row of glyphs is a claim the reader cannot
+check, and an `alt` attribute is not visible to anyone.
+
+Each mark is that brand's own glyph, flattened to a single ink silhouette at render time
+(`brightness(0) invert(1)` in dark, `brightness(0)` in light) so the strip reads as one monochrome
+wordmark row. `logo: null` means we hold no official mark for that provider, and the tile shows the
+name alone rather than passing off a stand-in as theirs. Eleven of the twelve are the brands' own
+marks; OpenCode Zen is the one we cannot show a mark for.
+
 
 ## The hero wash
 
-One gradient, confined to the hero, masked so it fades out through the lower half before the next
-section begins. It is a shader rather than a bitmap, but it is deliberately restrained: at full
-strength the ember bloom dominates the hero and the page stops looking like this site. Dark runs
-at `0.2`, light at `0.12`.
+One gradient, confined to the hero. It is a **layered wave**: a base colour with three drifting
+simplex fields blended over it, each raised to a high power so it stays inside its own band
+instead of summing into grey mush. That is what produces the layered-horizon look the reference
+gets from displacing a vertex grid. The fields are aspect-corrected, so the bands keep their shape
+on a phone and on a wide desktop rather than stretching with the viewport.
 
-Its palette is declared in CSS, on `.heroWash`, as `--wash-deep`, `--wash-mid`, `--wash-glow` and
-`--wash-strength`. The component reads those custom properties rather than taking colours as
-props, so the theme stays the single source of colour truth and a theme flip repaints the wash
-without a re-render.
+**Where it stops.** The wave is fully faded out by the **vertical midpoint of the demo recording**,
+and that midpoint is measured rather than guessed. The copy block above the recording is
+content-sized, so it is a different fraction of the hero at every width; `GradientWash` takes a
+`fadeAt` selector, measures the target, and writes `--wash-fade-end` for the CSS mask to read. A
+`ResizeObserver` re-measures it, because the target moves when the copy above it reflows.
+
+Its palette is declared in CSS, on `.heroWash`, as `--wash-base`, `--wash-wave-1`, `--wash-wave-2`,
+`--wash-wave-3` and `--wash-strength`. The component reads those custom properties rather than
+taking colours as props, so the theme stays the single source of colour truth and a theme flip
+repaints the wash without a re-render.
+
+**The stops are the site's own warm dusk ramp, not the reference's sky blue.** Canvas, then a
+brown, then a lit brown, then ember. Dark runs at `0.88`, light at `0.58`: strong enough to read
+as a field of light, low enough that the headline keeps its contrast and the parchment theme does
+not turn into a dirty band.
 
 **What this is allowed to cost.** A background wash is easy to make expensive by accident, so:
 
 - One full-screen quad, two triangles. The wave is computed per fragment, so the geometry never
-  changes and a resize only touches the viewport. It does not rebuild a vertex grid.
+  changes and a resize only touches the viewport. It does not rebuild a 29x50 vertex grid, which
+  is what the reference it is modelled on does on every resize.
 - The frame rate is capped at 30 fps rather than pinned to the display.
 - An `IntersectionObserver` stops the loop when the hero leaves the viewport, and
   `visibilitychange` stops it when the tab is hidden. It does not run on the main thread forever.

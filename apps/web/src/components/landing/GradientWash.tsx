@@ -39,9 +39,10 @@ precision mediump float;
 
 uniform vec2  u_resolution;
 uniform float u_time;
-uniform vec3  u_deep;
-uniform vec3  u_mid;
-uniform vec3  u_glow;
+uniform vec3  u_base;
+uniform vec3  u_wave1;
+uniform vec3  u_wave2;
+uniform vec3  u_wave3;
 uniform float u_strength;
 
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -94,17 +95,32 @@ float snoise(vec3 v) {
 
 void main() {
   vec2 uv = gl_FragCoord.xy / u_resolution;
-  float t = u_time * 0.035;
+  // Aspect-corrected, so the bands keep their shape on a phone and on a wide
+  // desktop instead of stretching with the viewport.
+  vec2 p = vec2(uv.x * (u_resolution.x / u_resolution.y), uv.y);
+  float t = u_time * 0.06;
 
-  // Two drifting noise fields. Kept to a low frequency so the wash reads as a
-  // field of light rather than as texture.
-  float a = snoise(vec3(uv * vec2(2.1, 1.4) + vec2(t, -t * 0.6), t * 0.5)) * 0.5 + 0.5;
-  float b = snoise(vec3(uv * vec2(4.3, 2.2) + vec2(-t * 0.7, t * 0.4), 7.3)) * 0.5 + 0.5;
+  // Three drifting fields, coarsest first. Each is shaped by repeated
+  // multiplication rather than pow(): a fractional exponent lowers to
+  // exp2(y * log2(x)) on most drivers, and the last bit of that wobbles enough
+  // to shift a band-edge pixel by one, which the zero-tolerance screenshot
+  // baselines then fail on. Integer powers are exact.
+  float n1 = snoise(vec3(p * 1.3 + vec2(t, t * 0.25), t * 0.32)) * 0.5 + 0.5;
+  float n2 = snoise(vec3(p * 2.2 + vec2(-t * 0.7, t * 0.18), 11.4)) * 0.5 + 0.5;
+  float n3 = snoise(vec3(p * 3.6 + vec2(t * 0.45, -t * 0.3), 27.9)) * 0.5 + 0.5;
 
-  vec3 color = mix(u_deep, u_mid, smoothstep(0.18, 0.86, a));
-  // The ember bloom sits low and left, the way the site lights its surfaces.
-  float bloom = smoothstep(0.75, 0.0, distance(uv, vec2(0.26, 0.72)) * 1.35);
-  color = mix(color, u_glow, bloom * (0.30 + b * 0.22) * u_strength);
+  float s1 = smoothstep(0.34, 0.94, n1);
+  float s2 = smoothstep(0.44, 0.97, n2);
+  float s3 = smoothstep(0.56, 1.00, n3);
+
+  vec3 color = u_base;
+  color = mix(color, u_wave1, s1 * s1 * u_strength);
+  color = mix(color, u_wave2, s2 * s2 * s2 * u_strength * 0.95);
+  color = mix(color, u_wave3, s3 * s3 * s3 * s3 * u_strength * 0.8);
+
+  // A warm bloom low and left, the way the rest of the site lights its surfaces.
+  float bloom = smoothstep(0.9, 0.0, distance(uv, vec2(0.26, 0.70)) * 1.4);
+  color = mix(color, u_wave3, bloom * 0.3 * u_strength);
 
   gl_FragColor = vec4(color, 1.0);
 }`;
@@ -135,16 +151,23 @@ export type GradientWashProps = {
   className?: string;
   /** Frames per second. Capped rather than tied to the display. */
   fps?: number;
+  /**
+   * Selector for the element whose vertical midpoint the wash should have faded
+   * out by. Measured rather than guessed: the hero's copy block is content-sized,
+   * so the media's midpoint is a different fraction of the hero at every width.
+   */
+  fadeAt?: string;
 };
 
 const DEFAULTS = {
-  deep: "#14120b",
-  mid: "#14120b",
-  glow: "#f54e00",
+  base: "#14120b",
+  wave1: "#241d18",
+  wave2: "#4a3826",
+  wave3: "#a04a12",
   strength: "0",
 };
 
-export default function GradientWash({ className = "", fps = 30 }: GradientWashProps) {
+export default function GradientWash({ className = "", fps = 30, fadeAt }: GradientWashProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -158,15 +181,36 @@ export default function GradientWash({ className = "", fps = 30 }: GradientWashP
       const pick = (name: string, fallback: string) =>
         style.getPropertyValue(name).trim() || fallback;
       return {
-        deep: pick("--wash-deep", DEFAULTS.deep),
-        mid: pick("--wash-mid", DEFAULTS.mid),
-        glow: pick("--wash-glow", DEFAULTS.glow),
+        base: pick("--wash-base", DEFAULTS.base),
+        wave1: pick("--wash-wave-1", DEFAULTS.wave1),
+        wave2: pick("--wash-wave-2", DEFAULTS.wave2),
+        wave3: pick("--wash-wave-3", DEFAULTS.wave3),
         strength: Number(pick("--wash-strength", DEFAULTS.strength)) || 0,
       };
     };
 
     const applyFallback = (palette: ReturnType<typeof readPalette>) => {
-      container.style.background = `linear-gradient(180deg, ${palette.mid} 0%, ${palette.deep} 100%)`;
+      container.style.background = `linear-gradient(180deg, ${palette.wave2} 0%, ${palette.base} 100%)`;
+    };
+
+    /* Where the fade lands, as a fraction of the wash's own height. Written to a
+       custom property the stylesheet's mask reads, so the mask stays in CSS and
+       the geometry stays measured. The fraction is of the wash, not of the
+       section: the wash starts above the section's top edge, so the two do not
+       share an origin. */
+    const measureFade = () => {
+      if (!fadeAt) return;
+      const host = container.closest("section");
+      const target = host?.querySelector(fadeAt);
+      if (!host || !target) return;
+      const washBox = container.getBoundingClientRect();
+      const targetBox = target.getBoundingClientRect();
+      if (!washBox.height) return;
+      const midpoint = (targetBox.top + targetBox.height / 2 - washBox.top) / washBox.height;
+      // Clamped so a layout where the media starts above or below the wash still
+      // produces a mask that fades somewhere sensible instead of inverting.
+      const end = Math.min(0.99, Math.max(0.15, midpoint));
+      container.style.setProperty("--wash-fade-end", end.toFixed(4));
     };
 
     let palette = readPalette();
@@ -225,17 +269,19 @@ export default function GradientWash({ className = "", fps = 30 }: GradientWashP
 
     const uResolution = gl.getUniformLocation(program, "u_resolution");
     const uTime = gl.getUniformLocation(program, "u_time");
-    const uDeep = gl.getUniformLocation(program, "u_deep");
-    const uMid = gl.getUniformLocation(program, "u_mid");
-    const uGlow = gl.getUniformLocation(program, "u_glow");
+    const uBase = gl.getUniformLocation(program, "u_base");
+    const uWave1 = gl.getUniformLocation(program, "u_wave1");
+    const uWave2 = gl.getUniformLocation(program, "u_wave2");
+    const uWave3 = gl.getUniformLocation(program, "u_wave3");
     const uStrength = gl.getUniformLocation(program, "u_strength");
 
     const applyPalette = () => {
       palette = readPalette();
       applyFallback(palette);
-      gl.uniform3fv(uDeep, parseColor(palette.deep));
-      gl.uniform3fv(uMid, parseColor(palette.mid));
-      gl.uniform3fv(uGlow, parseColor(palette.glow));
+      gl.uniform3fv(uBase, parseColor(palette.base));
+      gl.uniform3fv(uWave1, parseColor(palette.wave1));
+      gl.uniform3fv(uWave2, parseColor(palette.wave2));
+      gl.uniform3fv(uWave3, parseColor(palette.wave3));
       gl.uniform1f(uStrength, palette.strength);
     };
     applyPalette();
@@ -255,6 +301,30 @@ export default function GradientWash({ className = "", fps = 30 }: GradientWashP
       }
     };
 
+    /* Snap the box to whole CSS pixels before anything reads it.
+     *
+     * The wash's height is a percentage of a content-sized section, so it lands
+     * on a fractional pixel. A fractional box cannot map 1:1 to the canvas
+     * backing store, the browser resamples the smooth gradient to fit, and that
+     * resample is not bit-stable between runs: two identical test runs differed
+     * by ~1300 pixels at one unit each, which the zero-tolerance screenshot
+     * baselines read as a failure. Whole pixels mean no resample at all. */
+    const snap = () => {
+      const rect = container.getBoundingClientRect();
+      const w = Math.round(rect.width);
+      const h = Math.round(rect.height);
+      if (Math.abs(rect.width - w) >= 0.25) container.style.width = `${w}px`;
+      if (Math.abs(rect.height - h) >= 0.25) container.style.height = `${h}px`;
+    };
+
+    // Re-measured with the canvas, because the fade end is a fraction of the
+    // wash's own box and both move together on resize.
+    const sync = () => {
+      snap();
+      measureFade();
+      resize();
+    };
+
     const draw = (time: number) => {
       gl.uniform1f(uTime, time / 1000);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -270,8 +340,12 @@ export default function GradientWash({ className = "", fps = 30 }: GradientWashP
     const interval = 1000 / Math.max(1, Math.min(fps, 60));
 
     const paintOnce = (time: number) => {
-      resize();
+      sync();
       draw(time);
+      /* The single static frame has to land at full opacity with no ramp, or
+         the screenshot baselines race the fade and compare a half-faded wash
+         against a fully faded one. */
+      canvas.style.transition = "none";
       canvas.style.opacity = "1";
     };
 
@@ -344,24 +418,33 @@ export default function GradientWash({ className = "", fps = 30 }: GradientWashP
     );
     observer.observe(container);
 
+    // The fade end follows the media, and the media moves with the copy above
+    // it, so it needs observing rather than a one-off read at mount.
+    const fadeObserver = new ResizeObserver(sync);
+    const fadeHost = container.closest("section");
+    const fadeTarget = fadeAt ? fadeHost?.querySelector(fadeAt) : null;
+    if (fadeTarget) fadeObserver.observe(fadeTarget);
+    if (fadeHost) fadeObserver.observe(fadeHost);
+
     canvas.addEventListener("webglcontextlost", onLost);
     themeObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["class"],
     });
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", sync);
     document.addEventListener("visibilitychange", onVisibility);
     motionQuery.addEventListener("change", onMotionChange);
 
-    resize();
+    sync();
     evaluate();
 
     return () => {
       stop();
       observer.disconnect();
+      fadeObserver.disconnect();
       themeObserver.disconnect();
       canvas.removeEventListener("webglcontextlost", onLost);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", sync);
       document.removeEventListener("visibilitychange", onVisibility);
       motionQuery.removeEventListener("change", onMotionChange);
       gl.deleteProgram(program);
@@ -371,7 +454,7 @@ export default function GradientWash({ className = "", fps = 30 }: GradientWashP
       gl.getExtension("WEBGL_lose_context")?.loseContext();
       canvas.remove();
     };
-  }, [fps]);
+  }, [fps, fadeAt]);
 
   return <div ref={containerRef} aria-hidden="true" className={className} />;
 }

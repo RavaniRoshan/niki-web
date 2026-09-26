@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import ClosingPortal from "@/components/landing/ClosingPortal";
 import LandingFooter from "@/components/landing/LandingFooter";
 import LandingHeader from "@/components/landing/LandingHeader";
 import NavShrinkSensor from "@/components/landing/NavShrinkSensor";
@@ -23,6 +24,7 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
       <main id="main" className={styles.main} tabIndex={-1}>
         {children}
       </main>
+      <ClosingPortal />
       <LandingFooter />
     </div>
   );

@@ -68,24 +68,76 @@ Full detail, including the measured values these came from, is in `DESIGN.md`.
 
 ## The header
 
-The header has two states: a full-width transparent bar at rest, and a capped floating pill once
-`html[data-nav-shrunk]` is set. Both are plain CSS keyed off that attribute, so do not move the
-state into React state on the header, and do not replace the sensor with a scroll listener.
+The header has two states: a transparent bar at rest, and a capped bar with a **notched surface**
+once `html[data-nav-shrunk]` is set. Both are plain CSS keyed off that attribute, so do not move
+the state into React state on the header, and do not replace the sensor with a scroll listener.
 
-The pill is capped at 1200px because the bar needs about 1342px at its resting spacing; the
-shrunk state tightens the nav gap and link padding to make it fit. Widening the desktop nav
-cluster means either raising that cap or lowering the collapse breakpoint, which is 1279. The
-tests assert the header never overlaps itself at 1440, 1280, 1200, 1024, 834 or 390.
+The bar is one left-to-right group — brand, notch, links — with the action cluster holding the
+right. The links are deliberately **not** centred: they sit beside the notch because the bite only
+reads as part of the bar when something is either side of it, and because a centred nav is what
+made the bar need 1342px. The bar now needs about 1030px, which is why the 1200px cap has room.
+
+Two structural rules, both of which broke when they were ignored:
+
+- The bar's surface is a **sibling** of the content, not the content's background. The notch is cut
+  with a `clip-path` on that surface, and a `clip-path` clips descendants — including the
+  mega-panels hanging below the bar.
+- The content is lifted with `z-index` alone. Giving those flex items `position` out-specifies
+  `.desktopNav { position: static }`, which turns the nav into the containing block for the panels
+  and shrinks them to the width of the links.
+
+The notch itself is a fixed 88px ruler in the flow, and `HeaderBarSurface` measures where it lands
+and writes the `clip-path`. Do not hand-write the path in CSS; it has to follow the real layout.
+Note that CSS `path()` **requires a quoted argument**: an unquoted one is dropped without an error,
+which reads as "the effect never ran".
+
+The tests assert the header never overlaps itself at 1440, 1280, 1200, 1024, 834 or 390, and that
+the notch is a real cut rather than a painted-on shape.
+
+## The mega-menus
+
+Panels open on hover **and** on focus, close on Escape, on an outside pointerdown, and on a route
+change. `aria-expanded` and `aria-controls` live on the trigger and the ids must agree.
+
+A closed panel is `visibility: hidden`, not `aria-hidden` alone — `aria-hidden` does not take its
+links out of the tab order. And on close, clear the panel's inline styles rather than tweening them
+back: the entrance tween leaves `visibility: inherit` inline, which beats the stylesheet and
+strands the links in the tab order.
+
+Every href in a panel must be a route the site serves or a docs page the docs build. Do not invent
+destinations to fill a panel.
+
+## Base link colour
+
+`.shell :where(a)` is a **floor at zero specificity**, written `:where(.shell) :where(a)` on
+purpose. At `.shell :where(a)` it tied with single-class component rules such as
+`.primaryAction` and then won on source order, which left every ink-filled button rendering its
+label in the same ink as its own fill. Keep it at zero.
 
 ## The hero wash
 
-The hero background is a WebGL gradient wash. Its palette lives in CSS on `.heroWash` as
-`--wash-deep`, `--wash-mid`, `--wash-glow`, `--wash-strength`; the component reads those
-properties, so change the colours there and not in the component.
+The hero background is a WebGL layered wave. Its palette lives in CSS on `.heroWash` as
+`--wash-base`, `--wash-wave-1`, `--wash-wave-2`, `--wash-wave-3` and `--wash-strength`; the
+component reads those properties, so change the colours there and not in the component.
 
-**`--wash-strength` is the knob that matters.** Dark is `0.2`, light is `0.12`. At `1` the ember
-bloom takes over the hero and the page stops looking like this site. If the wash looks wrong, that
-value is almost always why.
+**The stops are the site's warm dusk ramp, not the reference's sky blue.** A saturated blue on
+this canvas reads as a different product. If you add a stop, add it to the ramp.
+
+**`--wash-strength` is the knob that matters.** Dark is `0.88`, light is `0.58`. Below about `0.3`
+the wave stops reading; at `1` it takes over the hero and the headline loses its contrast. If the
+wash looks wrong, that value is almost always why.
+
+**Where it fades is measured, not authored.** `GradientWash` takes a `fadeAt` selector, finds that
+element inside the wash's own `<section>`, and writes `--wash-fade-end` as a fraction of the
+wash's **own** height. Two traps, both of which have bitten:
+
+- `closest("section, div")` from inside the wash returns **the wash itself**, because it is a div.
+  Match the tag you mean.
+- The fraction is of the wash, not of the section. The wash starts above the section's top edge, so
+  the two do not share an origin, and using the section's height puts the fade in the wrong place.
+
+The wash must be fully gone by the midpoint of the demo recording, and a test asserts it at two
+widths. Do not hardcode a mask stop; re-measure via the `ResizeObserver` that is already there.
 
 Do not make it more expensive without measuring:
 
@@ -149,7 +201,17 @@ this codebase just spent its effort removing.
 
 ## Screenshot baselines
 
-Baselines are compared at `maxDiffPixels: 0`. That is strict on purpose.
+The inner-route baselines are compared at `maxDiffPixels: 0`. That is strict on purpose.
+
+The landing baselines allow **15000** pixels, and the exception is narrow rather than general. The
+hero background is a live WebGL canvas, and a driver's rounding when compositing one is not
+bit-stable. Measured across repeated runs of the same test: 1.3k, 5.0k, 5.4k and 10.6k differing
+pixels, always at one or two units per channel and always along the gradient's band edges. 15000
+is ~0.13% of the desktop image; the smallest real regression this suite exists to catch, a nav
+gap closing by 4px, moves over 100k pixels. The inner routes carry no canvas and stay at 0.
+
+If you find yourself raising that number to get a build green, the fix is in the component, not in
+the tolerance.
 
 When a change is intentional:
 

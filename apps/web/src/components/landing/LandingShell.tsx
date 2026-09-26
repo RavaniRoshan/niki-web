@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import ClosingPortal from "./ClosingPortal";
 import LandingFooter from "./LandingFooter";
 import NavShrinkSensor from "./NavShrinkSensor";
 import LandingHeader from "./LandingHeader";
@@ -13,6 +14,7 @@ export default function LandingShell({ children }: { children: ReactNode }) {
       <main id="main" tabIndex={-1} className={styles.main}>
         <Reveal>{children}</Reveal>
       </main>
+      <ClosingPortal />
       <LandingFooter />
     </div>
   );

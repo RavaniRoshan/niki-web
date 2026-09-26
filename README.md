@@ -77,16 +77,20 @@ deploys. It starts its own static server on port 4322.
 | ------------------------------- | --------------------------------------------------------------- |
 | `landing.spec.ts`               | Landing content, overflow, Axe, media, navigation, theme        |
 | `landing.visual.spec.ts`        | Screenshot baselines for the landing and three inner routes     |
+| `nav-and-portal.spec.ts`        | Mega-menu contracts and the closing portal's motion states      |
 | `interactive-sections.spec.ts`  | Run explorer and evidence tabs, keyboard contracts, autoplay     |
 | `proof-sections.spec.ts`        | Branch gate, model routing, install command, clipboard, changelog |
 | `routes.spec.ts`                | All 18 inner routes: status, h1, landmarks, canonical URL       |
 
 Two things about this suite are worth knowing before you change UI code.
 
-**Screenshots are exact.** Baselines are compared with `maxDiffPixels: 0`, so a one-pixel shift
-fails. This is deliberate: it catches layout drift that no assertion would notice. When a change is
-intentional, run `npm run test:e2e:update` and review the diff in the image viewer before
-committing the new baselines.
+**Screenshots are near-exact.** The inner-route baselines are compared with `maxDiffPixels: 0`, so a
+one-pixel shift fails. This is deliberate: it catches layout drift that no assertion would notice.
+The landing baselines allow 15000 pixels, because the hero background is a live WebGL canvas and a
+driver's rounding when compositing one is not bit-stable between runs; that is ~0.13% of the
+image, against the 100k-plus a real layout regression moves. When a change is intentional, run
+`npm run test:e2e:update` and review the diff in the image viewer before committing the new
+baselines.
 
 **Content below the fold is hidden until scrolled.** The landing reveals each section on scroll, so
 a test that reads a section, its accessibility tree, or its box must scroll first. Use the

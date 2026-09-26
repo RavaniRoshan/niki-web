@@ -6,12 +6,239 @@ import { DOCS_ROUTES, SITE, WEB_ROUTES, docsUrl } from "../../lib/site";
    Niki repository and the release data actually support. No customer names, no
    adoption numbers, no invented outcomes. */
 
-export const NAV_LINKS = [
-  { label: "Product", href: WEB_ROUTES.product },
-  { label: "Agents", href: WEB_ROUTES.agents },
-  { label: "Security", href: WEB_ROUTES.security },
-  { label: "Integrations", href: WEB_ROUTES.integrations },
-  { label: "Changelog", href: WEB_ROUTES.changelog },
+/* The header, the mega-panels, the mobile sheet and the footer all read this one
+   list, so a route is added once. Every href below is a route the site actually
+   serves or a docs page the docs app actually builds. */
+export type NavTarget = {
+  label: string;
+  href: string;
+  description: string;
+  external?: boolean;
+};
+
+export type NavGroup = {
+  heading: string;
+  items: NavTarget[];
+};
+
+export type NavEntry = NavTarget & {
+  groups: NavGroup[];
+};
+
+export const NAV_LINKS: readonly NavEntry[] = [
+  {
+    label: "Product",
+    href: WEB_ROUTES.product,
+    description: "What Niki is, and how the four agents fit together.",
+    groups: [
+      {
+        heading: "Product",
+        items: [
+          {
+            label: "Overview",
+            href: WEB_ROUTES.product,
+            description: "A run from task to branch, end to end.",
+          },
+          {
+            label: "Agents",
+            href: WEB_ROUTES.agents,
+            description: "Planner, Coder, Tester, and Reviewer.",
+          },
+          {
+            label: "Security",
+            href: WEB_ROUTES.security,
+            description: "The sandbox and the branch rules.",
+          },
+        ],
+      },
+      {
+        heading: "Get started",
+        items: [
+          {
+            label: "Download",
+            href: WEB_ROUTES.downloads,
+            description: "Installers for Linux, macOS, and Windows.",
+          },
+          {
+            label: "Pricing",
+            href: WEB_ROUTES.pricing,
+            description: "What the free tier covers.",
+          },
+          {
+            label: "About",
+            href: WEB_ROUTES.about,
+            description: "Who builds Niki and why.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Agents",
+    href: WEB_ROUTES.agents,
+    description: "Four stages, each independently checkable.",
+    groups: [
+      {
+        heading: "The pipeline",
+        items: [
+          {
+            label: "How the pipeline works",
+            href: WEB_ROUTES.agents,
+            description: "Typed artifacts instead of one long conversation.",
+          },
+          {
+            label: "Pipeline reference",
+            href: docsUrl(DOCS_ROUTES.pipeline),
+            description: "Every stage, input, and output.",
+            external: true,
+          },
+        ],
+      },
+      {
+        heading: "Work with it",
+        items: [
+          {
+            label: "Examples",
+            href: WEB_ROUTES.examples,
+            description: "Worked runs you can read end to end.",
+          },
+          {
+            label: "Guides",
+            href: WEB_ROUTES.guides,
+            description: "Tasks written for the pipeline.",
+          },
+          {
+            label: "CLI reference",
+            href: docsUrl(DOCS_ROUTES.cli),
+            description: "Every flag, exit code, and output path.",
+            external: true,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Security",
+    href: WEB_ROUTES.security,
+    description: "What a run is allowed to touch, and what it leaves behind.",
+    groups: [
+      {
+        heading: "The model",
+        items: [
+          {
+            label: "Security architecture",
+            href: WEB_ROUTES.security,
+            description: "Sandbox, credentials, and network policy.",
+          },
+          {
+            label: "Sandboxing and security",
+            href: docsUrl(DOCS_ROUTES.security),
+            description: "The container and the allow list.",
+            external: true,
+          },
+        ],
+      },
+      {
+        heading: "Proof",
+        items: [
+          {
+            label: "Evals and auditing",
+            href: docsUrl(DOCS_ROUTES.evals),
+            description: "How a run is measured rather than claimed.",
+            external: true,
+          },
+          {
+            label: "Configuration",
+            href: docsUrl(DOCS_ROUTES.configuration),
+            description: "Every setting a run reads.",
+            external: true,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Integrations",
+    href: WEB_ROUTES.integrations,
+    description: "Bring your own key, then route models per stage.",
+    groups: [
+      {
+        heading: "Providers",
+        items: [
+          {
+            label: "Integrations",
+            href: WEB_ROUTES.integrations,
+            description: "Every provider Niki can call.",
+          },
+          {
+            label: "Providers overview",
+            href: docsUrl(DOCS_ROUTES.providers),
+            description: "Keys, endpoints, and model names.",
+            external: true,
+          },
+          {
+            label: "Mixing providers",
+            href: WEB_ROUTES.guides,
+            description: "A stronger reasoner on review, a faster one on tests.",
+          },
+        ],
+      },
+      {
+        heading: "Runtimes",
+        items: [
+          {
+            label: "Installation",
+            href: docsUrl(DOCS_ROUTES.installation),
+            description: "Podman, Docker, or a plain git worktree.",
+            external: true,
+          },
+          {
+            label: "Downloads",
+            href: WEB_ROUTES.downloads,
+            description: "Current releases and checksums.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Changelog",
+    href: WEB_ROUTES.changelog,
+    description: "Every release, with what changed and why.",
+    groups: [
+      {
+        heading: "Releases",
+        items: [
+          {
+            label: "Changelog",
+            href: WEB_ROUTES.changelog,
+            description: "What shipped, and when.",
+          },
+          {
+            label: "Blog",
+            href: WEB_ROUTES.blog,
+            description: "Longer notes on how the pipeline works.",
+          },
+        ],
+      },
+      {
+        heading: "Reference",
+        items: [
+          {
+            label: "Docs changelog",
+            href: docsUrl(DOCS_ROUTES.changelog),
+            description: "Documentation releases.",
+            external: true,
+          },
+          {
+            label: "Community",
+            href: WEB_ROUTES.community,
+            description: "Where Niki is discussed.",
+          },
+        ],
+      },
+    ],
+  },
 ] as const;
 
 export const HERO = {
@@ -142,7 +369,7 @@ export const HIGHLIGHTS = [
     id: "providers",
     category: "Providers",
     title: "Twelve integrations, one config",
-    body: "Anthropic, OpenAI, Google, Ollama, OpenRouter, Zen, Kimi, Kilo, NVIDIA, Groq, Together, DeepSeek.",
+    body: "Anthropic, OpenAI, Google, Ollama, OpenRouter, OpenCode Zen, Kimi Code, Kilo Code, NVIDIA, Groq, Together, DeepSeek.",
     href: docsUrl(DOCS_ROUTES.providers),
   },
   {
@@ -284,13 +511,16 @@ export const BRANCH_GATES = [
   { id: "history", label: "Committed history", result: "never rewritten" },
 ] as const;
 
+/* Each mark is the brand's own glyph, flattened to a single ink silhouette at
+   render time. `logo: null` means we hold no official mark for that provider, so
+   the tile shows the name alone rather than passing off a stand-in as theirs. */
 export const PROVIDERS = [
   { name: "Anthropic", logo: "/logos/anthropic.svg", width: 16, height: 16 },
   { name: "OpenAI", logo: "/logos/openai.svg", width: 16, height: 16 },
   { name: "Google", logo: "/logos/google.svg", width: 32, height: 32 },
   { name: "Ollama", logo: "/logos/ollama.svg", width: 16, height: 16 },
   { name: "OpenRouter", logo: "/logos/openrouter.svg", width: 16, height: 16 },
-  { name: "OpenCode Zen", logo: "/logos/opencode.svg", width: 512, height: 512 },
+  { name: "OpenCode Zen", logo: null, width: 0, height: 0 },
   { name: "Kimi Code", logo: "/logos/kimi.svg", width: 16, height: 16 },
   { name: "Kilo Code", logo: "/logos/kilocode.svg", width: 16, height: 16 },
   { name: "NVIDIA", logo: "/logos/nvidia.svg", width: 16, height: 16 },

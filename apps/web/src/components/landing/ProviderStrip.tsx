@@ -13,14 +13,17 @@ export default function ProviderStrip() {
       <p className={styles.providerLabel}>{PROVIDER_STRIP.label}</p>
       <ul data-testid="provider-grid" className={styles.providerGrid}>
         {PROVIDERS.map((provider) => (
-          <li key={provider.name} className={styles.providerTile}>
-            <Image
-              src={provider.logo}
-              alt={provider.name}
-              width={provider.width}
-              height={provider.height}
-              className={styles.providerLogo}
-            />
+          <li key={provider.name} className={styles.providerTile} data-provider={provider.name}>
+            {provider.logo ? (
+              <Image
+                src={provider.logo}
+                alt={provider.name}
+                width={provider.width}
+                height={provider.height}
+                className={styles.providerLogo}
+              />
+            ) : null}
+            <span className={styles.providerName}>{provider.name}</span>
           </li>
         ))}
       </ul>

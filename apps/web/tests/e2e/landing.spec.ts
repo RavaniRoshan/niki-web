@@ -35,7 +35,7 @@ const EXPECTED_PROVIDERS = [
   { name: "Google", logo: "/logos/google.svg", width: 32, height: 32 },
   { name: "Ollama", logo: "/logos/ollama.svg", width: 16, height: 16 },
   { name: "OpenRouter", logo: "/logos/openrouter.svg", width: 16, height: 16 },
-  { name: "OpenCode Zen", logo: "/logos/opencode.svg", width: 512, height: 512 },
+  { name: "OpenCode Zen", logo: null, width: 0, height: 0 },
   { name: "Kimi Code", logo: "/logos/kimi.svg", width: 16, height: 16 },
   { name: "Kilo Code", logo: "/logos/kilocode.svg", width: 16, height: 16 },
   { name: "NVIDIA", logo: "/logos/nvidia.svg", width: 16, height: 16 },
@@ -136,32 +136,38 @@ test("desktop navigation stays on one line and mobile navigation is hidden", asy
 
   const nav = page.getByRole("navigation", { name: "Primary" });
   await expect(nav).toBeVisible();
-  const linkTops = await nav
-    .locator("a")
-    .evaluateAll((links) => links.map((link) => Math.round(link.getBoundingClientRect().top)));
-  expect(new Set(linkTops).size).toBe(1);
+  /* The entries are disclosure buttons, not links, so the one-line contract is
+     asserted on the triggers. */
+  const triggerTops = await nav
+    .locator("[data-mega-trigger]")
+    .evaluateAll((triggers) =>
+      triggers.map((trigger) => Math.round(trigger.getBoundingClientRect().top))
+    );
+  expect(triggerTops.length).toBe(5);
+  expect(new Set(triggerTops).size).toBe(1);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(nav).toBeHidden();
   await expect(page.getByTestId("mobile-nav-trigger")).toBeVisible();
 });
 
-test("the header shrinks into a floating pill once the page is scrolled", async ({ page }) => {
+test("the header grows a notched surface once the page is scrolled", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openLanding(page);
 
   const header = page.getByTestId("landing-header");
-  const inner = header.locator("> div");
+  const surface = header.locator("> div > span").first();
   const metrics = async () =>
-    inner.evaluate((element) => {
+    surface.evaluate((element) => {
       const style = getComputedStyle(element);
       const box = element.getBoundingClientRect();
       return {
         width: Math.round(box.width),
-        radius: style.borderTopLeftRadius,
+        height: Math.round(box.height),
         background: style.backgroundColor,
-        shadow: style.boxShadow !== "none",
+        radius: style.borderTopLeftRadius,
+        clipPath: style.clipPath,
       };
     });
 
@@ -170,7 +176,6 @@ test("the header shrinks into a floating pill once the page is scrolled", async 
     false
   );
   expect(atTop.background).toBe("rgba(0, 0, 0, 0)");
-  expect(atTop.shadow).toBe(false);
 
   await page.evaluate(() => window.scrollTo(0, 500));
   await expect
@@ -178,28 +183,56 @@ test("the header shrinks into a floating pill once the page is scrolled", async 
     .toBe(true);
 
   const shrunk = await metrics();
-  expect(shrunk.width).toBeLessThan(atTop.width);
-  expect(shrunk.width).toBeLessThanOrEqual(1200);
   expect(shrunk.background).not.toBe("rgba(0, 0, 0, 0)");
-  expect(shrunk.shadow).toBe(true);
-  expect(shrunk.radius).toBe(shrunk.radius); // pill: a large radius
+  expect(shrunk.width).toBeLessThanOrEqual(1200);
+  expect(shrunk.radius).toBe("12px");
+  /* Not a pill: the surface is cut, and the path carries the bite's curves. */
+  expect(shrunk.clipPath).toMatch(/^path\(/);
+  expect(shrunk.clipPath).toContain("A 10 10");
 
-  // The nav and the action cluster must not overlap once the bar is narrow.
-  const gap = await header.evaluate((element) => {
-    const nav = element.querySelector("nav");
-    if (!nav || getComputedStyle(nav).display === "none") return null;
-    const kids = [...element.firstElementChild!.children];
-    return Math.round(
-      kids[kids.length - 1].getBoundingClientRect().left - nav.getBoundingClientRect().right
-    );
+  /* The bite sits between the brand and the nav, and opens off the bottom edge,
+     so the bar's floor is missing exactly across the ruler's span. */
+  const geometry = await header.evaluate((element) => {
+    const bar = element.firstElementChild as HTMLElement;
+    const notch = element.querySelector("[data-notch]") as HTMLElement;
+    const nav = element.querySelector("nav") as HTMLElement;
+    const barBox = bar.getBoundingClientRect();
+    const notchBox = notch.getBoundingClientRect();
+    const brand = element.querySelector("a") as HTMLElement;
+    const brandBox = brand.getBoundingClientRect();
+    return {
+      notchLeft: Math.round(notchBox.left - barBox.left),
+      notchRight: Math.round(notchBox.right - barBox.left),
+      brandRight: Math.round(brandBox.right - barBox.left),
+      navLeft: Math.round(nav.getBoundingClientRect().left - barBox.left),
+      barHeight: Math.round(barBox.height),
+    };
   });
-  if (gap !== null) expect(gap).toBeGreaterThan(0);
+  expect(geometry.notchLeft).toBeGreaterThan(geometry.brandRight);
+  expect(geometry.notchRight).toBeLessThanOrEqual(geometry.navLeft);
+  expect(geometry.notchRight - geometry.notchLeft).toBe(88);
+  /* Roughly half the bar, so the roof still reads as a bar and not a lid. */
+  expect(geometry.barHeight).toBeGreaterThanOrEqual(48);
 
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect
     .poll(() => page.evaluate(() => document.documentElement.hasAttribute("data-nav-shrunk")))
     .toBe(false);
-  expect((await metrics()).width).toBe(atTop.width);
+});
+
+test("the nav and the action cluster do not overlap once the bar is notched", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openLanding(page);
+  await page.evaluate(() => window.scrollTo(0, 500));
+
+  const gap = await page.getByTestId("landing-header").evaluate((element) => {
+    const nav = element.querySelector("nav");
+    if (!nav || getComputedStyle(nav).display === "none") return null;
+    const actions = element.querySelector('[class*="headerActions"]') as HTMLElement;
+    return Math.round(actions.getBoundingClientRect().left - nav.getBoundingClientRect().right);
+  });
+  expect(gap).not.toBeNull();
+  if (gap !== null) expect(gap).toBeGreaterThan(0);
 });
 
 test("the header never overlaps itself at any width", async ({ page }) => {
@@ -398,6 +431,67 @@ test("landing content data deeply locks the source-backed truth", () => {
   expect(INSTALL_COMMAND).toBe(INSTALLERS.shell.command);
 });
 
+test("the hero wave is palette-driven and gone by the recording's midpoint", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openLanding(page);
+
+  const hero = page.getByTestId("landing-hero");
+  const wash = hero.locator("[class*='heroWash']");
+  const canvas = wash.locator("canvas");
+  await expect(canvas).toHaveCount(1);
+  /* One frame painted, and visible: the wash is not sitting at opacity 0. */
+  await expect.poll(() => canvas.evaluate((node) => getComputedStyle(node).opacity)).toBe("1");
+
+  const geometry = await wash.evaluate((node) => {
+    const style = getComputedStyle(node);
+    const washBox = node.getBoundingClientRect();
+    const media = node
+      .closest("section")!
+      .querySelector<HTMLElement>("[data-testid='hero-window']")!;
+    const mediaBox = media.getBoundingClientRect();
+    return {
+      fadeEnd: Number(style.getPropertyValue("--wash-fade-end")),
+      expected: (mediaBox.top + mediaBox.height / 2 - washBox.top) / washBox.height,
+      strength: Number(style.getPropertyValue("--wash-strength")),
+      /* Palette comes from CSS. The reference default was a sky blue that has
+         no place on this canvas, so the stops must not be baked into the shader. */
+      base: style.getPropertyValue("--wash-base").trim(),
+      waves: [
+        style.getPropertyValue("--wash-wave-1").trim(),
+        style.getPropertyValue("--wash-wave-2").trim(),
+        style.getPropertyValue("--wash-wave-3").trim(),
+      ],
+    };
+  });
+
+  expect(geometry.fadeEnd).toBeGreaterThan(0);
+  expect(Math.abs(geometry.fadeEnd - geometry.expected)).toBeLessThan(0.01);
+  /* Visible, but not so strong it fights the headline. */
+  expect(geometry.strength).toBeGreaterThan(0.3);
+  expect(geometry.strength).toBeLessThanOrEqual(1);
+  expect(geometry.base).not.toBe("");
+  for (const wave of geometry.waves) {
+    expect(wave).toMatch(/^#[0-9a-f]{3,8}$/i);
+  }
+
+  /* The fade is measured, so it has to hold at a width where the copy block
+     above the recording is a different height. */
+  await page.setViewportSize({ width: 900, height: 1000 });
+  const narrow = await wash.evaluate((node) => {
+    const washBox = node.getBoundingClientRect();
+    const media = node
+      .closest("section")!
+      .querySelector<HTMLElement>("[data-testid='hero-window']")!;
+    const mediaBox = media.getBoundingClientRect();
+    return {
+      fadeEnd: Number(getComputedStyle(node).getPropertyValue("--wash-fade-end")),
+      expected: (mediaBox.top + mediaBox.height / 2 - washBox.top) / washBox.height,
+    };
+  });
+  expect(Math.abs(narrow.fadeEnd - narrow.expected)).toBeLessThan(0.01);
+});
+
 test("the hero uses only the approved copy and actions", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openLanding(page);
@@ -476,8 +570,20 @@ test("the provider strip presents twelve named integrations with meaningful imag
 
   const grid = strip.getByTestId("provider-grid");
   await expect(grid.locator("li")).toHaveCount(12);
+
+  /* Every tile names its integration in visible text, and only the providers we
+     hold an official mark for carry one. */
   for (const provider of EXPECTED_PROVIDERS) {
-    const image = grid.getByRole("img", { name: provider.name });
+    const tile = grid.locator("li", { hasText: provider.name });
+    await expect(tile).toHaveCount(1);
+    await expect(tile).toHaveAttribute("data-provider", provider.name);
+
+    if (provider.logo === null) {
+      await expect(tile.getByRole("img")).toHaveCount(0);
+      continue;
+    }
+
+    const image = tile.getByRole("img", { name: provider.name });
     await expect(image).toHaveAttribute("src", provider.logo);
     await expect(image).toHaveAttribute("width", String(provider.width));
     await expect(image).toHaveAttribute("height", String(provider.height));
@@ -488,6 +594,7 @@ test("the provider strip presents twelve named integrations with meaningful imag
     await Promise.all(images.map((image) => (image as HTMLImageElement).decode()));
   });
   for (const provider of EXPECTED_PROVIDERS) {
+    if (provider.logo === null) continue;
     const image = grid.getByRole("img", { name: provider.name });
     await expect
       .poll(() =>
@@ -507,8 +614,10 @@ test("the provider strip presents twelve named integrations with meaningful imag
         complete: true,
         naturalWidth: provider.width,
         naturalHeight: provider.height,
-        renderedWidth: 26,
-        renderedHeight: 26,
+        /* Every mark is square, and the CSS fixes the height, so all of them
+           render at 22 regardless of their intrinsic viewBox. */
+        renderedWidth: 22,
+        renderedHeight: 22,
       });
   }
 
@@ -518,19 +627,28 @@ test("the provider strip presents twelve named integrations with meaningful imag
   );
 });
 
-test("the provider grid steps down from twelve columns to four", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 1000 });
+test("the provider strip wraps onto fewer rows as the viewport narrows", async ({ page }) => {
+  const rowCount = async () => {
+    const grid = page.getByTestId("provider-grid");
+    return grid.evaluate((element) => {
+      const tops = new Set(
+        [...element.querySelectorAll("li")].map((item) =>
+          Math.round(item.getBoundingClientRect().top)
+        )
+      );
+      return tops.size;
+    });
+  };
+
+  await page.setViewportSize({ width: 1728, height: 1000 });
   await openLanding(page);
+  await expect.poll(rowCount).toBe(2);
 
-  const grid = page.getByTestId("provider-grid");
-  const columnCount = () =>
-    grid.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(/\s+/).length);
+  await page.setViewportSize({ width: 640, height: 1000 });
+  await expect.poll(rowCount).toBe(3);
 
-  await expect.poll(columnCount).toBe(12);
-  await page.setViewportSize({ width: 1100, height: 900 });
-  await expect.poll(columnCount).toBe(6);
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect.poll(columnCount).toBe(4);
+  await expect.poll(rowCount).toBe(6);
 });
 
 for (const theme of ["dark", "light"] as const) {
@@ -670,6 +788,7 @@ test("the real recording and every provider mark are served locally with correct
   expect(gif.headers()["content-type"]).toContain("image/gif");
 
   for (const provider of PROVIDERS) {
+    if (provider.logo === null) continue;
     const response = await request.get(provider.logo);
     expect(response.status(), provider.name).toBe(200);
     expect(response.headers()["content-type"], provider.name).toContain("image/svg+xml");

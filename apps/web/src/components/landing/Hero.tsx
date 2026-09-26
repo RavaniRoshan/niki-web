@@ -18,9 +18,11 @@ export default function Hero() {
       data-reveal
       aria-labelledby="landing-hero-title"
     >
-      {/* Background wash. Decorative, behind everything, and masked so it fades
-          out across the lower half of the hero rather than ending on a line. */}
-      <GradientWash className={styles.heroWash} />
+      {/* Background wave. Decorative, behind everything, and masked so it is
+          fully gone by the vertical midpoint of the demo recording rather than
+          ending on a line. That midpoint is measured, not guessed, because the
+          copy block above it is content-sized. */}
+      <GradientWash className={styles.heroWash} fadeAt="[data-testid='hero-window']" />
 
       <div className={styles.heroInner}>
         <h1 id="landing-hero-title" className={styles.heroTitle}>

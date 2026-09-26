@@ -49,7 +49,15 @@
   --landing-control-radius: 999px;
   --landing-control-height: 44px;
   --landing-touch-target: 44px;
-  --landing-header-height: 64px;
+  --landing-header-height: 76px;
+
+  /* The notched bar. Measured off the reference capture: its bite takes about
+     two thirds of the bar's height, so the roof and the notch split it evenly
+     here rather than leaving a roof too thin to read as a bar. */
+  --landing-bar-radius: 12px;
+  --landing-notch-width: 88px;
+  --landing-notch-depth: 24px;
+  --landing-notch-radius: 10px;
 
   /* Spacing scale. */
   --landing-space-xs: 4px;
@@ -141,7 +149,12 @@
   list-style: none;
 }
 
-.shell :where(a) {
+/* A floor, not a competitor. `:where()` on both halves drops this to zero
+   specificity, so a bare link inherits but any component class that sets its own
+   colour wins. At `.shell :where(a)` this rule tied with single-class component
+   rules such as `.primaryAction` and then beat them on source order, which left
+   every ink-filled button rendering its label in the same ink as its own fill. */
+:where(.shell) :where(a) {
   color: inherit;
   text-decoration: none;
 }
@@ -182,61 +195,101 @@
 
 /* ---------- Header ---------- */
 
-/* The header is fixed so the shrinking pill can float clear of the content.
+/* The header is fixed so the shrinking bar can float clear of the content.
    `main` carries the equivalent padding so nothing hides underneath it. */
 .header {
   position: fixed;
   inset: 0 0 auto;
-  z-index: 20;
+  /* Above the inner pages' `.ax-band` and `.ax-strip`, which sit at 20. At an
+     equal z-index the later band in the DOM paints over the fixed header and
+     swallows every pointer event on the nav. */
+  z-index: 50;
   display: flex;
   justify-content: center;
   height: var(--landing-header-height);
   padding-inline: var(--landing-gutter);
   padding-block: 12px;
   background: transparent;
-  transition: height var(--landing-enter-duration) var(--landing-ease-out);
 }
 
+/* One flex row, not a centred three-column grid. The notch only reads as part
+   of the bar when it sits directly against the nav cluster, so the brand, the
+   notch and the links are one left-hand group and the actions hold the right. */
 .headerInner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  position: relative;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--landing-space-lg);
   width: 100%;
   max-width: var(--landing-container);
   height: 100%;
-  padding-inline: 0;
-  border: 1px solid transparent;
-  border-radius: var(--landing-control-radius);
-  background: transparent;
-  transition:
-    max-width var(--landing-enter-duration) var(--landing-ease-out),
-    padding var(--landing-enter-duration) var(--landing-ease-out),
-    border-radius var(--landing-enter-duration) var(--landing-ease-out),
-    background-color var(--landing-enter-duration) var(--landing-ease-out),
-    border-color var(--landing-enter-duration) var(--landing-ease-out),
-    box-shadow var(--landing-enter-duration) var(--landing-ease-out);
 }
 
-/* Scrolled past the first screenful: a smaller, floating, pill-shaped bar.
-   Declared after the base rules so it wins without a specificity bump. */
+/* The bar surface. It is a sibling of the content rather than the content's own
+   background, because the notch is cut with a clip-path and a clip-path would
+   also clip the mega-panels hanging below. */
+.barSurface {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border: 1px solid transparent;
+  border-radius: var(--landing-bar-radius);
+  background: transparent;
+  transition:
+    background-color var(--landing-enter-duration) var(--landing-ease-out),
+    border-color var(--landing-enter-duration) var(--landing-ease-out);
+  pointer-events: none;
+}
+
+/* Lift the content above the surface. These are flex items, so z-index applies
+   without positioning them; giving them `position` here would out-specify
+   `.desktopNav { position: static }` and turn the nav into the containing block
+   for the mega-panels, which would shrink them to the width of the links. */
+.headerInner > :not(.barSurface) {
+  z-index: 1;
+}
+
+/* Scrolled past the first screenful: a smaller floating bar with a bite taken
+   out of its bottom edge. The clip-path is written by HeaderBarSurface once the
+   notch has been measured, so the cut tracks the real layout at any width. */
 :global(html[data-nav-shrunk]) .headerInner {
   max-width: min(100%, 1200px);
-  padding-inline: 10px;
+  transition: max-width var(--landing-enter-duration) var(--landing-ease-out);
+}
+
+:global(html[data-nav-shrunk]) .barSurface {
   border-color: var(--landing-line);
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--landing-surface) 82%, transparent);
-  box-shadow:
-    0 1px 0 rgb(255 255 255 / 0.04) inset,
-    0 10px 30px rgb(0 0 0 / 0.28);
-  backdrop-filter: saturate(180%) blur(14px);
-  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  /* Nearly opaque on purpose. A fixed bar over scrolling content picks up
+     whatever passes under it, and at a lighter mix the nav labels went dark on
+     dark wherever a dark section crossed the bar. The blur stays for the
+     hairline's edge, not for the fill. */
+  background: color-mix(in oklab, var(--landing-surface) 93%, transparent);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+}
+
+.brandZone {
+  display: flex;
+  align-items: center;
+  gap: var(--landing-space-lg);
+  min-width: 0;
+}
+
+/* A ruler, not a shape. The surface's clip-path is derived from where this sits,
+   which is why it is measured rather than positioned: the notch has to follow
+   the brand's real width at every viewport and in both themes. */
+.notch {
+  flex: 0 0 var(--landing-notch-width);
+  width: var(--landing-notch-width);
+  height: var(--landing-notch-depth);
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  justify-self: start;
   gap: 9px;
   min-height: var(--landing-control-height);
   color: var(--landing-ink);
@@ -248,8 +301,27 @@
 }
 
 .desktopNav {
-  justify-self: center;
+  position: static;
   min-width: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+  transition: gap var(--landing-enter-duration) var(--landing-ease-out);
+}
+
+:global(html[data-nav-shrunk]) .headerActions {
+  gap: 6px;
+}
+
+/* ---------- Mega-menu ---------- */
+
+.megaRoot {
+  position: static;
 }
 
 .navList {
@@ -264,52 +336,198 @@
   gap: 20px;
 }
 
-:global(html[data-nav-shrunk]) .navLink {
-  padding-inline: 9px;
+.navItem {
+  display: flex;
+  align-items: center;
 }
 
-:global(html[data-nav-shrunk]) .headerActions {
-  gap: 6px;
-}
-
-.navLink {
+.navTrigger {
   position: relative;
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   min-height: 36px;
   padding-inline: 12px;
   border-radius: var(--landing-control-radius);
+  background: transparent;
   color: var(--landing-ink);
   font-size: var(--landing-small-size);
+  white-space: nowrap;
+  cursor: pointer;
   transition:
     color var(--landing-hover-duration) var(--landing-ease-ui),
     background-color var(--landing-hover-duration) var(--landing-ease-ui);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .navLink:hover {
-    background: var(--landing-surface-strong);
-  }
+:global(html[data-nav-shrunk]) .navTrigger {
+  padding-inline: 9px;
 }
 
-.headerActions {
+/* A two-stroke chevron drawn rather than shipped as an icon, so it inherits the
+   ink and costs nothing. Rotating it is the only motion the trigger needs. */
+.navChevron {
+  display: block;
+  width: 7px;
+  height: 7px;
+  margin-top: -3px;
+  border-right: 1.25px solid currentColor;
+  border-bottom: 1.25px solid currentColor;
+  opacity: 0.5;
+  transform: rotate(45deg);
+  transition: transform var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.navChevron[data-open="true"] {
+  transform: rotate(225deg);
+  margin-top: 3px;
+}
+
+.navTrigger[aria-expanded="true"] {
+  color: var(--landing-ink);
+  background: var(--landing-surface-strong);
+}
+
+.navTrigger[aria-expanded="true"] .navChevron {
+  opacity: 0.9;
+}
+
+/* The panel spans the bar and hangs below it. `hidden` is not used: the entrance
+   is a tween, and a hard toggle would drop the stagger mid-flight. */
+.megaPanel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  margin-top: 8px;
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-card-radius);
+  background: color-mix(in oklab, var(--landing-surface) 94%, transparent);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.04) inset,
+    0 18px 44px rgb(0 0 0 / 0.34);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.megaPanel[data-open="true"] {
+  visibility: visible;
+}
+
+.megaInner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) repeat(2, minmax(0, 1fr));
+  gap: 40px;
+  width: min(100%, var(--landing-container));
+  margin-inline: auto;
+  padding: 28px 32px 32px;
+}
+
+/* The left column states the entry and gives the whole group a way to the page
+   the entry names, so the trigger is never a dead end. */
+.megaIntro {
   display: flex;
-  align-items: center;
-  justify-self: end;
-  justify-content: flex-end;
-  gap: 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding-right: 32px;
+  border-right: 1px solid var(--landing-line);
+}
+
+.megaIntroTitle {
+  color: var(--landing-ink);
+  font-size: var(--landing-section-size);
+  font-weight: 400;
+  letter-spacing: var(--landing-section-track);
+  line-height: 1.15;
+}
+
+.megaIntroBody {
+  color: var(--landing-muted);
+  font-size: var(--landing-small-size);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.megaOverview {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  margin-top: auto;
+  color: var(--landing-link);
+  font-size: var(--landing-small-size);
+  white-space: nowrap;
+  transition: gap var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.megaArrow {
+  display: block;
+  transition: transform var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.megaOverview:hover .megaArrow {
+  transform: translateX(3px);
+}
+
+.megaGroup {
   min-width: 0;
 }
 
-.headerGhost {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--landing-control-height);
-  padding-inline: 12px;
+.megaHeading {
+  margin-bottom: 12px;
+  color: var(--landing-muted);
+  font-size: var(--landing-meta-size);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.megaList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.megaLink {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--landing-tile-radius);
+  transition: background-color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.megaLinkLabel {
   color: var(--landing-ink);
   font-size: var(--landing-small-size);
-  white-space: nowrap;
-  transition: color var(--landing-hover-duration) var(--landing-ease-ui);
+  line-height: 1.4;
+}
+
+.megaLinkDescription {
+  grid-column: 1 / -1;
+  color: var(--landing-muted);
+  font-size: var(--landing-meta-size);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.megaExternal {
+  grid-row: 1;
+  grid-column: 2;
+  color: var(--landing-muted);
+  font-size: var(--landing-meta-size);
+  line-height: 1.4;
+}
+
+.megaLink:hover {
+  background: var(--landing-tile);
+}
+
+.megaLink:hover .megaLinkLabel {
+  color: var(--landing-link);
 }
 
 .headerOutline,
@@ -488,18 +706,14 @@
   transition: color var(--landing-hover-duration) var(--landing-ease-ui);
 }
 
-/* 1280, not 1024. Measured: the full desktop bar needs about 1342px, so between
-   1024 and 1280 the centred nav and the action cluster overlapped. Collapsing to
-   the menu here is what makes the shrunk pill fit as well. */
+/* The nav is a single left-hand group now, so the bar needs about 1030px rather
+   than the 1342px a centred nav did. The collapse point stays where it is: below
+   it the group plus the actions stop fitting on one line. */
 @media (max-width: 1279px) {
-  .headerInner {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
   .desktopNav,
   .headerSolid,
   .headerOutline,
-  .headerGhost {
+  .notch {
     display: none;
   }
 
@@ -525,10 +739,12 @@
 
 /* Hover motion only where a real pointer exists, so touch never fires it. */
 @media (hover: hover) and (pointer: fine) {
-  .brand:hover,
-  .navLink:hover,
-  .headerGhost:hover {
+  .brand:hover {
     color: var(--landing-link);
+  }
+
+  .navTrigger:hover {
+    background: var(--landing-surface-strong);
   }
 
   .headerOutline:hover {
@@ -551,8 +767,7 @@
   }
 
   .brand:active,
-  .navLink:active,
-  .headerGhost:active,
+  .navTrigger:active,
   .headerOutline:active,
   .headerSolid:active,
   .themeButton:active,
@@ -561,8 +776,7 @@
   }
 
   .brand,
-  .navLink,
-  .headerGhost,
+  .navTrigger,
   .headerOutline,
   .headerSolid,
   .themeButton,
@@ -576,10 +790,9 @@
 }
 
 @media (pointer: coarse) {
-  .navLink,
+  .navTrigger,
   .headerSolid,
   .headerOutline,
-  .headerGhost,
   .themeButton,
   .themePlaceholder,
   .mobileTrigger {

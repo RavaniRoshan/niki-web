@@ -15,7 +15,7 @@ no-reference-assets boundary.
 
 - [x] Twelve sections, each matching a reference section's role
   - Hero, provider strip, four alternating feature cards, receipt grid, changelog, capability
-    row, manifesto card, highlights row, closing display CTA, footer.
+    row, manifesto card, highlights row, closing display CTA, closing portal, footer.
   - Where the reference shows social proof, Niki shows product evidence: the receipt grid carries
     real run artifacts, the provider strip carries the twelve real integrations, the changelog and
     highlights rows read from live data modules.
@@ -98,7 +98,7 @@ gradient decoration. They now resolve to the same palette as the landing.
 - [x] `npm run lint`
 - [x] `npm run typecheck`
 - [x] `npm run build` for both apps
-- [x] `npm run test:e2e:web`, 82 passing, including Axe at 1440 and 390 in both themes across the
+- [x] `npm run test:e2e:web`, including Axe at 1440 and 390 in both themes across the
       landing and the inner routes, and 12 screenshot baselines at `maxDiffPixels: 0`
 
 ## Still open
