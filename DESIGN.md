@@ -190,6 +190,30 @@ Prohibited: customer names or logos, testimonials, adoption or performance numbe
 that Niki writes to `main`, creates a hosted pull request, or guarantees an outcome, and any
 invented file names, timings, or scores.
 
+## The hero recording
+
+The hero media is a flat macOS-style canvas: a light textured card with a dark Terminal window
+sitting on it, cropped by the card's bottom edge. It is deliberately **not** wrapped in a
+`RunWindow`; the asset already carries its own window, and wrapping it drew a window around a
+window. `RunWindow` is untouched and still carries every other product surface on the page.
+
+**It shows no controls.** The `Pause / Replay / Playing` bar is gone. What replaced it:
+
+- **Hover** the media and it pauses; move away and it resumes. The control appears on hover so
+  the thing that pauses it is visible when you want it.
+- **Focus** the control, from the keyboard or a screen reader, and it paints. It is out of the
+  layout until then, so nothing is visible by default.
+- **On a coarse pointer**, where hover never fires, the control is always visible. Without
+  this, a phone had auto-playing motion and no reachable way to stop it.
+
+That is the WCAG 2.2.2 pause mechanism, and it is asserted rather than assumed. The control is
+positioned inside the media rather than beside it: as a sibling, moving the pointer onto it fired
+`pointerleave` on the media, which resumed the recording, and the click then paused it. The two
+fought and the click lost.
+
+The media holds its own aspect ratio at every breakpoint, so the 16:9 canvas is never cropped.
+An earlier `min-height` on the mobile viewport overrode the ratio and cut the terminal in half.
+
 ## Site-wide system
 
 The landing carries the measured values on its own `.shell` scope. The other 16 routes read the

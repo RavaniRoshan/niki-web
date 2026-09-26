@@ -649,14 +649,18 @@ test("the recording exposes local sources, stable framing, and keyboard controls
 
   const status = page.getByTestId("pipeline-video-status");
   const toggle = page.getByTestId("pipeline-video-toggle");
-  const replay = page.getByTestId("pipeline-video-replay");
   await expect(status).toHaveAttribute("aria-live", "polite");
   await expect(status).toHaveText("Paused");
   await expect(toggle).toHaveAttribute("aria-pressed", "false");
   await expect(toggle).toHaveAccessibleName("Play pipeline recording");
-  await expect(replay).toHaveAccessibleName("Replay pipeline recording");
 
-  for (const control of [toggle, replay]) {
+  // The hero shows no controls, so the pause mechanism is hover plus a button
+  // that only paints on focus. Both are asserted below.
+  await expect(page.getByTestId("pipeline-video-replay")).toHaveCount(0);
+  const toggleOpacity = await toggle.evaluate((e) => getComputedStyle(e).opacity);
+  expect(Number(toggleOpacity)).toBe(0);
+
+  for (const control of [toggle]) {
     const controlBox = await control.boundingBox();
     expect(controlBox).not.toBeNull();
     expect(controlBox!.width).toBeGreaterThanOrEqual(TOUCH_TARGET_PX - TOUCH_TOLERANCE);
@@ -727,36 +731,59 @@ test("a recording load failure is announced as unavailable", async ({ page }) =>
   await expect(page.getByTestId("pipeline-video-element")).toHaveJSProperty("paused", true);
 });
 
-test("the pipeline recording can be advanced, rewound, and replayed", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
+test("the recording pauses on hover and exposes a working control", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openLanding(page);
 
   const video = page.getByTestId("pipeline-video-element");
+  const media = page.getByTestId("pipeline-video");
   const toggle = page.getByTestId("pipeline-video-toggle");
-  const replay = page.getByTestId("pipeline-video-replay");
+  const status = page.getByTestId("pipeline-video-status");
+  const opacity = () => toggle.evaluate((e) => Number(getComputedStyle(e).opacity));
+  const paused = () => video.evaluate((e) => (e as HTMLVideoElement).paused);
 
-  await replay.click();
-  await expect(video).toHaveJSProperty("paused", false);
-  await expect
-    .poll(() => video.evaluate((element) => (element as HTMLVideoElement).currentTime))
-    .toBeLessThan(0.5);
-  await expect(toggle).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByTestId("pipeline-video-status")).toHaveText("Playing");
+  await expect.poll(() => paused(), { timeout: 10_000 }).toBe(false);
 
-  await expect
-    .poll(() => video.evaluate((element) => (element as HTMLVideoElement).currentTime), {
-      timeout: 10_000,
-    })
-    .toBeGreaterThan(1);
+  // The hero shows no control bar at all.
+  await expect(page.getByTestId("pipeline-video-replay")).toHaveCount(0);
+  expect(await opacity()).toBe(0);
 
-  await replay.click();
-  await expect
-    .poll(() => video.evaluate((element) => (element as HTMLVideoElement).currentTime))
-    .toBeLessThan(0.5);
-  await expect(video).toHaveJSProperty("paused", false);
-  await expect(toggle).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByTestId("pipeline-video-status")).toHaveText("Playing");
+  const box = await toggle.boundingBox();
+  expect(box!.width).toBeGreaterThanOrEqual(TOUCH_TARGET_PX - TOUCH_TOLERANCE);
+  expect(box!.height).toBeGreaterThanOrEqual(TOUCH_TARGET_PX - TOUCH_TOLERANCE);
+
+  // Hovering pauses and reveals the control. This is the pointer half of the
+  // pause mechanism WCAG 2.2.2 asks for.
+  await media.hover();
+  await expect.poll(() => paused()).toBe(true);
+  await expect.poll(opacity).toBe(1);
+  await expect(toggle).toHaveAccessibleName("Play pipeline recording");
+  await expect(status).toHaveText("Paused");
+
+  // Clicking it does exactly what its label says, and the pointer is still over
+  // the media, so the click has to win rather than lose to the hover state.
+  await toggle.click();
+  await expect.poll(() => paused()).toBe(false);
+  await expect(toggle).toHaveAccessibleName("Pause pipeline recording");
+
+  // Moving away keeps playing, because the viewer did not ask it to stop.
+  await page.mouse.move(5, 5);
+  await expect.poll(() => paused()).toBe(false);
+
+  // An explicit pause, made from the keyboard without hovering, survives both
+  // hover cycles and scrolling away.
+  await toggle.focus();
+  await toggle.press("Enter");
+  await expect.poll(() => paused()).toBe(true);
+  await expect(status).toHaveText("Paused");
+  for (let i = 0; i < 3; i += 1) {
+    await media.hover();
+    await page.waitForTimeout(150);
+    await page.mouse.move(5, 5);
+    await page.waitForTimeout(200);
+  }
+  await expect.poll(() => paused()).toBe(true);
 });
 
 test("the pipeline recording keeps an explicit user pause through interruptions", async ({
@@ -784,7 +811,13 @@ test("the pipeline recording keeps an explicit user pause through interruptions"
       timeout: 10_000,
     })
     .toBe(false);
-  await toggle.click();
+
+  // The control is not pointer-reachable until the media is hovered, so an
+  // explicit pause is made from the keyboard. That is also the path that has to
+  // survive an interruption, because a hovered pause is only held by the pointer.
+  await toggle.focus();
+  await expect(toggle).toBeFocused();
+  await toggle.press("Enter");
   await expect(video).toHaveJSProperty("paused", true);
   await expect(status).toHaveText("Paused");
 

@@ -137,38 +137,84 @@
   object-position: top left;
 }
 
-.videoControls {
-  display: flex;
+/* The recording shows no controls. What replaces them:
+   - hovering the media pauses it and it resumes on leave;
+   - a focusable button, painted only on focus, so keyboard and screen-reader
+     users still have a real pause control without the hero showing one. */
+.videoToggle {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 2;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-}
-
-.videoButton {
-  /* 44px, matching every other control on the page. */
-  min-height: 44px;
+  min-height: var(--landing-touch-target);
   padding-inline: 14px;
   border: 1px solid var(--landing-line);
   border-radius: var(--landing-control-radius);
-  background: transparent;
+  background: var(--landing-canvas);
   color: var(--landing-ink);
   font-size: var(--landing-small-size);
   cursor: pointer;
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
   transition:
-    background-color var(--landing-hover-duration) var(--landing-ease-ui),
-    border-color var(--landing-hover-duration) var(--landing-ease-ui),
-    opacity var(--landing-hover-duration) var(--landing-ease-ui);
+    opacity var(--landing-hover-duration) var(--landing-ease-ui),
+    transform var(--landing-hover-duration) var(--landing-ease-ui);
 }
 
-.videoButton:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+/* The control is out of the way until it is wanted, but it must be reachable
+   once the pointer is on the media, otherwise a mouse user could never click it.
+   Hovering already pauses the recording, so the control that appears is the way
+   to hold it paused. */
+.videoViewport[data-hovered="true"] .videoToggle,
+.videoToggle:focus-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  background: var(--landing-surface);
+}
+
+.videoToggleGlyph {
+  display: block;
+  width: 10px;
+  height: 12px;
+  border-left: 3px solid currentColor;
+  border-right: 3px solid currentColor;
+}
+
+.videoToggle[aria-pressed="false"] .videoToggleGlyph {
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-left: 9px solid currentColor;
+  border-right: 0;
+}
+
+.videoToggleText {
+  line-height: 1;
+}
+
+@media (pointer: coarse) {
+  .videoToggle {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    min-height: var(--landing-touch-target);
+  }
 }
 
 .videoStatus {
-  margin-left: auto;
-  color: var(--landing-muted);
-  font-family: var(--landing-font-mono);
-  font-size: var(--landing-meta-size);
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ---------- Window chrome ---------- */
@@ -1080,6 +1126,10 @@
  * viewport carries the ratio, so media loading cannot change the page height
  * and the full-page baseline stays stable. */
 .heroMedia .pipelineVideo {
+  /* The pause control is absolutely positioned against this box. Without
+     `position: relative` it resolves against the page instead, which detaches
+     it from the media and makes the pointer leave and re-enter on every move. */
+  position: relative;
   border-radius: var(--landing-card-radius);
   overflow: hidden;
   background: var(--landing-canvas);
@@ -1100,7 +1150,7 @@
 
 @media (max-width: 899px) {
   .heroMedia .videoViewport {
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
   }
 }
 
@@ -1997,53 +2047,8 @@
   .secondaryAction,
   .textControl,
   .metaCard,
-  .textLink {
+  .textLink,
+  .videoToggle {
     transition-duration: 0.001ms;
-  }
-}
-
-/* ---------- Hero window ----------
- *
- * Declared after the responsive block on purpose. The stage owns the height
- * through its aspect ratio and the window is pinned inside it, so media loading
- * can never change the page height and the full-page baseline stays stable.
- * These selectors have to outrank the generic `.window` margin and the
- * offset-variant width rules above, so they restate both. */
-.heroMedia .windowStage {
-  position: relative;
-  aspect-ratio: 1.95;
-}
-
-.heroMedia .windowStage > .window,
-.heroMedia .windowStage[data-window-variant="offset"] > .window {
-  position: absolute;
-  inset: 40px;
-  width: auto;
-  margin: 0;
-}
-
-/* Below 900px the 16:9 letterbox leaves the video no height at all, so the stage
-   drops the ratio and the window returns to normal flow. Height stays
-   deterministic because `.videoElement` is out of flow and the viewport carries
-   a fixed minimum instead. */
-@media (max-width: 899px) {
-  .heroMedia .windowStage {
-    aspect-ratio: auto;
-  }
-
-  .heroMedia .windowStage > .window,
-  .heroMedia .windowStage[data-window-variant="offset"] > .window {
-    position: relative;
-    inset: auto;
-    width: auto;
-    margin: 20px;
-  }
-
-  .heroMedia .windowBody {
-    min-height: 0;
-  }
-
-  .heroMedia .videoViewport {
-    min-height: 260px;
   }
 }

@@ -13,6 +13,8 @@ const STATE_LABEL: Record<PlaybackState, string> = {
 
 export default function PipelineVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const hoverHandlerRef = useRef<((inside: boolean) => void) | null>(null);
+  const [pointerInside, setPointerInside] = useState(false);
   const unavailableRef = useRef(false);
   const resumeAfterInterruptionRef = useRef(false);
   const userPausedRef = useRef(false);
@@ -27,6 +29,7 @@ export default function PipelineVideo() {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     let disposed = false;
     let inViewport = false;
+    const hoveredRef = { current: false };
     let documentVisible = !document.hidden;
     let loadWatchdog: number | undefined;
 
@@ -76,6 +79,7 @@ export default function PipelineVideo() {
         userPausedRef.current ||
         motionQuery.matches ||
         !inViewport ||
+        hoveredRef.current ||
         !documentVisible
       ) {
         return;
@@ -89,7 +93,13 @@ export default function PipelineVideo() {
             video.pause();
             return;
           }
-          if (userPausedRef.current || motionQuery.matches || !inViewport || !documentVisible) {
+          if (
+            userPausedRef.current ||
+            motionQuery.matches ||
+            !inViewport ||
+            hoveredRef.current ||
+            !documentVisible
+          ) {
             resumeAfterInterruptionRef.current = !userPausedRef.current;
             video.pause();
             return;
@@ -108,9 +118,29 @@ export default function PipelineVideo() {
 
     const pauseForInterruption = () => {
       if (video.paused) return;
-      resumeAfterInterruptionRef.current = true;
+      resumeAfterInterruptionRef.current = !userPausedRef.current;
       video.pause();
+      setPlaybackState("paused");
     };
+
+    // Hovering the recording pauses it and it resumes on leave, unless the
+    // viewer paused it themselves. This is the pointer half of the pause
+    // mechanism WCAG 2.2.2 asks for, now that the control bar is gone.
+    const syncHover = (inside: boolean) => {
+      hoveredRef.current = inside;
+      if (inside) {
+        pauseForInterruption();
+        return;
+      }
+      if (!userPausedRef.current) attemptAutomaticPlayback();
+    };
+
+    // The button is the keyboard half of the pause mechanism. It stays out of
+    // the layout and only paints when focused, so the hero shows no controls at
+    // all while a keyboard or screen-reader user still has a real one. Focus is
+    // deliberately not routed through syncHover: tabbing to the control must not
+    // change playback, or the first press would resume what focusing had paused.
+    hoverHandlerRef.current = syncHover;
 
     const syncMotionPreference = () => {
       const reduceMotion = motionQuery.matches;
@@ -255,14 +285,6 @@ export default function PipelineVideo() {
     video.pause();
   };
 
-  const replay = () => {
-    const video = videoRef.current;
-    if (!video || unavailableRef.current) return;
-    video.currentTime = 0;
-    userPausedRef.current = false;
-    void play();
-  };
-
   const isPlaying = playbackState === "playing";
   const isUnavailable = playbackState === "unavailable";
   const toggleLabel = isUnavailable
@@ -273,7 +295,21 @@ export default function PipelineVideo() {
 
   return (
     <div className={styles.pipelineVideo}>
-      <div data-testid="pipeline-video" className={styles.videoViewport}>
+      <div
+        data-testid="pipeline-video"
+        className={styles.videoViewport}
+        data-hovered={pointerInside ? "true" : "false"}
+        onPointerEnter={(event) => {
+          if (event.pointerType !== "mouse") return;
+          setPointerInside(true);
+          hoverHandlerRef.current?.(true);
+        }}
+        onPointerLeave={(event) => {
+          if (event.pointerType !== "mouse") return;
+          setPointerInside(false);
+          hoverHandlerRef.current?.(false);
+        }}
+      >
         <video
           ref={videoRef}
           data-testid="pipeline-video-element"
@@ -287,39 +323,28 @@ export default function PipelineVideo() {
           <source src="/niki-tui-demo.webm" type="video/webm" />
           <source src="/niki-tui-demo.mp4" type="video/mp4" />
         </video>
-      </div>
-      <div className={styles.videoControls}>
         <button
           data-testid="pipeline-video-toggle"
-          className={styles.videoButton}
           type="button"
+          className={styles.videoToggle}
           aria-label={toggleLabel}
           aria-pressed={isPlaying}
           disabled={isUnavailable}
           onClick={togglePlayback}
         >
-          {isPlaying ? "Pause" : "Play"}
+          <span className={styles.videoToggleGlyph} aria-hidden="true" />
+          <span className={styles.videoToggleText}>{isPlaying ? "Pause" : "Play"}</span>
         </button>
-        <button
-          data-testid="pipeline-video-replay"
-          className={styles.videoButton}
-          type="button"
-          aria-label="Replay pipeline recording"
-          disabled={isUnavailable}
-          onClick={replay}
-        >
-          Replay
-        </button>
-        <p
-          data-testid="pipeline-video-status"
-          className={styles.videoStatus}
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {STATE_LABEL[playbackState]}
-        </p>
       </div>
+      <p
+        data-testid="pipeline-video-status"
+        className={styles.videoStatus}
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {STATE_LABEL[playbackState]}
+      </p>
     </div>
   );
 }

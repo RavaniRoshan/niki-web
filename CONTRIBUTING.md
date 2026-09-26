@@ -66,6 +66,29 @@ If you add a colour, check it against both themes. `landing.visual.spec.ts` runs
 
 Full detail, including the measured values these came from, is in `DESIGN.md`.
 
+## The hero recording
+
+The hero media is a rendered asset, not a screen recording. Regenerate it with:
+
+```bash
+cd apps/web
+python3 scripts/demo/render_demo.py --out /tmp/niki-demo
+python3 scripts/demo/export_demo.py --frames /tmp/niki-demo/frames --out /tmp/niki-demo/out \
+  --public public
+```
+
+**It shows no controls, on purpose.** Do not add a visible play/pause bar back. The pause
+mechanism is: hover the media to pause, focus the control to reach it from the keyboard, and on a
+coarse pointer the control is always visible. That satisfies WCAG 2.2.2 without putting a control
+on the page. The tests assert all three paths.
+
+The control must stay **inside** the media element, not beside it. As a sibling, moving the
+pointer onto it fired `pointerleave` on the media, which resumed the recording, and the click then
+paused it.
+
+The media keeps its aspect ratio at every breakpoint. A `min-height` on the mobile viewport will
+override the ratio and crop the canvas, which is what happened once already.
+
 ## Changing the landing
 
 `apps/web/src/components/landing/` is the landing only. `page.tsx` composes it; `content.ts` holds
