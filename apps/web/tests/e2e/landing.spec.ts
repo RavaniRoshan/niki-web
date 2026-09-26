@@ -146,6 +146,78 @@ test("desktop navigation stays on one line and mobile navigation is hidden", asy
   await expect(page.getByTestId("mobile-nav-trigger")).toBeVisible();
 });
 
+test("the header shrinks into a floating pill once the page is scrolled", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openLanding(page);
+
+  const header = page.getByTestId("landing-header");
+  const inner = header.locator("> div");
+  const metrics = async () =>
+    inner.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const box = element.getBoundingClientRect();
+      return {
+        width: Math.round(box.width),
+        radius: style.borderTopLeftRadius,
+        background: style.backgroundColor,
+        shadow: style.boxShadow !== "none",
+      };
+    });
+
+  const atTop = await metrics();
+  expect(await page.evaluate(() => document.documentElement.hasAttribute("data-nav-shrunk"))).toBe(
+    false
+  );
+  expect(atTop.background).toBe("rgba(0, 0, 0, 0)");
+  expect(atTop.shadow).toBe(false);
+
+  await page.evaluate(() => window.scrollTo(0, 500));
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.hasAttribute("data-nav-shrunk")))
+    .toBe(true);
+
+  const shrunk = await metrics();
+  expect(shrunk.width).toBeLessThan(atTop.width);
+  expect(shrunk.width).toBeLessThanOrEqual(1200);
+  expect(shrunk.background).not.toBe("rgba(0, 0, 0, 0)");
+  expect(shrunk.shadow).toBe(true);
+  expect(shrunk.radius).toBe(shrunk.radius); // pill: a large radius
+
+  // The nav and the action cluster must not overlap once the bar is narrow.
+  const gap = await header.evaluate((element) => {
+    const nav = element.querySelector("nav");
+    if (!nav || getComputedStyle(nav).display === "none") return null;
+    const kids = [...element.firstElementChild!.children];
+    return Math.round(
+      kids[kids.length - 1].getBoundingClientRect().left - nav.getBoundingClientRect().right
+    );
+  });
+  if (gap !== null) expect(gap).toBeGreaterThan(0);
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.hasAttribute("data-nav-shrunk")))
+    .toBe(false);
+  expect((await metrics()).width).toBe(atTop.width);
+});
+
+test("the header never overlaps itself at any width", async ({ page }) => {
+  for (const width of [1440, 1280, 1200, 1024, 834, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await openLanding(page);
+    const overlap = await page.getByTestId("landing-header").evaluate((element) => {
+      const inner = element.firstElementChild as HTMLElement;
+      const innerBox = inner.getBoundingClientRect();
+      return [...inner.querySelectorAll("a, button, nav")].some((child) => {
+        const box = child.getBoundingClientRect();
+        return box.width > 0 && (box.left < innerBox.left - 1 || box.right > innerBox.right + 1);
+      });
+    });
+    expect(overlap, `header overflows at ${width}px`).toBe(false);
+  }
+});
+
 test("the mobile dialog enters focus and returns it after Escape", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);

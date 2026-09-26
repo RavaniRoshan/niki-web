@@ -190,6 +190,30 @@ Prohibited: customer names or logos, testimonials, adoption or performance numbe
 that Niki writes to `main`, creates a hosted pull request, or guarantees an outcome, and any
 invented file names, timings, or scores.
 
+## The header
+
+One header for the whole site, and it has two states.
+
+At rest it is a full-width, transparent bar: the brand on the left, five links centred, and the
+action cluster on the right. It carries no fill and no shadow, so the page reads as one surface.
+
+Once the page scrolls past its first screenful it becomes a **smaller floating pill**: capped at
+1200px, full pill radius, a translucent surface with backdrop blur, and a soft shadow. It is fixed
+rather than sticky so it can float clear of the content, and `main` carries the matching top
+padding so nothing hides underneath it.
+
+The state is a single attribute, `html[data-nav-shrunk]`, set by `NavShrinkSensor`. That is an
+`IntersectionObserver` on a one-pixel sentinel, not a scroll listener: the state changes once per
+crossing rather than once per frame, so there is no per-frame work to throttle. The header itself
+stays a Server Component; the sensor is the only thing this ships to the client.
+
+Two measurements shaped this, and both are asserted in the tests:
+
+- The bar needs about **1342px** at its resting spacing, so the shrunk state also tightens the nav
+  gap and link padding. 1200px is close to the real floor; going narrower collides.
+- The desktop nav **already overlapped the action cluster between 1024px and 1280px** before this
+  change, because the collapse breakpoint was at 1023. It is now 1279.
+
 ## The hero recording
 
 The hero media is a flat macOS-style canvas: a light textured card with a dark Terminal window

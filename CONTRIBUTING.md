@@ -66,6 +66,17 @@ If you add a colour, check it against both themes. `landing.visual.spec.ts` runs
 
 Full detail, including the measured values these came from, is in `DESIGN.md`.
 
+## The header
+
+The header has two states: a full-width transparent bar at rest, and a capped floating pill once
+`html[data-nav-shrunk]` is set. Both are plain CSS keyed off that attribute, so do not move the
+state into React state on the header, and do not replace the sensor with a scroll listener.
+
+The pill is capped at 1200px because the bar needs about 1342px at its resting spacing; the
+shrunk state tightens the nav gap and link padding to make it fit. Widening the desktop nav
+cluster means either raising that cap or lowering the collapse breakpoint, which is 1279. The
+tests assert the header never overlaps itself at 1440, 1280, 1200, 1024, 834 or 390.
+
 ## The hero recording
 
 The hero media is a rendered asset, not a screen recording. Regenerate it with:

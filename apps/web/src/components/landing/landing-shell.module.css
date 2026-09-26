@@ -171,7 +171,8 @@
 }
 
 .main {
-  min-height: calc(100dvh - var(--landing-header-height));
+  min-height: 100dvh;
+  padding-top: calc(var(--landing-header-height) + 12px);
 }
 
 .main:focus-visible {
@@ -181,25 +182,55 @@
 
 /* ---------- Header ---------- */
 
+/* The header is fixed so the shrinking pill can float clear of the content.
+   `main` carries the equivalent padding so nothing hides underneath it. */
 .header {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  inset: 0 0 auto;
   z-index: 20;
+  display: flex;
+  justify-content: center;
   height: var(--landing-header-height);
-  background: color-mix(in oklab, var(--landing-canvas) 88%, transparent);
-  backdrop-filter: saturate(180%) blur(12px);
-  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  padding-inline: var(--landing-gutter);
+  padding-block: 12px;
+  background: transparent;
+  transition: height var(--landing-enter-duration) var(--landing-ease-out);
 }
 
 .headerInner {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  width: min(100%, var(--landing-container));
+  gap: var(--landing-space-lg);
+  width: 100%;
+  max-width: var(--landing-container);
   height: 100%;
-  margin-inline: auto;
-  padding-inline: var(--landing-gutter);
-  column-gap: var(--landing-space-lg, 24px);
+  padding-inline: 0;
+  border: 1px solid transparent;
+  border-radius: var(--landing-control-radius);
+  background: transparent;
+  transition:
+    max-width var(--landing-enter-duration) var(--landing-ease-out),
+    padding var(--landing-enter-duration) var(--landing-ease-out),
+    border-radius var(--landing-enter-duration) var(--landing-ease-out),
+    background-color var(--landing-enter-duration) var(--landing-ease-out),
+    border-color var(--landing-enter-duration) var(--landing-ease-out),
+    box-shadow var(--landing-enter-duration) var(--landing-ease-out);
+}
+
+/* Scrolled past the first screenful: a smaller, floating, pill-shaped bar.
+   Declared after the base rules so it wins without a specificity bump. */
+:global(html[data-nav-shrunk]) .headerInner {
+  max-width: min(100%, 1200px);
+  padding-inline: 10px;
+  border-color: var(--landing-line);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--landing-surface) 82%, transparent);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.04) inset,
+    0 10px 30px rgb(0 0 0 / 0.28);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
 }
 
 .brand {
@@ -226,15 +257,39 @@
   align-items: center;
   gap: 34px;
   white-space: nowrap;
+  transition: gap var(--landing-enter-duration) var(--landing-ease-out);
+}
+
+:global(html[data-nav-shrunk]) .navList {
+  gap: 20px;
+}
+
+:global(html[data-nav-shrunk]) .navLink {
+  padding-inline: 9px;
+}
+
+:global(html[data-nav-shrunk]) .headerActions {
+  gap: 6px;
 }
 
 .navLink {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  min-height: var(--landing-control-height);
+  min-height: 36px;
+  padding-inline: 12px;
+  border-radius: var(--landing-control-radius);
   color: var(--landing-ink);
   font-size: var(--landing-small-size);
-  transition: color var(--landing-hover-duration) var(--landing-ease-ui);
+  transition:
+    color var(--landing-hover-duration) var(--landing-ease-ui),
+    background-color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .navLink:hover {
+    background: var(--landing-surface-strong);
+  }
 }
 
 .headerActions {
@@ -433,7 +488,10 @@
   transition: color var(--landing-hover-duration) var(--landing-ease-ui);
 }
 
-@media (max-width: 1023px) {
+/* 1280, not 1024. Measured: the full desktop bar needs about 1342px, so between
+   1024 and 1280 the centred nav and the action cluster overlapped. Collapsing to
+   the menu here is what makes the shrunk pill fit as well. */
+@media (max-width: 1279px) {
   .headerInner {
     grid-template-columns: minmax(0, 1fr) auto;
   }

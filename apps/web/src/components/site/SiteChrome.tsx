@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import LandingFooter from "@/components/landing/LandingFooter";
 import LandingHeader from "@/components/landing/LandingHeader";
+import NavShrinkSensor from "@/components/landing/NavShrinkSensor";
 import styles from "./site.module.css";
 
 /** One header and one footer for the whole site.
@@ -17,6 +18,7 @@ import styles from "./site.module.css";
 export default function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <div data-testid="site-chrome" className={styles.chrome}>
+      <NavShrinkSensor />
       <LandingHeader />
       <main id="main" className={styles.main} tabIndex={-1}>
         {children}

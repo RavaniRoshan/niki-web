@@ -84,7 +84,8 @@
 }
 
 .main {
-  min-height: calc(100dvh - var(--landing-header-height));
+  min-height: 100dvh;
+  padding-top: calc(var(--landing-header-height) + 12px);
 }
 
 .main:focus-visible {
