@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { docsUrl } from "./site";
 
 /* ---------- Markdown content loading (build-time, zero client cost) ---------- */
 export interface Doc {
@@ -87,6 +88,21 @@ export function getCollection(kind: Collection): Doc[] {
 export function getDoc(kind: Collection, slug: string): Doc | undefined {
   return getCollection(kind).find((d) => d.slug === slug);
 }
+
+/** The docs site's canonical domain, used in prose by guides and posts. */
+const CANONICAL_DOCS_ORIGIN = "https://docs.niki.dev";
+
+/* A post is content, so it cannot call docsUrl() the way the components do, and
+   writing the origin into the markdown is exactly what site.ts warns against:
+   the constants there are the single switch that retargets every cross-site
+   link. So a link written against the canonical docs domain is repointed at
+   whichever origin is actually deployed, at the moment the anchor is emitted.
+   Without this, a guide that names docs.niki.dev is a dead link until that
+   domain is attached — which is not yet. */
+const retargetDocsUrl = (href: string): string =>
+  href.startsWith(CANONICAL_DOCS_ORIGIN)
+    ? docsUrl(href.slice(CANONICAL_DOCS_ORIGIN.length) || "/")
+    : href;
 
 /** Minimal, dependency-free markdown → HTML for the content collections.
  *  Handles the subset used by Niki's blog/guides/examples: headings, lists,
@@ -196,7 +212,7 @@ export function renderMarkdown(md: string): string {
     // links
     out = out.replace(
       /\[([^\]]+)\]\(([^)]+)\)/g,
-      (_m, text, href) => `<a href="${href}">${text}</a>`
+      (_m, text, href) => `<a href="${retargetDocsUrl(href)}">${text}</a>`
     );
     // bold
     out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");

@@ -129,3 +129,43 @@ test("an unknown route serves the generated 404 document", async ({ page }) => {
   await expect(page.locator("h1")).toHaveCount(1);
   await expect(page.locator("main")).toHaveCount(1);
 });
+
+/* A link is a promise about a destination, and nothing in the build checks it.
+   An audit of all 74 pages across both sites found two dead ones that every
+   other check sailed past: the About page's documentation card pointed at
+   /docs, which does not exist on the marketing site, and a guide hardcoded
+   docs.niki.dev, a domain that is not attached yet. Both rendered fine and
+   both 404'd on click.
+
+   Internal links only. An external reachability check would be a network
+   dependency in CI and would flap on rate limits - chatgpt.com and claude.ai
+   answer 403 to anything that is not a browser. */
+test("every internal link on every route lands on a real page", async ({ page }) => {
+  await setStoredTheme(page, "dark");
+
+  const dead: string[] = [];
+  const seen = new Set<string>();
+
+  for (const route of ["/", ...SITE_ROUTES]) {
+    const response = await page.goto(route, { waitUntil: "domcontentloaded" });
+    expect(response?.status(), `${route} itself is not serving`).toBeLessThan(400);
+    await waitForStaticDom(page);
+
+    const hrefs = await page
+      .locator("a[href]")
+      .evaluateAll((links) =>
+        [...new Set(links.map((link) => link.getAttribute("href") ?? ""))].filter(
+          (href) => href.startsWith("/") && !href.startsWith("//")
+        )
+      );
+
+    for (const href of hrefs) {
+      if (seen.has(href)) continue;
+      seen.add(href);
+      const landed = await page.request.get(href);
+      if (landed.status() >= 400) dead.push(`${href} (${landed.status()}) from ${route}`);
+    }
+  }
+
+  expect(dead).toEqual([]);
+});

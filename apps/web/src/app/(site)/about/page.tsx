@@ -1,5 +1,5 @@
 import { Frame, Box, Strip, BoxHeader } from "@/components/Frame";
-import { WEB_ROUTES, SITE } from "@/lib/site";
+import { WEB_ROUTES, SITE, DOCS_ROUTES, docsUrl } from "@/lib/site";
 import { pageMetadata } from "@/lib/meta";
 
 export const metadata = pageMetadata({
@@ -91,7 +91,11 @@ export default function AboutPage() {
         <div className="ax-grid ax-grid--3" style={{ padding: "8px 24px 40px" }}>
           {[
             ["The repository", "Implementation, issues and releases.", SITE.repo],
-            ["The documentation", "Pipeline, sandbox, providers, CLI and config.", "/docs"],
+            [
+              "The documentation",
+              "Pipeline, sandbox, providers, CLI and config.",
+              docsUrl(DOCS_ROUTES.overview),
+            ],
             ["The changelog", "What shipped in each release.", WEB_ROUTES.changelog],
           ].map(([title, body, href]) => (
             <a key={title} href={href} className="ax-cell" style={{ textDecoration: "none" }}>
