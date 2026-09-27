@@ -68,41 +68,25 @@ Full detail, including the measured values these came from, is in `DESIGN.md`.
 
 ## The header
 
-The header has two states: a transparent bar at rest, and a capped bar with a **notched surface**
+The header has two states: a transparent bar at rest, and a capped bar with a **filled surface**
 once `html[data-nav-shrunk]` is set. Both are plain CSS keyed off that attribute, so do not move
 the state into React state on the header, and do not replace the sensor with a scroll listener.
 
-The bite's corners use the **same sweep flag as the bar's outer corners**. The opposite sweep draws
-an arch, which reads as a doorway rather than a cut out of a solid bar; that was the first thing
-that made this look wrong, and no amount of tuning the proportions fixed it.
-
-The bite is **backed with the canvas**, not left transparent. Transparent, it became a hole onto
-whatever section was scrolling past, and a fragment of a card floated inside the navigation. The
-backing sits under the surface and starts at the bite's ceiling so it does not show through the
-translucent roof. It is held down 12%: a notch catches shadow, and without it the bite is invisible
-in the light theme, where the bar and the canvas are three points of luminance apart.
-
-The bar is one left-to-right group — brand, notch, links — with the action cluster holding the
-right. The links are deliberately **not** centred: they sit beside the notch because the bite only
-reads as part of the bar when something is either side of it, and because a centred nav is what
-made the bar need 1342px. The bar now needs about 1030px, which is why the 1200px cap has room.
+The bar is one left-to-right group — brand, links — with the action cluster holding the right. The
+links are deliberately **not** centred, and they are not centred because a centred nav is what made
+the bar need 1342px. The bar now needs about 1030px, which is why the 1200px cap has room.
 
 Two structural rules, both of which broke when they were ignored:
 
-- The bar's surface is a **sibling** of the content, not the content's background. The notch is cut
-  with a `clip-path` on that surface, and a `clip-path` clips descendants — including the
-  mega-panels hanging below the bar.
+- The bar's surface is a **sibling** of the content, not the content's background. It carries the
+  backdrop blur, and the mega-panels hang below that box; making the bar itself the filtered
+  element drags them into the blur.
 - The content is lifted with `z-index` alone. Giving those flex items `position` out-specifies
   `.desktopNav { position: static }`, which turns the nav into the containing block for the panels
   and shrinks them to the width of the links.
 
-The notch itself is a fixed 88px ruler in the flow, and `HeaderBarSurface` measures where it lands
-and writes the `clip-path`. Do not hand-write the path in CSS; it has to follow the real layout.
-Note that CSS `path()` **requires a quoted argument**: an unquoted one is dropped without an error,
-which reads as "the effect never ran".
-
 The tests assert the header never overlaps itself at 1440, 1280, 1200, 1024, 834 or 390, and that
-the notch is a real cut rather than a painted-on shape.
+the surface is a plain rounded bar rather than a pill.
 
 ## The mark
 

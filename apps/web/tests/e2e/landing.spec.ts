@@ -151,12 +151,11 @@ test("desktop navigation stays on one line and mobile navigation is hidden", asy
   await expect(page.getByTestId("mobile-nav-trigger")).toBeVisible();
 });
 
-test("the header grows a notched surface once the page is scrolled", async ({ page }) => {
+test("the header grows a floating surface once the page is scrolled", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openLanding(page);
 
-  const header = page.getByTestId("landing-header");
   const surface = page.getByTestId("header-bar-surface");
   const metrics = async () =>
     surface.evaluate((element) => {
@@ -167,7 +166,6 @@ test("the header grows a notched surface once the page is scrolled", async ({ pa
         height: Math.round(box.height),
         background: style.backgroundColor,
         radius: style.borderTopLeftRadius,
-        clipPath: style.clipPath,
       };
     });
 
@@ -185,39 +183,10 @@ test("the header grows a notched surface once the page is scrolled", async ({ pa
   const shrunk = await metrics();
   expect(shrunk.background).not.toBe("rgba(0, 0, 0, 0)");
   expect(shrunk.width).toBeLessThanOrEqual(1200);
+  /* A rounded bar, not a pill: the four corners are cut to a single radius, so
+     the shape stays rectangular between them. */
   expect(shrunk.radius).toBe("12px");
-  /* Not a pill: the surface is cut, and the path carries the bite's curves.
-     The bite corners use sweep 1, the same as the bar's outer corners: the
-     opposite sweep draws an arch, which reads as a doorway rather than a cut. */
-  expect(shrunk.clipPath).toMatch(/^path\(/);
-  expect(shrunk.clipPath).toContain("A 14 14 0 0 1");
-
-  /* The bite sits between the brand and the nav, and opens off the bottom edge,
-     so the bar's floor is missing exactly across the ruler's span. */
-  const geometry = await header.evaluate((element) => {
-    const bar = element.firstElementChild as HTMLElement;
-    const notch = element.querySelector("[data-notch]") as HTMLElement;
-    const nav = element.querySelector("nav") as HTMLElement;
-    const barBox = bar.getBoundingClientRect();
-    const notchBox = notch.getBoundingClientRect();
-    const brand = element.querySelector("a") as HTMLElement;
-    const brandBox = brand.getBoundingClientRect();
-    return {
-      notchLeft: Math.round(notchBox.left - barBox.left),
-      notchRight: Math.round(notchBox.right - barBox.left),
-      brandRight: Math.round(brandBox.right - barBox.left),
-      navLeft: Math.round(nav.getBoundingClientRect().left - barBox.left),
-      barHeight: Math.round(barBox.height),
-      ceiling: Math.round(barBox.height - notchBox.height),
-    };
-  });
-  expect(geometry.notchLeft).toBeGreaterThan(geometry.brandRight);
-  expect(geometry.notchRight).toBeLessThanOrEqual(geometry.navLeft);
-  expect(geometry.notchRight - geometry.notchLeft).toBe(148);
-  /* The bite takes about two thirds of the bar, matching the reference, so the
-     roof still reads as a bar rather than a lid. */
-  expect(geometry.barHeight).toBeGreaterThanOrEqual(48);
-  expect(geometry.barHeight - geometry.ceiling).toBeGreaterThanOrEqual(30);
+  expect(shrunk.height).toBeGreaterThanOrEqual(48);
 
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect
@@ -225,7 +194,7 @@ test("the header grows a notched surface once the page is scrolled", async ({ pa
     .toBe(false);
 });
 
-test("the nav and the action cluster do not overlap once the bar is notched", async ({ page }) => {
+test("the nav and the action cluster do not overlap once the bar has shrunk", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openLanding(page);
   await page.evaluate(() => window.scrollTo(0, 500));

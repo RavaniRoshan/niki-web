@@ -5,7 +5,7 @@
 The page reads as one template repeated. Five blocks share a card anatomy (rounded
 tile, mono eyebrow, title, body), four share a feature anatomy (macOS window + copy
 block + ember arrow link), and every one of them arrives with the same 24px fade-up
-on scroll. The hero, the wave, the notched header, the mega-menus and the portal are
+on scroll. The hero, the wave, the header, the mega-menus and the portal are
 all distinctive; everything between them is not.
 
 That is the AI-slop signature, and it is a repetition problem, not a polish problem.

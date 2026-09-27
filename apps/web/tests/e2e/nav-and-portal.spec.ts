@@ -109,9 +109,6 @@ test.describe("the mega-menu", () => {
     await page.setViewportSize({ width: 1100, height: 900 });
     await expect(trigger(page, "product")).toBeHidden();
     await expect(page.getByTestId("mobile-nav-trigger")).toBeVisible();
-
-    /* The bite only means anything on the bar, so it goes with the nav. */
-    await expect(page.locator("[data-notch]")).toBeHidden();
   });
 
   test("a click never snatches a panel away a hover just opened", async ({ page }) => {

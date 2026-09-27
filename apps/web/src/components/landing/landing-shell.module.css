@@ -51,13 +51,12 @@
   --landing-touch-target: 44px;
   --landing-header-height: 76px;
 
-  /* The notched bar. Measured off the reference capture: its bite takes about
-     two thirds of the bar's height, so the roof and the notch split it evenly
-     here rather than leaving a roof too thin to read as a bar. */
+  /* The bar's corner radius, matched by the hairline that traces it. */
   --landing-bar-radius: 12px;
-  --landing-notch-width: 148px;
-  --landing-notch-depth: 34px;
-  --landing-notch-radius: 14px;
+  /* How far the bar's contents stand off its own edge. Without it the brand mark
+     sat at exactly 0px from the border, flush with the 12px corner arc, and read
+     as jammed against the bar rather than set into it. */
+  --landing-bar-inset: 16px;
 
   /* Spacing scale. */
   --landing-space-xs: 4px;
@@ -217,9 +216,8 @@
   background: transparent;
 }
 
-/* One flex row, not a centred three-column grid. The notch only reads as part
-   of the bar when it sits directly against the nav cluster, so the brand, the
-   notch and the links are one left-hand group and the actions hold the right. */
+/* One flex row, not a centred three-column grid. The brand, the links and the
+   actions sit on one line with the actions holding the right. */
 .headerInner {
   position: relative;
   display: flex;
@@ -229,13 +227,20 @@
   width: 100%;
   max-width: var(--landing-container);
   height: 100%;
+  /* The contents stand off the bar's own edge. The surface below cancels this
+     back out, so the painted bar keeps the full width the layout gives it and
+     only the controls move inward. */
+  padding-inline: var(--landing-bar-inset);
 }
 
 /* The bar surface. It is a sibling of the content rather than the content's own
-   background, because the notch is cut with a clip-path and a clip-path would
-   also clip the mega-panels hanging below. */
+   background: it carries the backdrop blur, and the mega-panels hang below this
+   box and must not be filtered along with it. */
 .barSurface {
   position: absolute;
+  /* No counteract against the header's inset. The header is border-box with no
+     border, so its padding box is already the full width and the painted bar
+     keeps the footprint the layout gives it while only the controls move in. */
   inset: 0;
   z-index: 0;
   border: 1px solid transparent;
@@ -247,44 +252,15 @@
   pointer-events: none;
 }
 
-/* What the bite reveals. Left transparent, the notch became a hole straight
-   through the header onto whatever section happened to be scrolling past, and a
-   fragment of a card ended up floating inside the navigation. The reference
-   gets a clean cut because the page behind its bar is plain; ours is not, so the
-   bite is backed with the canvas instead. It sits under the surface, so it is
-   only ever visible where the surface has been clipped away, and it runs a few
-   pixels past the bar's floor to cover the blur's bleed. */
-.barBacking {
-  position: absolute;
-  top: 0;
-  left: 0;
-  /* Flush with the bar's floor. Extended below it, the backing reads as a tab
-     hanging off the navigation; the reference's bite runs straight into the
-     page, and the bar's blur does not sample outside its own box, so there is
-     no seam to cover. */
-  bottom: 0;
-  z-index: 0;
-  width: 0;
-  /* The canvas, held down a little. A notch catches shadow, and without it the
-     bite is invisible in the light theme, where the bar and the canvas are three
-     points of luminance apart. In the dark theme the canvas is already darker
-     than the bar, so the same rule costs nothing. */
-  background:
-    linear-gradient(to bottom, rgb(0 0 0 / 0.12), rgb(0 0 0 / 0.12)), var(--landing-canvas);
-  pointer-events: none;
-}
-
 /* Lift the content above the surface. These are flex items, so z-index applies
    without positioning them; giving them `position` here would out-specify
    `.desktopNav { position: static }` and turn the nav into the containing block
    for the mega-panels, which would shrink them to the width of the links. */
-.headerInner > :not(.barSurface):not(.barBacking) {
+.headerInner > :not(.barSurface) {
   z-index: 1;
 }
 
-/* Scrolled past the first screenful: a smaller floating bar with a bite taken
-   out of its bottom edge. The clip-path is written by HeaderBarSurface once the
-   notch has been measured, so the cut tracks the real layout at any width. */
+/* Scrolled past the first screenful: a smaller floating bar. */
 :global(html[data-nav-shrunk]) .headerInner {
   max-width: min(100%, 1200px);
   transition: max-width var(--landing-enter-duration) var(--landing-ease-out);
@@ -301,28 +277,11 @@
   -webkit-backdrop-filter: saturate(180%) blur(18px);
 }
 
-.brandZone {
-  display: flex;
-  align-items: center;
-  gap: var(--landing-space-lg);
-  min-width: 0;
-}
-
-/* A ruler, not a shape. The surface's clip-path is derived from where this sits,
-   which is why it is measured rather than positioned: the notch has to follow
-   the brand's real width at every viewport and in both themes. */
-.notch {
-  flex: 0 0 var(--landing-notch-width);
-  width: var(--landing-notch-width);
-  height: var(--landing-notch-depth);
-  visibility: hidden;
-  pointer-events: none;
-}
-
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 9px;
+  min-width: 0;
   min-height: var(--landing-control-height);
   color: var(--landing-ink);
   font-size: 1.0625rem;
@@ -738,14 +697,13 @@
   transition: color var(--landing-hover-duration) var(--landing-ease-ui);
 }
 
-/* The nav is a single left-hand group now, so the bar needs about 1030px rather
-   than the 1342px a centred nav did. The collapse point stays where it is: below
-   it the group plus the actions stop fitting on one line. */
+/* The brand, the nav and the actions share one line, so the bar needs about
+   1030px rather than the 1342px a centred nav did. The collapse point stays
+   where it is: below it the group plus the actions stop fitting on one line. */
 @media (max-width: 1279px) {
   .desktopNav,
   .headerSolid,
-  .headerOutline,
-  .notch {
+  .headerOutline {
     display: none;
   }
 

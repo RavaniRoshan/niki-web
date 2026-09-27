@@ -105,9 +105,6 @@ and no en dash.
 --landing-control-height: 44px;
 --landing-header-height: 76px;
 --landing-bar-radius: 12px;
---landing-notch-width: 88px;
---landing-notch-depth: 24px;
---landing-notch-radius: 10px;
 ```
 
 **Radius rule, stated once and followed everywhere:** controls are full pill, cards are 8 px,
@@ -240,41 +237,27 @@ invented file names, timings, or scores.
 One header for the whole site, and it has two states.
 
 At rest it is a transparent bar with no fill and no shadow, so the page reads as one surface. It
-is a single left-to-right group: brand, then the **notch**, then the links, with the action cluster
-holding the right. The links are *not* centred in the viewport. They sit directly beside the notch
-because the bite only reads as part of the bar when something is either side of it, and because a
-centred nav is what forced the bar to need 1342px in the first place.
+is a single left-to-right group: brand, then the links, with the action cluster holding the right.
+The links are *not* centred in the viewport, because a centred nav is what forced the bar to need
+1342px in the first place.
 
-Once the page scrolls past its first screenful the bar gains a **notched surface**. It is capped at
-1200px, carries a translucent fill and a backdrop blur, and has a rounded rectangular **bite taken
-out of its bottom edge**, between the brand and the first link. It is fixed rather than sticky so it
-can float clear of the content, and `main` carries the matching top padding so nothing hides
-underneath it.
+Once the page scrolls past its first screenful the bar gains a **floating surface**. It is capped at
+1200px, carries a translucent fill, a backdrop blur and a hairline, with its four corners rounded to
+12px. It is fixed rather than sticky so it can float clear of the content, and `main` carries the
+matching top padding so nothing hides underneath it.
 
-The bite is a real cut, not a painted-on one. The bar's surface is a sibling element, `.barSurface`,
-and `HeaderBarSurface` measures where the notch ruler lands and writes a `clip-path: path(...)` that
-traces the bar's outline and dips into the bite. Two consequences are deliberate:
-
-- The surface is a **sibling** of the content, not the content's background, because a `clip-path`
-  would also clip the mega-panels hanging below the bar.
-- The path rounds the bar's four outer corners at the same 12px as `border-radius`, so the hairline
-  still lands on the silhouette, and the bite's ceiling is the only edge the path adds.
-
-The measurements come from the reference capture: its bite takes about two thirds of the bar's
-height, so the roof and the notch split ours evenly instead of leaving a roof too thin to read as a
-bar.
+The surface is a **sibling** of the content, not the content's own background, because it carries
+the backdrop blur and the mega-panels hang below that box: making the bar itself the filtered
+element would drag them into the blur. The content is lifted above it with `z-index` alone.
 
 The state is a single attribute, `html[data-nav-shrunk]`, set by `NavShrinkSensor`. That is an
 `IntersectionObserver` on a one-pixel sentinel, not a scroll listener: the state changes once per
 crossing rather than once per frame, so there is no per-frame work to throttle.
 
-Two measurements shaped this, and both are asserted in the tests:
-
-- The notch is a **fixed 88px ruler** in the flow, and the surface follows it, so the cut tracks
-  the real layout at every width and in both themes rather than being pinned to a guessed offset.
-- The desktop nav **already overlapped the action cluster between 1024px and 1280px** before this
-  change, because the collapse breakpoint was at 1023. It is now 1279, and the single-group layout
-  brought the bar's own requirement down to about 1030px.
+The desktop nav **already overlapped the action cluster between 1024px and 1280px** when the
+collapse breakpoint was at 1023, because a centred nav made the bar need 1342px. The breakpoint is
+now 1279, and the single-group layout brought the bar's own requirement down to about 1030px. The
+tests assert the header never overlaps itself at 1440, 1280, 1200, 1024, 834 or 390.
 
 ## The mark
 

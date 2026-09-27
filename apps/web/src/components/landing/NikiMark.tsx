@@ -5,20 +5,35 @@ import styles from "./logo.module.css";
 /**
  * The Niki mark.
  *
- * The old one was a generic letter in a rounded square, in a yellow that is not
- * in this palette. This one is a letterform that says what the product does: the
- * two stems are fixed, and the diagonal between them is a **run in progress** —
- * dashed, and marching when you hover. Four stages handing off typed artifacts
- * is the whole product, and a dashed diagonal is that idea at 26 pixels.
+ * One solid geometric letterform: two fixed stages with a single run drawn
+ * between them, every bar the same weight and the same colour, meeting on exact
+ * coordinates. The previous mark was a filled tile with a dashed diagonal that
+ * marched on an endless loop, and both of those read as toy rather than tool —
+ * a dash pattern looks like stitching, and a loop that never stops looks like a
+ * spinner. A mark has to survive being looked at for a long time, so the
+ * geometry is solid, even, and does not ask to be watched.
+ *
+ * There is no tile behind it. A filled rounded square is the shape of an app
+ * icon, and it is what made the old mark read as a sticker; the glyph stands on
+ * its own so it belongs to the bar rather than sitting on it. The stems take the
+ * ink and the run takes the accent, so the mark is legible in both themes
+ * without borrowing a backdrop.
+ *
+ * The three bars are stroked lines rather than filled rectangles so that "one
+ * weight" is a single declaration instead of three that have to be kept in step.
+ * The run's ends land inside the stems, so the form closes up as one object
+ * rather than three strokes that happen to overlap.
+ *
+ * Motion is the one thing here, and it is deliberate: on hover the run draws
+ * itself across, once, and holds. That is the product in one gesture — work
+ * travelling between two fixed points — and because it does not loop there is
+ * nothing to distract from the page. Under reduced motion the mark is simply
+ * the still mark.
  *
  * Built as a component rather than an `<Image>` so the motion is real DOM the
  * browser can run, and so the strokes can take the theme's tokens. The static
  * `logo-mark.svg` next to it is the same geometry with hardcoded colours, for
  * the favicon and anything that cannot run a script.
- *
- * Motion is transform and stroke-dashoffset only, and it is entirely on hover.
- * There is no idle loop: a mark that animates on its own is a distraction, and
- * the diagonal is already a static dashed line when the pointer is elsewhere.
  */
 export default function NikiMark({ size = 26 }: { size?: number }) {
   return (
@@ -31,14 +46,10 @@ export default function NikiMark({ size = 26 }: { size?: number }) {
         aria-hidden="true"
         focusable="false"
       >
-        {/* The tile is the ink, so the mark reads as one object in both themes
-            rather than dissolving into a dark header. */}
-        <rect className={styles.tile} x="1" y="1" width="30" height="30" rx="7.5" />
-        {/* The two fixed stages. */}
-        <path className={styles.stem} d="M9.5 23 V9" />
-        <path className={styles.stem} d="M22.5 23 V9" />
-        {/* The run between them. */}
-        <path className={styles.run} d="M9.5 9 L22.5 23" />
+        {/* The two fixed stages, and the run between them. */}
+        <path className={styles.bar} d="M9 7 V25" />
+        <path className={styles.bar} d="M23 7 V25" />
+        <path className={styles.run} d="M9 8.5 L23 23.5" />
       </svg>
     </span>
   );

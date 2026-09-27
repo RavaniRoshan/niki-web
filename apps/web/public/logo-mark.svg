@@ -1,10 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="Niki">
-  <!-- The static twin of components/landing/NikiMark.tsx. Same geometry, hardcoded
-       colours, for the favicon and anything that cannot run a script. The
-       diagonal keeps its dashes so the mark still reads as a run in progress
-       when nothing is moving. -->
-  <rect x="1" y="1" width="30" height="30" rx="7.5" fill="#edecec"/>
-  <path d="M9.5 23 V9" fill="none" stroke="#f54e00" stroke-width="2.6" stroke-linecap="square"/>
-  <path d="M22.5 23 V9" fill="none" stroke="#f54e00" stroke-width="2.6" stroke-linecap="square"/>
-  <path d="M9.5 9 L22.5 23" fill="none" stroke="#f54e00" stroke-width="2.2" stroke-dasharray="2.4 2.2" opacity="0.7"/>
+  <!-- The static twin of components/landing/NikiMark.tsx, in the dark theme's
+       tokens: ink stems, one accent run. Same geometry, hardcoded colours, for
+       anywhere that cannot run a script. The run is solid — the dash in the
+       component is a drawing mechanism, not a pattern. -->
+  <g fill="none" stroke-width="4" stroke-linecap="butt">
+    <path stroke="#edecec" d="M9 7 V25"/>
+    <path stroke="#edecec" d="M23 7 V25"/>
+    <path stroke="#f54e00" d="M9 8.5 L23 23.5"/>
+  </g>
 </svg>

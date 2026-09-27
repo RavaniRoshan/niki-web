@@ -1,12 +1,11 @@
-/* The Niki mark. One letterform, one idea: two fixed stages and a run between
-   them. Everything here is transform or stroke-dashoffset, and it only moves on
-   hover, so the resting mark costs nothing. */
+/* The Niki mark. Two fixed stages and a single run between them, drawn at one
+   weight in one colour. Everything here is transform or stroke-dashoffset, and
+   the only motion is a one-shot draw on hover, so the resting mark costs
+   nothing and nothing on the page loops. */
 
 .mark {
   display: inline-flex;
   flex: 0 0 auto;
-  border-radius: 7.5px;
-  transition: transform var(--landing-enter-duration) var(--landing-ease-out);
 }
 
 .glyph {
@@ -14,71 +13,59 @@
   overflow: visible;
 }
 
-.tile {
-  fill: var(--landing-ink);
-  transition: fill var(--landing-hover-duration) var(--landing-ease-ui);
-}
-
-/* The stems are the pipeline's fixed points. Ember, because ember is the one
-   accent this site spends, and it is spent on the thing that runs. */
-.stem {
-  fill: none;
-  stroke: var(--landing-signal);
-  stroke-width: 2.6;
-  stroke-linecap: square;
-}
-
-.stem:nth-of-type(2) {
-  transition: transform 320ms var(--landing-ease-out);
-  transform-origin: 22.5px 23px;
-}
-
-/* The diagonal is a job queue: dashed, so it reads as segmented work rather
-   than a solid stroke, and marching on hover so it reads as running. */
+/* One declaration for the weight, so the three bars cannot drift apart. Butt
+   caps: a rounded cap would soften the corners that make the form read as
+   machined rather than drawn. */
+.bar,
 .run {
   fill: none;
-  stroke: var(--landing-signal);
-  /* Slightly finer than the stems, so the run sits behind them rather than
-     competing with them at 26px. */
-  stroke-width: 2.2;
+  stroke-width: 4;
   stroke-linecap: butt;
-  /* Small enough that the diagonal still reads as a dashed line. The diagonal is
-     about 18px long, so a coarse dash pattern turns it into two loose blobs. */
-  stroke-dasharray: 2.4 2.2;
-  /* Held back at rest so the diagonal is visibly a different thing from the
-     stems even before the pointer arrives. */
-  opacity: 0.7;
-  transition: opacity var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+/* The structure is ink, so it is legible in both themes by definition — it is
+   the same colour as the wordmark beside it. The old mark sat on a filled tile
+   to guarantee that; carrying the tile only to buy contrast is what made it read
+   as a sticker. */
+.bar {
+  stroke: var(--landing-ink);
+}
+
+/* The run is the one accent. It takes --landing-link rather than --landing-signal
+   because that is the token darkened for the light theme: the bright ember only
+   reaches 2.9:1 on parchment, under the 3:1 a graphic needs, and a mark that
+   fails that stops being a mark. In the dark theme the two are the same colour,
+   so this costs nothing there. */
+.run {
+  stroke: var(--landing-link);
+  /* The run is a solid line at rest. The dash is a drawing mechanism, not a
+     pattern — at rest the offset is zero, so the bar is continuous and no gap is
+     ever visible. On hover it is offset out and wiped back in. */
+  /* The run is ~20.5 units long; this is the whole of it plus a margin. */
+  stroke-dasharray: 22;
+  stroke-dashoffset: 0;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .mark:hover {
-    transform: translateY(-1px);
-  }
-
+  /* One iteration, and it holds. An endless march here reads as a loading
+     spinner, which is the opposite of what this mark is for. */
   .mark:hover .run {
-    opacity: 1;
-    animation: nikiMarch 900ms linear infinite;
-  }
-
-  /* The far stem leans in by a hair, the way a stage leans toward the next. */
-  .mark:hover .stem:nth-of-type(2) {
-    transform: translateY(-1px);
+    animation: nikiRun 380ms var(--landing-ease-out) 1 both;
   }
 }
 
-@keyframes nikiMarch {
+@keyframes nikiRun {
+  from {
+    stroke-dashoffset: 22;
+  }
+
   to {
-    /* One full dash period, so the loop has no visible seam. */
-    stroke-dashoffset: -4.6;
+    stroke-dashoffset: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mark,
-  .stem,
-  .run {
+  .mark:hover .run {
     animation: none;
-    transition: none;
   }
 }

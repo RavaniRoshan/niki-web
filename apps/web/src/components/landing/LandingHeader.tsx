@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { NAV_LINKS } from "./content";
-import HeaderBarSurface from "./HeaderBarSurface";
 import LandingThemeToggle from "./LandingThemeToggle";
 import MobileNav from "./MobileNav";
 import NavMenu from "./NavMenu";
@@ -11,16 +10,15 @@ export default function LandingHeader() {
   return (
     <header className={styles.header} data-testid="landing-header">
       <div className={styles.headerInner}>
-        <HeaderBarSurface />
-        <div className={styles.brandZone}>
-          <Link className={styles.brand} href="/">
-            <NikiMark size={26} />
-            Niki
-          </Link>
-          {/* A ruler, not a shape. HeaderBarSurface measures where this lands and
-              cuts the bar's surface to match. */}
-          <span className={styles.notch} data-notch aria-hidden="true" />
-        </div>
+        {/* The bar's own surface, as a sibling of the content rather than the
+            content's background: it carries a backdrop blur, and the mega-panels
+            hang below this box and must not be filtered with it. */}
+        <span className={styles.barSurface} data-testid="header-bar-surface" aria-hidden="true" />
+
+        <Link className={styles.brand} href="/">
+          <NikiMark size={26} />
+          Niki
+        </Link>
 
         <nav className={styles.desktopNav} aria-label="Primary">
           <NavMenu />

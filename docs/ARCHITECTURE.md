@@ -64,11 +64,10 @@ tight tracking, the same 64-to-112px section rhythm) rather than rewritten, beca
 almost all their markup through three components. `landing.visual.spec.ts` pins three of them
 alongside the landing so the two systems cannot drift apart again.
 
-The header is one component for both route groups and it is not a purely static one. Four client
-pieces sit behind it: `NavMenu` (the mega-panels, driven by `content.ts`), `HeaderBarSurface`
-(measures the notch, writes the bar's `clip-path` and positions the canvas backing behind the bite),
-`NikiMark` (the mark, so its strokes can take the theme's tokens and run their hover motion), and
-`NavShrinkSensor` (the one-pixel observer that sets `html[data-nav-shrunk]`).
+The header is one component for both route groups and it is not a purely static one. Three client
+pieces sit behind it: `NavMenu` (the mega-panels, driven by `content.ts`), `NikiMark` (the mark, so
+its strokes can take the theme's tokens and run their hover motion), and `NavShrinkSensor` (the
+one-pixel observer that sets `html[data-nav-shrunk]`).
 
 The landing's closing portal is a vendored third-party component, `GlyphPortal` (MIT, © 2026
 Christian Katzmann, attribution preserved in the file). `BrandPortal` is the wrapper that supplies

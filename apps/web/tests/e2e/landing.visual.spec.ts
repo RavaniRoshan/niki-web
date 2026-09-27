@@ -38,8 +38,8 @@ for (const viewport of VIEWPORTS) {
         fullPage: true,
         animations: "disabled",
         scale: "css",
-        // Not 0, and the reason is specific rather than a general loosening. The
-        // hero background is a live WebGL canvas, and a driver's rounding when
+        // 15000 is ~0.13% of the desktop image, and it is not a general loosening:
+        // it is the room the live WebGL canvas needs. A driver's rounding when
         // compositing one is not bit-stable between runs. Measured over repeated
         // runs of this exact test, on an otherwise idle machine and under load:
         // 1.3k, 5.0k, 5.4k and 10.6k differing pixels, always at one or two units
@@ -47,9 +47,15 @@ for (const viewport of VIEWPORTS) {
         // inner-route baselines below stay at 0 because those pages carry no
         // canvas.
         //
-        // 15000 is ~0.13% of the desktop image. The smallest real regression this
-        // suite is meant to catch, a nav gap closing by 4px, moves well over
-        // 100k pixels, so this cannot hide one.
+        // The limit is real, though. The header is ~76px of an 8722px image, so a
+        // change confined to the nav moves far less than a section reflow would.
+        // Removing the header's 148px notch shifted the whole desktop nav, cost
+        // 9.2k pixels, sat inside this budget, and `--update-snapshots` then left
+        // the stale baseline in place because the comparison still passed. Nav
+        // geometry is therefore asserted structurally in landing.spec.ts; this
+        // image guards the page, not the chrome. If you change the header,
+        // re-approve these with `maxDiffPixels: 0` so a stale baseline cannot
+        // survive the rewrite.
         maxDiffPixels: 15000,
       });
     });
