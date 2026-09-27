@@ -103,6 +103,54 @@ test.describe("the mega-menu", () => {
     expect(geometry.barLeft).toBeGreaterThanOrEqual(0);
   });
 
+  test("moving along the bar leaves only one panel on screen", async ({ page }) => {
+    /* Going straight from one open panel to another never passes through the
+       closed state, so nothing else clears the panel being left behind. Its
+       entrance tween left `visibility: inherit` and `opacity: 1` inline, which
+       beat the stylesheet's hidden state: the old panel stayed composited and
+       its links stayed in the tab order, stacked exactly under the new one. */
+    await trigger(page, "product").hover();
+    await expect(panel(page, "product")).toBeVisible();
+
+    await trigger(page, "agents").hover();
+    await expect(panel(page, "agents")).toBeVisible();
+
+    const onScreen = () =>
+      page.evaluate(() =>
+        [...document.querySelectorAll('[data-testid^="mega-panel-"]')]
+          .filter((node) => {
+            const style = getComputedStyle(node);
+            return style.visibility === "visible" && Number(style.opacity) > 0.05;
+          })
+          .map((node) => node.getAttribute("data-testid"))
+      );
+    expect(await onScreen()).toEqual(["mega-panel-agents"]);
+
+    /* Not just unpainted: out of the tab order, which is the part a user
+       actually hits. `checkVisibility` is no help here — it does not report an
+       ancestor's `visibility: hidden` — so walk the chain. */
+    const reachable = await page.evaluate(() => {
+      const isReachable = (node: Element) => {
+        for (let n: Element | null = node; n && n !== document.body; n = n.parentElement) {
+          if (getComputedStyle(n).visibility === "hidden") return false;
+        }
+        return true;
+      };
+      return [...document.querySelectorAll('[data-testid^="mega-panel-"] a')].filter(isReachable)
+        .length;
+    });
+    expect(reachable).toBe(await panel(page, "agents").getByRole("link").count());
+
+    /* And nothing is left over from the tween that stranded it. */
+    const leftovers = await page.evaluate(() =>
+      [...document.querySelectorAll('[data-testid^="mega-panel-"]')]
+        .filter((node) => node.getAttribute("data-open") === "false")
+        .map((node) => node.getAttribute("style") ?? "")
+        .filter((style) => style.includes("visibility") || style.includes("opacity"))
+    );
+    expect(leftovers).toEqual([]);
+  });
+
   test("the desktop nav is replaced by the mobile sheet below the collapse point", async ({
     page,
   }) => {

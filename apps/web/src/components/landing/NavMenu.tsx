@@ -144,6 +144,17 @@ export default function NavMenu() {
       const panel = panelRefs.current[openIndex];
       if (!panel) return;
 
+      /* Moving straight from one open panel to another never passes through
+         null, so the branch above does not run and the panel being left behind
+         keeps the entrance tween's inline `visibility: inherit` and
+         `opacity: 1`. Inline styles beat the stylesheet's hidden state, so it
+         stays on screen and its links stay in the tab order. Clear every panel
+         that is not the one opening. */
+      const others = panels.filter((candidate) => candidate !== panel);
+      if (others.length > 0) {
+        gsap.set(others, { clearProps: "all" });
+      }
+
       const items = panel.querySelectorAll("[data-mega-item]");
       gsap.fromTo(
         panel,
