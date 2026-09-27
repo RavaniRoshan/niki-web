@@ -1,10 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { NAV_LINKS } from "./content";
 import HeaderBarSurface from "./HeaderBarSurface";
 import LandingThemeToggle from "./LandingThemeToggle";
 import MobileNav from "./MobileNav";
 import NavMenu from "./NavMenu";
+import NikiMark from "./NikiMark";
 import styles from "./landing-shell.module.css";
 
 export default function LandingHeader() {
@@ -14,7 +14,7 @@ export default function LandingHeader() {
         <HeaderBarSurface />
         <div className={styles.brandZone}>
           <Link className={styles.brand} href="/">
-            <Image src="/logo-mark.svg" alt="" width={26} height={26} priority />
+            <NikiMark size={26} />
             Niki
           </Link>
           {/* A ruler, not a shape. HeaderBarSurface measures where this lands and

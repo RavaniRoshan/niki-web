@@ -1,68 +1,63 @@
 import Link from "next/link";
-import RunWindow from "./RunWindow";
 import { BACKENDS, CAPABILITIES, CAPABILITY_SECTION, GUARDS, STAGES } from "./content";
 import styles from "./sections.module.css";
 
-const MEDIA: Record<
-  string,
-  {
-    title: string;
-    tabs: string[];
-    variant: "solo" | "offset";
-    backdrop: "dusk" | "strata" | "haze";
-  }
-> = {
-  agents: {
-    title: "niki run",
-    tabs: ["Planner", "Coder", "Tester", "Reviewer"],
-    variant: "solo",
-    backdrop: "dusk",
-  },
-  sandbox: {
-    title: "backends",
-    tabs: ["Podman", "Docker", "worktree"],
-    variant: "solo",
-    backdrop: "strata",
-  },
-  guardrails: { title: "niki.toml", tabs: ["guards"], variant: "solo", backdrop: "haze" },
-};
-
-function Media({ kind }: { kind: string }) {
-  if (kind === "agents") {
-    return (
-      <ul className={styles.miniRows}>
-        {STAGES.map((stage) => (
-          <li key={stage.id} className={styles.miniRow}>
-            <span>{stage.label}</span>
-            <code>{stage.output}</code>
-          </li>
-        ))}
-      </ul>
-    );
-  }
-  if (kind === "sandbox") {
-    return (
-      <ul className={styles.miniRows}>
-        {BACKENDS.map((backend) => (
-          <li key={backend.id} className={styles.miniRow}>
-            <span>{backend.name}</span>
-            <code>{backend.id}</code>
-          </li>
-        ))}
-      </ul>
-    );
-  }
+/* Three capabilities, three different instruments.
+ *
+ * These were three columns each wearing the same window, which is the third
+ * time the page reached for that chrome and the reason it read as one template.
+ * They now share a single hairline that runs unbroken across all three, and
+ * below it each column is the thing it actually is: a stage ladder, a runtime
+ * choice, a set of guard keys. The connection is the rule, not the window. */
+function AgentsColumn() {
   return (
-    <ul className={styles.miniRows}>
-      {GUARDS.map((guard) => (
-        <li key={guard.id} className={styles.miniRow}>
-          <code>{guard.label}</code>
-          <span>{guard.result}</span>
+    <ol className={styles.ladder} data-testid="capability-agents">
+      {STAGES.map((stage) => (
+        <li key={stage.id} className={styles.ladderStep}>
+          <span className={styles.ladderStage}>{stage.label}</span>
+          <code className={styles.ladderArtifact}>{stage.output}</code>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function SandboxColumn() {
+  return (
+    <ul className={styles.runtime} data-testid="capability-sandbox">
+      {BACKENDS.map((backend, index) => (
+        <li
+          key={backend.id}
+          className={styles.runtimeOption}
+          data-default={index === 0 ? "true" : "false"}
+        >
+          <span className={styles.runtimeMark} aria-hidden="true" />
+          <span className={styles.runtimeName}>{backend.name}</span>
+          <span className={styles.runtimeNote}>{backend.description}</span>
         </li>
       ))}
     </ul>
   );
 }
+
+function GuardrailColumn() {
+  return (
+    <ul className={styles.guards} data-testid="capability-guardrails">
+      {GUARDS.map((guard) => (
+        <li key={guard.id} className={styles.guardRow}>
+          <code className={styles.guardKey}>{guard.label}</code>
+          <span className={styles.guardEffect}>{guard.result}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+const COLUMNS = {
+  agents: AgentsColumn,
+  sandbox: SandboxColumn,
+  guardrails: GuardrailColumn,
+} as const;
 
 export default function CapabilityRow() {
   return (
@@ -75,9 +70,10 @@ export default function CapabilityRow() {
       <h2 id="capability-row-title" className={styles.sectionTitle}>
         {CAPABILITY_SECTION.title}
       </h2>
-      <ul className={styles.capabilityGrid}>
+
+      <ul className={styles.capabilityGrid} data-testid="capability-grid">
         {CAPABILITIES.map((capability) => {
-          const media = MEDIA[capability.media];
+          const Column = COLUMNS[capability.media as keyof typeof COLUMNS];
           return (
             <li key={capability.id} className={styles.capabilityCard}>
               <div className={styles.capabilityCopy}>
@@ -87,15 +83,7 @@ export default function CapabilityRow() {
                   {capability.link.label} <span aria-hidden="true">↗</span>
                 </Link>
               </div>
-              <RunWindow
-                title={media.title}
-                tabs={media.tabs}
-                variant={media.variant}
-                backdrop={media.backdrop}
-                testId={`capability-window-${capability.id}`}
-              >
-                <Media kind={capability.media} />
-              </RunWindow>
+              <Column />
             </li>
           );
         })}

@@ -77,7 +77,7 @@ deploys. It starts its own static server on port 4322.
 | ------------------------------- | --------------------------------------------------------------- |
 | `landing.spec.ts`               | Landing content, overflow, Axe, media, navigation, theme        |
 | `landing.visual.spec.ts`        | Screenshot baselines for the landing and three inner routes     |
-| `nav-and-portal.spec.ts`        | Mega-menu contracts and the closing portal's motion states      |
+| `nav-and-portal.spec.ts`        | Mega-menu, notched header, and the closing portal's states    |
 | `interactive-sections.spec.ts`  | Run explorer and evidence tabs, keyboard contracts, autoplay     |
 | `proof-sections.spec.ts`        | Branch gate, model routing, install command, clipboard, changelog |
 | `routes.spec.ts`                | All 18 inner routes: status, h1, landmarks, canonical URL       |

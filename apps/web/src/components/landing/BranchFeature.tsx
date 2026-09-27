@@ -1,7 +1,7 @@
 import FeatureCard from "./FeatureCard";
 import RunWindow from "./RunWindow";
-import { BRANCH_SECTION, BRANCH_GATES } from "./content";
-import styles from "./sections.module.css";
+import BranchGateRun from "./BranchGateRun";
+import { BRANCH_SECTION } from "./content";
 
 export default function BranchFeature() {
   return (
@@ -19,19 +19,7 @@ export default function BranchFeature() {
         backdrop="strata"
         testId="branch-window"
       >
-        <div className={styles.gateList}>
-          <p className={styles.gateLede}>
-            <code>main</code> is untouched. The run proposes one reviewed commit on a fresh branch.
-          </p>
-          <ul data-testid="branch-gates" className={styles.gateRows}>
-            {BRANCH_GATES.map((gate) => (
-              <li key={gate.id} className={styles.gateRow} data-result={gate.result}>
-                <span className={styles.gateLabel}>{gate.label}</span>
-                <span className={styles.gateResult}>{gate.result}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <BranchGateRun />
       </RunWindow>
     </FeatureCard>
   );

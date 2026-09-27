@@ -130,6 +130,9 @@ export default function RunExplorer() {
   };
 
   const activeStage = STAGES[activeIndex];
+  /* Stage zero receives the task itself; every later stage receives the typed
+     artifact the one before it produced. */
+  const incoming = activeIndex === 0 ? "Task in" : STAGES[activeIndex - 1].output;
   const panelId = `${id}-run-panel`;
   const statusId = `${id}-run-status`;
 
@@ -184,6 +187,15 @@ export default function RunExplorer() {
           data-testid="run-stage-panel"
           className={`${interactiveStyles.tabPanel} ${styles.runPanel}`}
         >
+          {/* The handoff. The copy claims each stage receives a typed artifact
+              from the one before it, so the panel shows the artifact arriving
+              rather than only naming it further down in the fact list. The
+              connector redraws on every change, which is the whole point. */}
+          <p className={styles.runHandoff} data-testid="run-handoff">
+            <span className={styles.runHandoffFrom}>{incoming}</span>
+            <span className={styles.runHandoffRule} aria-hidden="true" />
+            <span className={styles.runHandoffTo}>{activeStage.label}</span>
+          </p>
           <p className={styles.runOutput}>{activeStage.output}</p>
           <h3 className={styles.runStageTitle}>{activeStage.label}</h3>
           <p className={styles.runSummary}>{activeStage.summary}</p>

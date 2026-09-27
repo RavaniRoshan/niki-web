@@ -55,9 +55,9 @@
      two thirds of the bar's height, so the roof and the notch split it evenly
      here rather than leaving a roof too thin to read as a bar. */
   --landing-bar-radius: 12px;
-  --landing-notch-width: 88px;
-  --landing-notch-depth: 24px;
-  --landing-notch-radius: 10px;
+  --landing-notch-width: 148px;
+  --landing-notch-depth: 34px;
+  --landing-notch-radius: 14px;
 
   /* Spacing scale. */
   --landing-space-xs: 4px;
@@ -111,10 +111,15 @@
   --landing-elevated: #e6e5e0;
   --landing-ink: #26251e;
   --landing-quote-ink: #26251e;
-  --landing-muted: #6f6e68;
+  /* Darkened from #6f6e68. At that value the muted tone only reached 4.05:1 on
+     --landing-surface-strong, which is where the routing header sits, and several
+     other pairings sat under 4.8. This holds 5.16 at worst. */
+  --landing-muted: #5f5e58;
   --landing-line: #dcdbd4;
   --landing-signal: #f54e00;
-  --landing-link: #c53f04;
+  /* Darkened from #c53f04, which only reached 4.07:1 on --landing-surface-strong
+     where the routing header sits. This holds 4.62 there and 5.43 on canvas. */
+  --landing-link: #b83803;
   --landing-positive: #34785c;
   --landing-focus: #c53f04;
   --landing-selection: #f54e00;
@@ -242,11 +247,38 @@
   pointer-events: none;
 }
 
+/* What the bite reveals. Left transparent, the notch became a hole straight
+   through the header onto whatever section happened to be scrolling past, and a
+   fragment of a card ended up floating inside the navigation. The reference
+   gets a clean cut because the page behind its bar is plain; ours is not, so the
+   bite is backed with the canvas instead. It sits under the surface, so it is
+   only ever visible where the surface has been clipped away, and it runs a few
+   pixels past the bar's floor to cover the blur's bleed. */
+.barBacking {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Flush with the bar's floor. Extended below it, the backing reads as a tab
+     hanging off the navigation; the reference's bite runs straight into the
+     page, and the bar's blur does not sample outside its own box, so there is
+     no seam to cover. */
+  bottom: 0;
+  z-index: 0;
+  width: 0;
+  /* The canvas, held down a little. A notch catches shadow, and without it the
+     bite is invisible in the light theme, where the bar and the canvas are three
+     points of luminance apart. In the dark theme the canvas is already darker
+     than the bar, so the same rule costs nothing. */
+  background:
+    linear-gradient(to bottom, rgb(0 0 0 / 0.12), rgb(0 0 0 / 0.12)), var(--landing-canvas);
+  pointer-events: none;
+}
+
 /* Lift the content above the surface. These are flex items, so z-index applies
    without positioning them; giving them `position` here would out-specify
    `.desktopNav { position: static }` and turn the nav into the containing block
    for the mega-panels, which would shrink them to the width of the links. */
-.headerInner > :not(.barSurface) {
+.headerInner > :not(.barSurface):not(.barBacking) {
   z-index: 1;
 }
 

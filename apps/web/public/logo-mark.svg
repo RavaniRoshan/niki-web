@@ -1,4 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="Niki">
-  <rect x="1.5" y="1.5" width="29" height="29" rx="7" fill="#151312" stroke="#2b2622"/>
-  <path d="M9 22.5 L9 9.5 L23 22.5 L23 9.5" fill="none" stroke="#ffd60a" stroke-width="2.6" stroke-linecap="square" stroke-linejoin="miter"/>
+  <!-- The static twin of components/landing/NikiMark.tsx. Same geometry, hardcoded
+       colours, for the favicon and anything that cannot run a script. The
+       diagonal keeps its dashes so the mark still reads as a run in progress
+       when nothing is moving. -->
+  <rect x="1" y="1" width="30" height="30" rx="7.5" fill="#edecec"/>
+  <path d="M9.5 23 V9" fill="none" stroke="#f54e00" stroke-width="2.6" stroke-linecap="square"/>
+  <path d="M22.5 23 V9" fill="none" stroke="#f54e00" stroke-width="2.6" stroke-linecap="square"/>
+  <path d="M9.5 9 L22.5 23" fill="none" stroke="#f54e00" stroke-width="2.2" stroke-dasharray="2.4 2.2" opacity="0.7"/>
 </svg>

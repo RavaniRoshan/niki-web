@@ -1,0 +1,84 @@
+/* The Niki mark. One letterform, one idea: two fixed stages and a run between
+   them. Everything here is transform or stroke-dashoffset, and it only moves on
+   hover, so the resting mark costs nothing. */
+
+.mark {
+  display: inline-flex;
+  flex: 0 0 auto;
+  border-radius: 7.5px;
+  transition: transform var(--landing-enter-duration) var(--landing-ease-out);
+}
+
+.glyph {
+  display: block;
+  overflow: visible;
+}
+
+.tile {
+  fill: var(--landing-ink);
+  transition: fill var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+/* The stems are the pipeline's fixed points. Ember, because ember is the one
+   accent this site spends, and it is spent on the thing that runs. */
+.stem {
+  fill: none;
+  stroke: var(--landing-signal);
+  stroke-width: 2.6;
+  stroke-linecap: square;
+}
+
+.stem:nth-of-type(2) {
+  transition: transform 320ms var(--landing-ease-out);
+  transform-origin: 22.5px 23px;
+}
+
+/* The diagonal is a job queue: dashed, so it reads as segmented work rather
+   than a solid stroke, and marching on hover so it reads as running. */
+.run {
+  fill: none;
+  stroke: var(--landing-signal);
+  /* Slightly finer than the stems, so the run sits behind them rather than
+     competing with them at 26px. */
+  stroke-width: 2.2;
+  stroke-linecap: butt;
+  /* Small enough that the diagonal still reads as a dashed line. The diagonal is
+     about 18px long, so a coarse dash pattern turns it into two loose blobs. */
+  stroke-dasharray: 2.4 2.2;
+  /* Held back at rest so the diagonal is visibly a different thing from the
+     stems even before the pointer arrives. */
+  opacity: 0.7;
+  transition: opacity var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .mark:hover {
+    transform: translateY(-1px);
+  }
+
+  .mark:hover .run {
+    opacity: 1;
+    animation: nikiMarch 900ms linear infinite;
+  }
+
+  /* The far stem leans in by a hair, the way a stage leans toward the next. */
+  .mark:hover .stem:nth-of-type(2) {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes nikiMarch {
+  to {
+    /* One full dash period, so the loop has no visible seam. */
+    stroke-dashoffset: -4.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark,
+  .stem,
+  .run {
+    animation: none;
+    transition: none;
+  }
+}

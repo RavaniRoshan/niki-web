@@ -15,7 +15,6 @@ export default function Hero() {
     <section
       data-testid="landing-hero"
       className={styles.hero}
-      data-reveal
       aria-labelledby="landing-hero-title"
     >
       {/* Background wave. Decorative, behind everything, and masked so it is

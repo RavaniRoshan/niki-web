@@ -101,6 +101,10 @@ gradient decoration. They now resolve to the same palette as the landing.
 - [x] `npm run test:e2e:web`, including Axe at 1440 and 390 in both themes across the
       landing and the inner routes, and 12 screenshot baselines at `maxDiffPixels: 0`
 
+- [x] Section-by-section pass: no two sections share a layout skeleton, and each carries one motion
+      that expresses what it is rather than that it scrolled. `PLAN.md` records the idea per section
+- [x] The mark redesigned: two fixed stems and a dashed diagonal that marches on hover
+
 ## Still open
 
 - [ ] Confirm the hosted GitHub Actions run after this work is pushed

@@ -157,7 +157,7 @@ test("the header grows a notched surface once the page is scrolled", async ({ pa
   await openLanding(page);
 
   const header = page.getByTestId("landing-header");
-  const surface = header.locator("> div > span").first();
+  const surface = page.getByTestId("header-bar-surface");
   const metrics = async () =>
     surface.evaluate((element) => {
       const style = getComputedStyle(element);
@@ -186,9 +186,11 @@ test("the header grows a notched surface once the page is scrolled", async ({ pa
   expect(shrunk.background).not.toBe("rgba(0, 0, 0, 0)");
   expect(shrunk.width).toBeLessThanOrEqual(1200);
   expect(shrunk.radius).toBe("12px");
-  /* Not a pill: the surface is cut, and the path carries the bite's curves. */
+  /* Not a pill: the surface is cut, and the path carries the bite's curves.
+     The bite corners use sweep 1, the same as the bar's outer corners: the
+     opposite sweep draws an arch, which reads as a doorway rather than a cut. */
   expect(shrunk.clipPath).toMatch(/^path\(/);
-  expect(shrunk.clipPath).toContain("A 10 10");
+  expect(shrunk.clipPath).toContain("A 14 14 0 0 1");
 
   /* The bite sits between the brand and the nav, and opens off the bottom edge,
      so the bar's floor is missing exactly across the ruler's span. */
@@ -206,13 +208,16 @@ test("the header grows a notched surface once the page is scrolled", async ({ pa
       brandRight: Math.round(brandBox.right - barBox.left),
       navLeft: Math.round(nav.getBoundingClientRect().left - barBox.left),
       barHeight: Math.round(barBox.height),
+      ceiling: Math.round(barBox.height - notchBox.height),
     };
   });
   expect(geometry.notchLeft).toBeGreaterThan(geometry.brandRight);
   expect(geometry.notchRight).toBeLessThanOrEqual(geometry.navLeft);
-  expect(geometry.notchRight - geometry.notchLeft).toBe(88);
-  /* Roughly half the bar, so the roof still reads as a bar and not a lid. */
+  expect(geometry.notchRight - geometry.notchLeft).toBe(148);
+  /* The bite takes about two thirds of the bar, matching the reference, so the
+     roof still reads as a bar rather than a lid. */
   expect(geometry.barHeight).toBeGreaterThanOrEqual(48);
+  expect(geometry.barHeight - geometry.ceiling).toBeGreaterThanOrEqual(30);
 
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect
@@ -389,6 +394,17 @@ test("landing content data deeply locks the source-backed truth", () => {
       qualifier: "Plan mode",
       description:
         "Explicit plan mode researches without executing. Approve the plan with niki run --plan <id>.",
+      excerpt: {
+        kind: "markdown",
+        lines: [
+          "# Add a /health endpoint",
+          "",
+          "## Smallest safe change",
+          "- register GET /health in the existing router",
+          "- reuse the db ping readiness already makes",
+          "- one test, asserting 200 and the body shape",
+        ],
+      },
     },
     {
       id: "changes",
@@ -396,18 +412,53 @@ test("landing content data deeply locks the source-backed truth", () => {
       qualifier: null,
       description:
         "Unified diff written from the completed run, bound to the fresh niki/<id> branch when branch creation succeeds.",
+      excerpt: {
+        kind: "diff",
+        lines: [
+          "@@ -0,0 +1,9 @@",
+          "+router.get('/health', async (_req, res) => {",
+          "+  const db = await ping();",
+          "+  res.status(db ? 200 : 503).json({ ok: db });",
+          "+});",
+          "+",
+          "+test('GET /health reports 200', async () => {",
+          "+  const res = await request(app).get('/health');",
+          "+  expect(res.status).toBe(200);",
+        ],
+      },
     },
     {
       id: "report",
       name: "report.md",
       qualifier: null,
       description: "Human-readable run report written after the pipeline completes.",
+      excerpt: {
+        kind: "report",
+        stages: [
+          { stage: "Planner", verdict: "3 steps, 1 file touched" },
+          { stage: "Coder", verdict: "unified diff applied, +12 -6" },
+          { stage: "Tester", verdict: "4 passed, 0 failed" },
+          { stage: "Reviewer", verdict: "approved, 0 revisions" },
+        ],
+      },
     },
     {
       id: "artifacts",
       name: "artifacts/*.json",
       qualifier: null,
       description: "Per-agent JSON artifacts record what each agent decided and why.",
+      excerpt: {
+        kind: "json",
+        lines: [
+          "{",
+          '  "agent": "tester",',
+          '  "decision": "pass",',
+          '  "reason": "4 passed, 0 failed",',
+          '  "confidence": 0.94,',
+          '  "blocking": true',
+          "}",
+        ],
+      },
     },
   ]);
   expect(BACKENDS).toEqual([
@@ -566,7 +617,8 @@ test("the provider strip presents twelve named integrations with meaningful imag
 
   const strip = page.getByTestId("provider-strip");
   await expect(strip).toBeVisible();
-  await expect(strip).toContainText("Twelve providers");
+  await expect(strip.getByTestId("provider-count")).toHaveText("12");
+  await expect(strip).toContainText("One pipeline, one config file");
 
   const grid = strip.getByTestId("provider-grid");
   await expect(grid.locator("li")).toHaveCount(12);

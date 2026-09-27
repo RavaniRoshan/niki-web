@@ -48,7 +48,7 @@ test("model routing shows real per-agent configuration without a universal recom
     await expect(code).toContainText("provider =");
     await expect(code).toContainText("model =");
   }
-  await expect(section).toContainText("Example configuration");
+  await expect(section.getByTestId("model-routing-code")).toContainText("[agents.planner]");
   await expect(section).not.toContainText(/recommended for everyone|always use|best model/i);
   expect(await code.evaluate((element) => getComputedStyle(element).overflowX)).toMatch(
     /auto|scroll/
@@ -149,10 +149,12 @@ test("the changelog row renders real releases and links to each", async ({ page 
 
   const section = page.getByTestId("changelog-row");
   await expect(section.getByRole("heading", { level: 2 })).toHaveText("Changelog");
-  const cards = section.locator("ul li");
-  await expect(cards).toHaveCount(4);
-  for (const card of await cards.all()) {
-    await expect(card.getByRole("link")).toHaveAttribute("href", /github\.com/);
+  /* A timeline, not a four-up grid: an ordered list on a spine. */
+  const rows = section.getByTestId("changelog-timeline").locator("> li");
+  await expect(rows).toHaveCount(4);
+  for (const row of await rows.all()) {
+    await expect(row.getByRole("link")).toHaveAttribute("href", /github\.com/);
+    await expect(row.locator("time")).toHaveAttribute("datetime", /^\d{4}-\d{2}-\d{2}$/);
   }
   await expect(section.getByRole("link", { name: /See what's new/ })).toBeVisible();
 });

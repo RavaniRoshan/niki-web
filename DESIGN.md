@@ -161,15 +161,22 @@ Twelve sections. Product evidence replaces social proof throughout.
 2. **Provider strip.** The twelve named integrations, each with its own name set beside its mark,
    presented as integrations, never customers.
 3. **Feature A, copy left.** Four agents, with the live run explorer as the media.
-4. **Feature B, media left.** The branch gate: `main` untouched, one reviewed commit.
+4. **Feature B, media left.** The branch gate, shown as a run: four gates resolve in
+   sequence and the branch line commits last, because that is the section's claim.
 5. **Feature C, copy left.** Run artifacts, with tab pills and the install command bar.
-6. **Feature D, media left.** Per-stage model routing, with a real `niki.toml` example.
-7. **Receipt grid.** Centred display heading over three run-receipt cards. Stands in for the
-   reference's quote wall; Niki has no customers to quote and inventing quotes is not an option.
-8. **Changelog.** Four real releases from `src/data/changelog.ts`.
-9. **Capability row.** Agents, sandbox, guardrails, each with its own window.
+6. **Feature D, media left.** Per-stage model routing. Not a window: a highlighted config where each
+   `[agents.*]` block ignites in pipeline order, because a grey `<pre>` does not act on the claim.
+7. **Receipt grid.** Centred display heading over the three artifacts a reviewer actually reads,
+   each set as the artifact it is: a diff as a diff, a report as a ledger of verdicts, JSON as JSON.
+   Stands in for the reference's quote wall; Niki has no customers to quote and inventing quotes is
+   not an option.
+8. **Changelog.** Four real releases from `src/data/changelog.ts`, on a spine with nodes rather
+   than in a four-up grid, because releases have an order and a date.
+9. **Capability row.** Agents, sandbox, guardrails, as three different instruments on one
+   unbroken hairline: a stage ladder, a runtime choice, a guard ledger.
 10. **Manifesto card.** License, no telemetry, BYOK, and the real backends and providers.
-11. **Recent highlights.** Four real documentation sections.
+11. **Recent highlights.** Four real documentation sections as a quiet index: a mono category in the
+   gutter, hairlines between, no containers.
 12. **Closing CTA.** Centred display heading and one solid action.
 13. **Closing portal.** The wordmark, a camera that travels into one letter, and the panel that
     opens once you are through. It sits above the footer, which keeps its own place below.
@@ -269,6 +276,21 @@ Two measurements shaped this, and both are asserted in the tests:
   change, because the collapse breakpoint was at 1023. It is now 1279, and the single-group layout
   brought the bar's own requirement down to about 1030px.
 
+## The mark
+
+Two fixed stems and a run between them. The old mark was a generic letter in a
+rounded square, in a yellow that is not in this palette. The tile is the ink, so
+the mark reads as one object in both themes rather than dissolving into a dark
+header, and the diagonal is a **dashed line that marches on hover**. Four stages
+handing off typed artifacts is the whole product, and a dashed diagonal says that
+at 26 pixels.
+
+Motion is hover-only and there is no idle loop: a mark that animates on its own is
+a distraction, and the diagonal is already a static dashed line when the pointer
+is elsewhere. It lives in `NikiMark.tsx` so the strokes can take the theme's
+tokens; `public/logo-mark.svg` is the same geometry with hardcoded colours for
+the favicon and anything that cannot run a script.
+
 ## The mega-menus
 
 Each of the five nav entries opens a panel that spans the bar's full width and hangs below it, so
@@ -293,6 +315,10 @@ the element, which would beat the stylesheet and strand the panel's links in the
 Twelve integrations, presented as integrations, never customers. Each tile carries **the brand's
 name as visible text** next to its mark, because a bare row of glyphs is a claim the reader cannot
 check, and an `alt` attribute is not visible to anyone.
+
+**The count is the subject.** A row of twelve pills is a strip of logos and nothing else, so the
+number is now the largest thing in the section, set at display scale, and the marks arrive beneath
+it as the evidence for it. The premise and the count are stated once each and never repeated.
 
 Each mark is that brand's own glyph, flattened to a single ink silhouette at render time
 (`brightness(0) invert(1)` in dark, `brightness(0)` in light) so the strip reads as one monochrome

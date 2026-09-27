@@ -254,8 +254,12 @@ export const HERO = {
   },
 } as const;
 
+/* Split so the section does not say the same sentence twice. The eyebrow is
+   the premise, the count is the number, and the foot is the only part that
+   carries new information. */
 export const PROVIDER_STRIP = {
-  label: "Bring your own key. Twelve providers, one pipeline.",
+  eyebrow: "Bring your own key",
+  label: "One pipeline, one config file. Route a different model to every stage.",
 } as const;
 
 export const AGENT_SECTION = {
@@ -292,26 +296,80 @@ export const RECEIPT_SECTION = {
   body: "Three files stand between a finished run and your merge decision. No dashboards to trust, nothing inferred on a server you cannot read.",
 } as const;
 
-export const RECEIPTS = [
+/* Illustrative samples of the formats Niki writes, so each receipt is shown as
+   the artifact rather than described. Not a captured run. */
+export type Receipt =
+  | {
+      id: string;
+      file: string;
+      title: string;
+      body: string;
+      kind: "diff";
+      lines: readonly string[];
+    }
+  | {
+      id: string;
+      file: string;
+      title: string;
+      body: string;
+      kind: "report";
+      stages: readonly { stage: string; verdict: string }[];
+    }
+  | {
+      id: string;
+      file: string;
+      title: string;
+      body: string;
+      kind: "json";
+      lines: readonly string[];
+    };
+
+export const RECEIPTS: readonly Receipt[] = [
   {
     id: "patch",
     file: "changes.patch",
     title: "The exact diff",
     body: "A unified diff written from the completed run and bound to the branch when branch creation succeeds.",
+    kind: "diff",
+    lines: [
+      "--- a/src/server.ts",
+      "+++ b/src/server.ts",
+      "@@ -41,6 +41,12 @@",
+      "+router.get('/health', async (_req, res) => {",
+      "+  const db = await ping();",
+      "+  res.status(db ? 200 : 503).json({ ok: db });",
+      "+});",
+    ],
   },
   {
     id: "report",
     file: "report.md",
     title: "What happened, in order",
     body: "A readable account of every stage, its verdict, and the reason the run stopped or continued.",
+    kind: "report",
+    stages: [
+      { stage: "Planner", verdict: "3 steps" },
+      { stage: "Coder", verdict: "+12 -6" },
+      { stage: "Tester", verdict: "4 passed" },
+      { stage: "Reviewer", verdict: "approved" },
+    ],
   },
   {
     id: "artifacts",
     file: "artifacts/*.json",
     title: "Per-agent decisions",
     body: "One JSON file per agent recording what it decided and why, so a reviewer can argue with the call.",
+    kind: "json",
+    lines: [
+      "{",
+      '  "agent": "reviewer",',
+      '  "decision": "approve",',
+      '  "revisions": 0,',
+      '  "blocking": true',
+      "}",
+    ],
   },
-] as const;
+];
 
 export const CAPABILITY_SECTION = {
   title: "What you can change",
@@ -475,6 +533,15 @@ export const STAGES = [
   },
 ] as const;
 
+/* Each artifact's excerpt is the shape of the real file, written out so the tab
+   shows evidence rather than describing it. They are illustrative samples of the
+   formats Niki writes, not a captured run, and the panel says so. */
+export type ArtifactExcerpt =
+  | { kind: "markdown"; lines: readonly string[] }
+  | { kind: "diff"; lines: readonly string[] }
+  | { kind: "report"; stages: readonly { stage: string; verdict: string }[] }
+  | { kind: "json"; lines: readonly string[] };
+
 export const EVIDENCE_FILES = [
   {
     id: "plan",
@@ -482,6 +549,17 @@ export const EVIDENCE_FILES = [
     qualifier: "Plan mode",
     description:
       "Explicit plan mode researches without executing. Approve the plan with niki run --plan <id>.",
+    excerpt: {
+      kind: "markdown",
+      lines: [
+        "# Add a /health endpoint",
+        "",
+        "## Smallest safe change",
+        "- register GET /health in the existing router",
+        "- reuse the db ping readiness already makes",
+        "- one test, asserting 200 and the body shape",
+      ],
+    },
   },
   {
     id: "changes",
@@ -489,18 +567,53 @@ export const EVIDENCE_FILES = [
     qualifier: null,
     description:
       "Unified diff written from the completed run, bound to the fresh niki/<id> branch when branch creation succeeds.",
+    excerpt: {
+      kind: "diff",
+      lines: [
+        "@@ -0,0 +1,9 @@",
+        "+router.get('/health', async (_req, res) => {",
+        "+  const db = await ping();",
+        "+  res.status(db ? 200 : 503).json({ ok: db });",
+        "+});",
+        "+",
+        "+test('GET /health reports 200', async () => {",
+        "+  const res = await request(app).get('/health');",
+        "+  expect(res.status).toBe(200);",
+      ],
+    },
   },
   {
     id: "report",
     name: "report.md",
     qualifier: null,
     description: "Human-readable run report written after the pipeline completes.",
+    excerpt: {
+      kind: "report",
+      stages: [
+        { stage: "Planner", verdict: "3 steps, 1 file touched" },
+        { stage: "Coder", verdict: "unified diff applied, +12 -6" },
+        { stage: "Tester", verdict: "4 passed, 0 failed" },
+        { stage: "Reviewer", verdict: "approved, 0 revisions" },
+      ],
+    },
   },
   {
     id: "artifacts",
     name: "artifacts/*.json",
     qualifier: null,
     description: "Per-agent JSON artifacts record what each agent decided and why.",
+    excerpt: {
+      kind: "json",
+      lines: [
+        "{",
+        '  "agent": "tester",',
+        '  "decision": "pass",',
+        '  "reason": "4 passed, 0 failed",',
+        '  "confidence": 0.94,',
+        '  "blocking": true',
+        "}",
+      ],
+    },
   },
 ] as const;
 
@@ -582,24 +695,48 @@ export const CHANGELOG_ENTRIES = RELEASES.slice(0, 4).map((release) => ({
   href: release.url,
 }));
 
-export const MODEL_ROUTING_TOML = `[general]
-max_revision_rounds = 3
-spend_cap_usd = 5.0
+/* Model routing. The per-stage table is the structured source and the TOML is
+   generated from it, so the config a reader sees and the one the routing panel
+   animates cannot drift apart. */
+export const MODEL_GENERAL = [
+  { key: "max_revision_rounds", value: "3" },
+  { key: "spend_cap_usd", value: "5.0" },
+] as const;
 
-[agents.planner]
-provider = "anthropic"
-model = "claude-sonnet-4-20250514"
+export const MODEL_ROUTING = [
+  {
+    stage: "Planner",
+    table: "agents.planner",
+    provider: "anthropic",
+    model: "claude-sonnet-4-20250514",
+  },
+  {
+    stage: "Coder",
+    table: "agents.coder",
+    provider: "anthropic",
+    model: "claude-sonnet-4-20250514",
+  },
+  { stage: "Tester", table: "agents.tester", provider: "openai", model: "gpt-4o-mini" },
+  {
+    stage: "Reviewer",
+    table: "agents.reviewer",
+    provider: "anthropic",
+    model: "claude-sonnet-4-20250514",
+  },
+] as const;
 
-[agents.coder]
-provider = "anthropic"
-model = "claude-sonnet-4-20250514"
-
-[agents.tester]
-provider = "openai"
-model = "gpt-4o-mini"
-
-[agents.reviewer]
-provider = "anthropic"
-model = "claude-sonnet-4-20250514"`;
+export const MODEL_ROUTING_TOML = [
+  "[general]",
+  ...MODEL_GENERAL.map((setting) => `${setting.key} = ${setting.value}`),
+  "",
+  ...MODEL_ROUTING.flatMap((route) => [
+    `[${route.table}]`,
+    `provider = "${route.provider}"`,
+    `model = "${route.model}"`,
+    "",
+  ]),
+]
+  .join("\n")
+  .trimEnd();
 
 export const INSTALL_COMMAND = INSTALLERS.shell.command;

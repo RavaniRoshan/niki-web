@@ -72,6 +72,16 @@ The header has two states: a transparent bar at rest, and a capped bar with a **
 once `html[data-nav-shrunk]` is set. Both are plain CSS keyed off that attribute, so do not move
 the state into React state on the header, and do not replace the sensor with a scroll listener.
 
+The bite's corners use the **same sweep flag as the bar's outer corners**. The opposite sweep draws
+an arch, which reads as a doorway rather than a cut out of a solid bar; that was the first thing
+that made this look wrong, and no amount of tuning the proportions fixed it.
+
+The bite is **backed with the canvas**, not left transparent. Transparent, it became a hole onto
+whatever section was scrolling past, and a fragment of a card floated inside the navigation. The
+backing sits under the surface and starts at the bite's ceiling so it does not show through the
+translucent roof. It is held down 12%: a notch catches shadow, and without it the bite is invisible
+in the light theme, where the bar and the canvas are three points of luminance apart.
+
 The bar is one left-to-right group — brand, notch, links — with the action cluster holding the
 right. The links are deliberately **not** centred: they sit beside the notch because the bite only
 reads as part of the bar when something is either side of it, and because a centred nav is what
@@ -94,6 +104,16 @@ which reads as "the effect never ran".
 The tests assert the header never overlaps itself at 1440, 1280, 1200, 1024, 834 or 390, and that
 the notch is a real cut rather than a painted-on shape.
 
+## The mark
+
+`NikiMark.tsx` is the mark, and it is a component rather than an `<Image>` so the
+strokes can take the theme's tokens and so the hover motion is real. `public/logo-mark.svg` is the
+same geometry with hardcoded colours for the favicon; **change both together**, or the tab and the
+header will drift apart.
+
+The diagonal is dashed and marches on hover. Do not give it an idle loop: a mark that animates on
+its own is a distraction, and the dashed line already reads as a run at rest.
+
 ## The mega-menus
 
 Panels open on hover **and** on focus, close on Escape, on an outside pointerdown, and on a route
@@ -107,12 +127,32 @@ strands the links in the tab order.
 Every href in a panel must be a route the site serves or a docs page the docs build. Do not invent
 destinations to fill a panel.
 
+## Section skeletons
+
+The page is a sequence of thirteen sections and **no two of them may share a layout skeleton**. If
+you reach for a window, a card or a list because three blocks already used one, that is the
+repetition this pass exists to remove, and it reads as generated rather than designed.
+
+The uniform `Reveal` is the baseline arrival for every section. Anything on top of it must be
+specific to the section it lives in: if a section's motion could be lifted and dropped onto another
+section unchanged, it is wrong. `PLAN.md` records the idea each section is supposed to be making.
+
 ## Base link colour
 
 `.shell :where(a)` is a **floor at zero specificity**, written `:where(.shell) :where(a)` on
 purpose. At `.shell :where(a)` it tied with single-class component rules such as
 `.primaryAction` and then won on source order, which left every ink-filled button rendering its
 label in the same ink as its own fill. Keep it at zero.
+
+## Contrast on tinted code
+
+Never dim code with `opacity`. An opacity dim took the idle config lines to 1.85:1 on parchment and
+Axe refused it; the same state is expressed with colour instead.
+
+Never put `--landing-positive` on a tinted background either. A green string on a surface a few
+percent darker than `--landing-surface` is already under 4.5:1 in the light theme, which is why the
+routing panel marks its active line with an inset **ring** rather than a fill. A box shadow leaves
+the computed background alone; a background does not.
 
 ## The hero wash
 

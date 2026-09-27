@@ -119,6 +119,11 @@
   padding-inline: var(--landing-gutter);
 }
 
+/* The hero is the one entrance on the page that is choreographed rather than
+   faded, because it is the only moment with nothing above it. Everywhere else
+   the uniform reveal is enough; here the headline earns a beat of its own.
+   Keyframes rather than a script, so it starts with the first painted frame and
+   cannot flash. */
 .heroTitle {
   /* The reference headline is two lines at desktop. 33ch puts this longer
      headline on two as well, without letting it run the full container. */
@@ -128,6 +133,55 @@
   font-weight: 400;
   letter-spacing: var(--landing-hero-track);
   line-height: 1.05;
+  animation: heroRise 760ms var(--landing-ease-out) both;
+}
+
+.heroActions > * {
+  animation: heroRise 620ms var(--landing-ease-out) both;
+}
+
+.heroActions > *:first-child {
+  animation-delay: 120ms;
+}
+
+.heroActions > *:last-child {
+  animation-delay: 190ms;
+}
+
+.heroMedia {
+  animation: heroMediaIn 900ms var(--landing-ease-out) 180ms both;
+}
+
+@keyframes heroRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* The recording settles rather than rises: it is already in place on the page,
+   and sliding it up would fight the headline's motion. */
+@keyframes heroMediaIn {
+  from {
+    opacity: 0;
+    transform: scale(0.994);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroTitle,
+  .heroActions > *,
+  .heroMedia {
+    animation: none;
+  }
 }
 
 .heroActions {
@@ -472,16 +526,50 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 28px;
   width: min(100%, var(--landing-container));
   margin-inline: auto;
-  padding: 96px var(--landing-gutter) 0;
+  padding: 112px var(--landing-gutter) 0;
 }
 
 .providerLabel {
-  color: var(--landing-ink);
-  font-size: var(--landing-body-size);
+  color: var(--landing-muted);
+  font-size: var(--landing-small-size);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   text-align: center;
+}
+
+/* The count is the subject of this section, so it is set at display scale. It
+   resolves once, on entry, and never counts again. */
+.providerCount {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 18px;
+  margin: 0;
+  line-height: 1;
+}
+
+.providerCountFigure {
+  color: var(--landing-ink);
+  font-size: clamp(3.5rem, 9vw, 7.5rem);
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  /* Held back until the section arrives, then released. A count that is
+     already final in the HTML means there is nothing to animate, so the
+     static value is what a reader without JS and a screen reader get. */
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 620ms var(--landing-ease-out),
+    transform 620ms var(--landing-ease-out);
+}
+
+.providerCount[data-counted="true"] .providerCountFigure {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .providerGrid {
@@ -490,8 +578,28 @@
   justify-content: center;
   gap: 10px;
   width: 100%;
+  max-width: 1080px;
 }
 
+/* The stagger is set per tile from its index. */
+.providerTile {
+  animation-delay: calc(140ms + var(--i) * 34ms);
+}
+
+.providerCountCaption {
+  color: var(--landing-muted);
+  font-size: var(--landing-lead-size);
+  letter-spacing: -0.015em;
+}
+
+.providerDot {
+  color: var(--landing-link);
+}
+
+/* The marks are the evidence for the number, so they arrive after it and in
+   order. This is a CSS animation rather than a JS-driven state on purpose: a
+   state that gates opacity would leave the strip blank if the script never ran,
+   and a blank strip is a far worse failure than a strip that simply appears. */
 .providerTile {
   display: flex;
   align-items: center;
@@ -501,9 +609,21 @@
   border: 1px solid var(--landing-line);
   border-radius: var(--landing-tile-radius);
   background: var(--landing-tile);
+  animation: providerIn 420ms var(--landing-ease-out) both;
   transition:
     border-color var(--landing-hover-duration) var(--landing-ease-ui),
     background-color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+@keyframes providerIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .providerLogo {
@@ -531,6 +651,21 @@
   line-height: 1;
   white-space: nowrap;
   transition: color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.providerFoot {
+  color: var(--landing-ink);
+  font-size: var(--landing-body-size);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .providerCountFigure,
+  .providerTile {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -705,6 +840,59 @@
     border-color var(--landing-hover-duration) var(--landing-ease-ui);
 }
 
+/* The handoff bar: what this stage received, and who received it. The rule
+   between them draws itself on every stage change, so a pipeline reads as
+   something being passed along rather than a panel being swapped. */
+.runHandoff {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--landing-line);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+  line-height: 1.4;
+}
+
+.runHandoffFrom {
+  color: var(--landing-muted);
+  white-space: nowrap;
+}
+
+.runHandoffTo {
+  color: var(--landing-ink);
+  white-space: nowrap;
+}
+
+.runHandoffRule {
+  position: relative;
+  flex: 1;
+  height: 1px;
+  min-width: 20px;
+  overflow: hidden;
+  background: var(--landing-line);
+}
+
+/* The ember travelling along the rule is the artifact in motion. */
+.runHandoffRule::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--landing-link);
+  transform-origin: left center;
+  animation: handoffDraw 620ms var(--landing-ease-out) both;
+}
+
+@keyframes handoffDraw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 .runOutput {
   color: var(--landing-muted);
   font-family: var(--landing-font-mono);
@@ -749,21 +937,31 @@
 
 /* ---------- Branch gates ---------- */
 
-.gateList {
+/* The branch gate, as a run rather than a table. The status mark, the label and
+   the result are one row; the row's state is data-driven, so the sequence is a
+   class change rather than a set of elements appearing and disappearing. */
+
+.gateRun {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
-.gateLede {
-  color: var(--landing-ink);
-  font-size: var(--landing-small-size);
+.gateCommand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--landing-font-mono);
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
-.gateLede code {
-  font-family: var(--landing-font-mono);
-  font-size: 0.8125rem;
+.gatePrompt {
+  color: var(--landing-link);
+}
+
+.gateCommandText {
+  color: var(--landing-ink);
 }
 
 .gateRows {
@@ -773,17 +971,58 @@
 }
 
 .gateRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px 0;
+  gap: 10px;
+  padding: 11px 0;
   border-bottom: 1px solid var(--landing-line);
+  transition: color var(--landing-enter-duration) var(--landing-ease-out);
+}
+
+/* A row stays legible while it waits, so the list reads as a list at every
+   point in the sequence rather than as fragments arriving. */
+.gateRow[data-state="pending"] .gateLabel,
+.gateRow[data-state="checking"] .gateLabel {
+  color: var(--landing-muted);
+}
+
+.gateStatus {
+  display: block;
+  text-align: center;
+  font-family: var(--landing-font-mono);
+  font-size: 0.8125rem;
+  line-height: 1;
+  color: var(--landing-line);
+  transition:
+    color var(--landing-hover-duration) var(--landing-ease-ui),
+    transform var(--landing-enter-duration) var(--landing-ease-out);
+}
+
+.gateStatus[data-state="checking"] {
+  color: var(--landing-muted);
+  animation: gatePulse 900ms var(--landing-ease-ui) infinite;
+}
+
+.gateStatus[data-state="passed"] {
+  color: var(--landing-positive);
+  transform: scale(1.15);
+}
+
+@keyframes gatePulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .gateLabel {
   color: var(--landing-ink);
   font-size: var(--landing-small-size);
+  transition: color var(--landing-enter-duration) var(--landing-ease-out);
 }
 
 .gateResult {
@@ -791,6 +1030,211 @@
   font-family: var(--landing-font-mono);
   font-size: var(--landing-meta-size);
   text-align: right;
+}
+
+.gateRow[data-result="never rewritten"] .gateResult {
+  color: var(--landing-link);
+}
+
+/* The line that commits the branch. It resolves last, because that is the point.
+   Laid out as inline text rather than a flex row so it wraps at the separators
+   instead of between them. */
+.gateOutcome {
+  display: block;
+  padding-top: 2px;
+  font-family: var(--landing-font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--landing-ink);
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity var(--landing-enter-duration) var(--landing-ease-out),
+    transform var(--landing-enter-duration) var(--landing-ease-out);
+}
+
+.gateOutcome code {
+  font-family: inherit;
+  color: var(--landing-link);
+}
+
+.gateOutcome[data-state="committed"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gateOutcomeMark {
+  color: var(--landing-positive);
+}
+
+.gateOutcome[data-state="pending"] .gateOutcomeMark {
+  color: var(--landing-line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gateStatus[data-state="checking"] {
+    animation: none;
+  }
+}
+
+/* ---------- Model routing ---------- */
+
+/* Deliberately not a window. Four feature cards in a row all wearing the same
+   chrome is what made this page read as one template, so the config gets its
+   own surface: an editor, lit from within. */
+.routing {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 420px;
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-card-radius);
+  background: var(--landing-surface);
+  box-shadow: 0 28px 70px rgb(0 0 0 / 0.3);
+  overflow: hidden;
+}
+
+.routingHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--landing-line);
+  background: var(--landing-surface-strong);
+}
+
+.routingFile {
+  color: var(--landing-muted);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+}
+
+.routingStage {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 20px;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+  color: var(--landing-muted);
+  opacity: 0;
+  transition: opacity var(--landing-enter-duration) var(--landing-ease-out);
+}
+
+.routingStage[data-live="true"] {
+  opacity: 1;
+}
+
+.routingStageIdle {
+  color: var(--landing-muted);
+}
+
+.routingStageName {
+  color: var(--landing-ink);
+}
+
+.routingArrow {
+  color: var(--landing-link);
+}
+
+.routingModel {
+  color: var(--landing-link);
+}
+
+.routingCode {
+  margin: 0;
+  padding: 20px 18px 24px;
+  overflow-x: auto;
+  font-family: var(--landing-font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--landing-muted);
+  tab-size: 2;
+}
+
+.routingBlock {
+  display: block;
+  border-left: 2px solid transparent;
+  padding-left: 10px;
+  margin-left: -12px;
+  transition:
+    border-color var(--landing-enter-duration) var(--landing-ease-out),
+    color var(--landing-enter-duration) var(--landing-ease-out),
+    background-color var(--landing-enter-duration) var(--landing-ease-out);
+}
+
+.routingBlock[data-state="static"] {
+  border-left-color: transparent;
+}
+
+/* A routed stage keeps a quiet mark, so the file ends up showing the whole
+   topology rather than only where the playhead currently is. */
+/* Held back with colour, never with opacity. An opacity dim took the idle
+   config lines to 1.85:1 on parchment and 2.11:1 on the dark surface, which
+   Axe correctly refused. The accent rule still carries the state. */
+.routingBlock[data-state="idle"] .routingTable,
+.routingBlock[data-state="idle"] .routingKey,
+.routingBlock[data-state="idle"] .routingOp {
+  color: var(--landing-muted);
+}
+
+.routingBlock[data-state="idle"] .routingString,
+.routingBlock[data-state="idle"] .routingNumber {
+  color: color-mix(in oklab, var(--landing-positive) 62%, var(--landing-muted));
+}
+
+.routingBlock[data-state="routed"] {
+  border-left-color: var(--landing-line);
+  color: var(--landing-ink);
+}
+
+/* The active block is marked with a ring, not a fill. Any fill darkens the
+   background under the green strings, and a green string on a surface even a few
+   percent darker than the surface is already under 4.5:1 on parchment. A box
+   shadow leaves the computed background alone, so the syntax colour survives. */
+.routingBlock[data-state="active"] {
+  border-left-color: var(--landing-link);
+  border-radius: 0 var(--landing-tile-radius) var(--landing-tile-radius) 0;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--landing-link) 24%, transparent);
+  color: var(--landing-ink);
+}
+
+.routingTable {
+  color: var(--landing-ink);
+}
+
+.routingBlock[data-state="active"] .routingTable {
+  color: var(--landing-link);
+}
+
+/* The line being routed keeps its syntax colour. With the ring rather than a
+   fill, the green sits on the plain surface, where it passes. */
+.routingBlock[data-state="active"] .routingString,
+.routingBlock[data-state="active"] .routingNumber {
+  color: var(--landing-positive);
+}
+
+.routingKey {
+  color: var(--landing-muted);
+}
+
+.routingOp {
+  color: var(--landing-line);
+}
+
+.routingString {
+  color: var(--landing-positive);
+}
+
+.routingNumber {
+  color: var(--landing-positive);
+}
+
+.routingBlock[data-state="idle"] .routingString,
+.routingBlock[data-state="idle"] .routingNumber {
+  color: var(--landing-muted);
 }
 
 /* ---------- Evidence (embedded) ---------- */
@@ -839,6 +1283,77 @@
   line-height: 1.5;
 }
 
+/* The artifact itself. A diff, a report and a JSON document are not the same
+   kind of thing, so each gets its own treatment rather than one paragraph
+   describing all four. */
+.evidenceExcerpt {
+  margin-top: 16px;
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-tile-radius);
+  background: var(--landing-canvas);
+  overflow: hidden;
+}
+
+.excerptCode {
+  margin: 0;
+  padding: 14px 0;
+  overflow-x: auto;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+  line-height: 1.6;
+}
+
+.excerptLine {
+  display: block;
+  padding-inline: 14px;
+  color: var(--landing-muted);
+  white-space: pre;
+}
+
+.excerptLine[data-tone="hunk"] {
+  color: var(--landing-ink);
+}
+
+.excerptLine[data-tone="add"] {
+  color: var(--landing-ink);
+  background: color-mix(in oklab, var(--landing-positive) 12%, transparent);
+}
+
+.excerptLine[data-tone="key"] {
+  color: var(--landing-ink);
+}
+
+/* The report is a ledger, not code, so it is set as one. */
+.excerptReport {
+  margin: 0;
+  padding: 4px 0;
+}
+
+.excerptReport li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--landing-line);
+}
+
+.excerptReport li:last-child {
+  border-bottom: 0;
+}
+
+.excerptReportStage {
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+}
+
+.excerptReportVerdict {
+  color: var(--landing-muted);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+  text-align: right;
+}
+
 /* ---------- Code block ---------- */
 
 .codeBlock {
@@ -856,7 +1371,196 @@
   overflow: auto;
 }
 
-/* ---------- Receipt grid (centred, 3-up) ---------- */
+/* ---------- Timeline (changelog) ---------- */
+
+/* A spine with nodes on it. Releases have an order and a date, which is what
+   this says and what a four-up card grid discards. */
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* No padding for the spine. An earlier version reserved it with padding and
+     hung the nodes outside with a negative offset, which put them past the
+     viewport edge on a phone: the gutter is 20px there and the offset was 26. */
+}
+
+/* The spine itself, drawn in as the row arrives. */
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 4px;
+  width: 1px;
+  /* The spine has to survive on its own: a hairline in --landing-line is
+     invisible at this weight, which left the timeline looking like an
+     unconnected list. The ember at the head is the newest release. */
+  background: linear-gradient(
+    to bottom,
+    var(--landing-link) 0%,
+    color-mix(in oklab, var(--landing-link) 30%, var(--landing-elevated)) 26%,
+    var(--landing-elevated) 100%
+  );
+  transform-origin: top center;
+  animation: spineDraw 900ms var(--landing-ease-out) both;
+  animation-delay: 120ms;
+}
+
+@keyframes spineDraw {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.timelineRow {
+  position: relative;
+  display: grid;
+  grid-template-columns: 104px 64px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--landing-line);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: rowIn 460ms var(--landing-ease-out) both;
+  animation-delay: calc(160ms + var(--i) * 70ms);
+}
+
+.timelineRow:last-child {
+  border-bottom: 0;
+}
+
+@keyframes rowIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.timelineNode {
+  position: absolute;
+  top: 19px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--landing-elevated);
+  background: var(--landing-canvas);
+  transition:
+    border-color var(--landing-hover-duration) var(--landing-ease-ui),
+    background-color var(--landing-hover-duration) var(--landing-ease-ui),
+    transform var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.timelineRow:hover .timelineNode,
+.timelineRow:focus-within .timelineNode {
+  border-color: var(--landing-link);
+  background: var(--landing-link);
+  transform: scale(1.2);
+}
+
+.timelineDate,
+.timelineVersion {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+  line-height: 1.5;
+}
+
+.timelineDate {
+  color: var(--landing-muted);
+}
+
+.timelineVersion {
+  color: var(--landing-link);
+}
+
+.timelineLink {
+  color: var(--landing-ink);
+  font-size: var(--landing-body-size);
+  line-height: 1.4;
+  transition: color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.timelineLink:hover {
+  color: var(--landing-link);
+}
+
+/* ---------- Ledger (highlights) ---------- */
+
+/* A table of contents, not a fifth row of cards. Mono category in the gutter,
+   title and summary beside it, hairlines between, and no container at all. */
+.ledger {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-top: 1px solid var(--landing-line);
+}
+
+.ledgerRow {
+  border-bottom: 1px solid var(--landing-line);
+}
+
+.ledgerLink {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr) 28px;
+  align-items: baseline;
+  gap: 24px;
+  padding: 18px 12px 18px 0;
+  transition: background-color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.ledgerCategory {
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+  line-height: 1.5;
+  color: var(--landing-link);
+}
+
+.ledgerTitle {
+  color: var(--landing-ink);
+  font-size: var(--landing-body-size);
+  line-height: 1.4;
+  transition: color var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.ledgerBody {
+  grid-column: 2;
+  color: var(--landing-muted);
+  font-size: var(--landing-small-size);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.ledgerArrow {
+  grid-row: 1 / span 2;
+  grid-column: 3;
+  align-self: center;
+  color: var(--landing-muted);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity var(--landing-hover-duration) var(--landing-ease-ui),
+    transform var(--landing-hover-duration) var(--landing-ease-ui);
+}
+
+.ledgerLink:hover {
+  background: var(--landing-tile);
+}
+
+.ledgerLink:hover .ledgerTitle {
+  color: var(--landing-link);
+}
+
+.ledgerLink:hover .ledgerArrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ---------- Receipt grid ---------- */
 
 .receiptSection {
   display: flex;
@@ -893,16 +1597,25 @@
 .receiptGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
   gap: 16px;
 }
 
 .receiptCard {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 28px;
+  gap: 14px;
+  height: 100%;
+  padding: 24px 24px 26px;
+  border: 1px solid var(--landing-line);
   border-radius: var(--landing-card-radius);
   background: var(--landing-surface);
+}
+
+.receiptHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .receiptFile {
@@ -919,8 +1632,82 @@
   line-height: 1.25;
 }
 
-.receiptBody {
+/* The artifact, inset so the card reads as a label wrapped around a sample. */
+.receiptExcerpt {
+  margin: 0;
+  padding: 12px 0;
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-tile-radius);
+  background: var(--landing-canvas);
+  overflow-x: auto;
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+  line-height: 1.55;
+}
+
+.receiptLine {
+  display: block;
+  padding-inline: 12px;
+  color: var(--landing-muted);
+  white-space: pre;
+}
+
+.receiptLine[data-tone="hunk"] {
   color: var(--landing-ink);
+}
+
+.receiptLine[data-tone="add"] {
+  /* Ink on a green band, not green on a green band: the latter is 4.38:1 on
+     parchment, which Axe refuses. This is 12.8:1 and reads the way a diff
+     viewer does. */
+  color: var(--landing-ink);
+  background: color-mix(in oklab, var(--landing-positive) 12%, transparent);
+}
+
+.receiptLine[data-tone="key"] {
+  color: var(--landing-ink);
+}
+
+.receiptLine[data-tone="value"] {
+  color: var(--landing-positive);
+}
+
+/* A report is a ledger of verdicts, so it is set as one. */
+.receiptVerdicts {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-tile-radius);
+  background: var(--landing-canvas);
+}
+
+.receiptVerdicts li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--landing-line);
+}
+
+.receiptVerdicts li:last-child {
+  border-bottom: 0;
+}
+
+.receiptVerdictStage {
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+}
+
+.receiptVerdictResult {
+  color: var(--landing-positive);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+}
+
+.receiptBody {
+  margin-top: auto;
+  color: var(--landing-muted);
   font-size: var(--landing-small-size);
   line-height: 1.55;
 }
@@ -977,11 +1764,14 @@
 
 /* ---------- Capability row (3-up with media) ---------- */
 
+/* One rule across all three columns, no gaps in it. The columns are connected by
+   that line rather than by three copies of the same window. */
 .capabilityGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  gap: 0;
   width: 100%;
+  border-top: 1px solid var(--landing-line);
 }
 
 .capabilityCard {
@@ -989,16 +1779,150 @@
   flex-direction: column;
   gap: 20px;
   min-width: 0;
+  padding: 28px 32px 0 0;
+  border-right: 1px solid var(--landing-line);
 }
 
-.capabilityCard .windowStage {
+.capabilityCard:last-child {
+  border-right: 0;
+  padding-right: 0;
+}
+
+.capabilityCard:nth-child(2) {
+  padding-left: 32px;
+}
+
+.capabilityCard:first-child {
+  padding-left: 0;
+}
+
+/* ---------- Three instruments ---------- */
+
+/* A stage ladder: four steps joined by a spine, because that is what a pipeline
+   is. Distinct from every list on the page, which are all flat. */
+.ladder {
+  position: relative;
   display: flex;
-  flex: 1;
-  min-height: 220px;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 20px;
 }
 
-.capabilityCard .windowStage > .window {
-  flex: 1;
+.ladder::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 3px;
+  width: 1px;
+  background: var(--landing-elevated);
+}
+
+.ladderStep {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+}
+
+.ladderStep::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: -20px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--landing-elevated);
+  background: var(--landing-canvas);
+}
+
+.ladderStage {
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+}
+
+.ladderArtifact {
+  color: var(--landing-muted);
+  font-family: var(--landing-font-mono);
+  font-size: 11px;
+}
+
+/* A runtime is a choice between named options, so it is set as one, with the
+   default actually marked rather than merely first. */
+.runtime {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.runtimeOption {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+}
+
+.runtimeMark {
+  width: 10px;
+  height: 10px;
+  margin-top: 4px;
+  border: 1px solid var(--landing-elevated);
+  border-radius: 50%;
+  background: var(--landing-canvas);
+}
+
+.runtimeOption[data-default="true"] .runtimeMark {
+  border-color: var(--landing-link);
+  background: var(--landing-link);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--landing-link) 18%, transparent);
+}
+
+.runtimeName {
+  color: var(--landing-ink);
+  font-size: var(--landing-small-size);
+}
+
+.runtimeNote {
+  grid-column: 2;
+  color: var(--landing-muted);
+  font-size: var(--landing-meta-size);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* Guardrails are configuration keys and their effect, so they are set as a
+   key/value ledger. */
+.guards {
+  display: flex;
+  flex-direction: column;
+}
+
+.guardRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--landing-line);
+}
+
+.guardRow:last-child {
+  border-bottom: 0;
+}
+
+.guardKey {
+  color: var(--landing-ink);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-meta-size);
+}
+
+.guardEffect {
+  color: var(--landing-link);
+  font-size: var(--landing-meta-size);
+  text-align: right;
 }
 
 .capabilityCopy {

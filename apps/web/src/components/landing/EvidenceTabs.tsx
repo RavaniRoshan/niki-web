@@ -4,6 +4,10 @@ import { useId, useRef, useState, type KeyboardEvent } from "react";
 import { EVIDENCE_FILES } from "./content";
 import interactiveStyles from "./interactive.module.css";
 import styles from "./sections.module.css";
+
+/* The artifact excerpt scrolls horizontally on a narrow screen, so it is
+ * focusable: a scrollable region with no keyboard access is a real barrier, not a
+ * lint nit. */
 import { useHorizontalTabs } from "./useHorizontalTabs";
 
 export default function EvidenceTabs() {
@@ -91,8 +95,58 @@ export default function EvidenceTabs() {
             ) : null}
           </div>
           <p className={styles.evidenceDescription}>{activeFile.description}</p>
+
+          {/* The file itself, not a description of the file. Each artifact gets
+              its own treatment because a diff and a report are not the same kind
+              of thing, and pretending otherwise was what made the old panel four
+              copies of one paragraph. */}
+          <div className={styles.evidenceExcerpt} data-kind={activeFile.excerpt.kind}>
+            {activeFile.excerpt.kind === "report" ? (
+              <ul className={styles.excerptReport}>
+                {activeFile.excerpt.stages.map((entry) => (
+                  <li key={entry.stage}>
+                    <span className={styles.excerptReportStage}>{entry.stage}</span>
+                    <span className={styles.excerptReportVerdict}>{entry.verdict}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <pre
+                className={styles.excerptCode}
+                tabIndex={0}
+                role="group"
+                aria-label={`Sample output from ${activeFile.name}`}
+              >
+                <code>
+                  {activeFile.excerpt.lines.map((line, index) => (
+                    <span
+                      key={index}
+                      className={styles.excerptLine}
+                      data-tone={
+                        activeFile.excerpt.kind === "diff"
+                          ? line.startsWith("+")
+                            ? "add"
+                            : line.startsWith("@@")
+                              ? "hunk"
+                              : "plain"
+                          : line.startsWith("#")
+                            ? "hunk"
+                            : activeFile.excerpt.kind === "json" && line.includes('"')
+                              ? "key"
+                              : "plain"
+                      }
+                    >
+                      {line || " "}
+                      {"\n"}
+                    </span>
+                  ))}
+                </code>
+              </pre>
+            )}
+          </div>
+
           <p className={styles.evidenceNote}>
-            The file stays with the run so the decision trail is inspectable before review.
+            Sample output. The real file ships with the run and stays with the branch.
           </p>
         </div>
       </div>
