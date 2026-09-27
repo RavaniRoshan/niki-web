@@ -483,7 +483,6 @@ export const FOOTER_GROUPS = [
       { label: "Source", href: SITE.repo, external: true },
       { label: "Issues", href: SITE.social.issues, external: true },
       { label: "License", href: SITE.repo, external: true },
-      { label: "X", href: SITE.twitter, external: true },
     ],
   },
   {
@@ -501,7 +500,6 @@ export const FOOTER_GROUPS = [
     links: [
       { label: "GitHub", href: SITE.social.github, external: true },
       { label: "Report an issue", href: SITE.social.issues, external: true },
-      { label: "X", href: SITE.twitter, external: true },
     ],
   },
 ] as const;

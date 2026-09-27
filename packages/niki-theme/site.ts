@@ -29,7 +29,6 @@ export const SITE = {
   tagline: "One sentence in. A reviewable branch out.",
   description:
     "Niki is the open-source multi-agent coding pipeline that can plan, code, test, and review tasks, then write a local git branch and changes.patch for review when branch creation succeeds.",
-  twitter: "https://x.com/niki_dev",
   social: {
     github: "https://github.com/RavaniRoshan/niki",
     issues: "https://github.com/RavaniRoshan/niki/issues",
