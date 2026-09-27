@@ -119,6 +119,19 @@ export async function revealAllSections(page: Page): Promise<void> {
   });
 }
 
+/**
+ * A box may sit a hair outside the viewport and still be flush.
+ *
+ * `getBoundingClientRect` returns fractional CSS pixels, and a full-width
+ * element measured as 1280.00006px in a 1280px viewport is not overflowing by
+ * anything a reader could see — it is a rounding artefact from the compositor.
+ * Without a tolerance the overflow suite fails intermittently under load, when
+ * layout lands on a different subpixel. Half a pixel is the right size for the
+ * allowance: it is below any real layout regression, which the suite's own
+ * fixtures stage at 20px, and above the float noise that causes the flake.
+ */
+const OVERFLOW_TOLERANCE = 0.5;
+
 export async function collectVisibleOverflow(page: Page): Promise<
   Array<{
     tag: string;
@@ -127,7 +140,7 @@ export async function collectVisibleOverflow(page: Page): Promise<
     right: number;
   }>
 > {
-  return page.locator("body *").evaluateAll((elements) => {
+  return page.locator("body *").evaluateAll((elements, tolerance) => {
     const viewportWidth = document.documentElement.clientWidth;
     const isInsideHorizontalScroller = (element: Element) => {
       let parent = element.parentElement;
@@ -155,7 +168,7 @@ export async function collectVisibleOverflow(page: Page): Promise<
         box.width > 0 &&
         box.height > 0;
 
-      if (!visible || (box.left >= 0 && box.right <= viewportWidth)) {
+      if (!visible || (box.left >= -tolerance && box.right <= viewportWidth + tolerance)) {
         return [];
       }
 
@@ -177,7 +190,7 @@ export async function collectVisibleOverflow(page: Page): Promise<
         },
       ];
     });
-  });
+  }, OVERFLOW_TOLERANCE);
 }
 
 export async function expectNoSeriousAxeViolations(page: Page): Promise<void> {

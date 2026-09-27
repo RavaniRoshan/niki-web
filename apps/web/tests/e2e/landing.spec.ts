@@ -712,6 +712,32 @@ test("overflow detection ignores only the hidden skip link and reports both edge
     "overflow-fixture-left",
     "overflow-fixture-right",
   ]);
+
+  /* And the subpixel case the tolerance exists for. A full-width box measured a
+     few millionths of a pixel past the viewport is a rounding artefact, not
+     overflow, and treating it as overflow made this suite fail intermittently
+     under load. Half a pixel of slack clears that and still catches anything a
+     reader could see. */
+  const subpixel = await page.evaluate(() => {
+    document.querySelectorAll(".overflow-fixture-left, .overflow-fixture-right").forEach((node) => {
+      node.remove();
+    });
+    const fixture = document.createElement("div");
+    fixture.className = "overflow-fixture-subpixel";
+    /* A transform, not a fractional width: the compositor keeps subpixel
+       offsets in the rect where it snaps a computed width back to whole pixels,
+       so this genuinely straddles the edge the way the failing run's hero did. */
+    fixture.style.cssText =
+      "position: fixed; top: 0; left: 0; width: 100%; height: 10px; transform: translateX(0.4px);";
+    document.body.append(fixture);
+    return {
+      right: fixture.getBoundingClientRect().right,
+      viewport: document.documentElement.clientWidth,
+    };
+  });
+  expect(subpixel.right).toBeGreaterThan(subpixel.viewport);
+  expect(subpixel.right).toBeLessThan(subpixel.viewport + 1);
+  expect(await collectVisibleOverflow(page)).toEqual([]);
 });
 
 test("the landing makes no external or cursor.com requests", async ({ page }) => {
