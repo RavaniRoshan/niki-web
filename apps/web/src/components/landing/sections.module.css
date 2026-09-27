@@ -787,9 +787,13 @@
   font-size: var(--landing-small-size);
   white-space: nowrap;
   cursor: pointer;
+  /* Carries transform as well as the colour pair: without it the press scale
+     below would snap rather than ease, which reads as a glitch on a control the
+     user is aiming at. */
   transition:
     background-color var(--landing-hover-duration) var(--landing-ease-ui),
-    border-color var(--landing-hover-duration) var(--landing-ease-ui);
+    border-color var(--landing-hover-duration) var(--landing-ease-ui),
+    transform var(--landing-hover-duration) var(--landing-ease-ui);
 }
 
 .commandStatus {
@@ -800,6 +804,27 @@
   color: var(--landing-muted);
   font-size: var(--landing-meta-size);
   line-height: 1.4;
+}
+
+/* The confirmation itself. Copying is invisible — the command leaves the page
+   and nothing on screen changes — so the status line is the only signal the
+   interface sent, and it used to arrive fully formed. It is a keyed span inside
+   the live region rather than an animation on the region, so the announcement
+   is not cut off mid-fade and a second copy replays the entrance. */
+.commandStatusText {
+  animation: status-enter 160ms var(--landing-ease-out) both;
+}
+
+@keyframes status-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ---------- Run explorer (inside a window) ---------- */
@@ -2243,7 +2268,8 @@
 
   .secondaryAction:hover,
   .textControl:hover,
-  .videoButton:hover:not(:disabled) {
+  .videoButton:hover:not(:disabled),
+  .commandButton:hover {
     background: var(--landing-surface-strong);
   }
 
@@ -2253,7 +2279,9 @@
 
   .primaryAction:active,
   .secondaryAction:active,
-  .textControl:active {
+  .textControl:active,
+  .commandButton:active,
+  .videoToggle:active:not(:disabled) {
     transform: scale(0.98);
   }
 }
@@ -2263,7 +2291,13 @@
   .secondaryAction,
   .textControl,
   .metaCard,
-  .textLink {
+  .textLink,
+  .commandButton,
+  .videoToggle {
     transition-duration: 0.001ms;
+  }
+
+  .commandStatusText {
+    animation: none;
   }
 }
