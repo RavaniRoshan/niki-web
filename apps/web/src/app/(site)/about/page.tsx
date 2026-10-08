@@ -11,8 +11,8 @@ export const metadata = pageMetadata({
 
 const facts: [string, string][] = [
   ["What", "Multi-agent coding pipeline (CLI + TUI)"],
-  ["Written in", "Rust, edition 2024"],
-  ["License", "Apache-2.0"],
+  ["Written in", "Go, 1.24+"],
+  ["License", "MIT"],
   ["Current release", `v${SITE.release.version} (${SITE.release.date})`],
   ["Sandbox", "Podman / Docker / git-worktree"],
   ["Providers", "12, BYOK"],
@@ -51,8 +51,8 @@ export default function AboutPage() {
               Podman or Docker; the worktree backend runs host-local processes.
             </p>
             <p>
-              It&apos;s written in Rust as a single binary, licensed Apache-2.0, and designed for
-              reviewing a local diff instead of steering an assistant through every edit.
+              It&apos;s written in Go as a single binary, licensed MIT, and designed for reviewing a
+              local diff instead of steering an assistant through every edit.
             </p>
             <p>
               The project&apos;s public documentation points back to the repository, where the

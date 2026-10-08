@@ -22,9 +22,9 @@ export default defineConfig({
   },
   banner: {
     content:
-      "Niki v0.8.0: agent runtime rework, repo intelligence, risk-gated Critic.",
+      "Niki v0.11.0: TUI redesign, Go rewrite, and platform hardening.",
     link: {
-      href: "https://niki-web.pages.dev/resources/changelog#v0.8.0",
+      href: "https://niki-web.pages.dev/resources/changelog#v0.11.0",
       text: "Read the release notes",
     },
     dismissible: true,

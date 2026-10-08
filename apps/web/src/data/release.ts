@@ -5,10 +5,10 @@
  */
 
 export const RELEASE = {
-  version: "0.8.0",
-  tag: "v0.8.0",
-  date: "2026-09-23",
-  notes: "https://github.com/RavaniRoshan/niki/releases/tag/v0.8.0",
+  version: "0.11.0",
+  tag: "v0.11.0",
+  date: "2026-10-08",
+  notes: "https://github.com/RavaniRoshan/niki/releases/tag/v0.11.0",
   latest: "https://github.com/RavaniRoshan/niki/releases/latest",
   repoBase: "https://github.com/RavaniRoshan/niki",
 } as const;
@@ -75,7 +75,7 @@ export const INSTALLERS = {
   powershell: {
     label: "Windows",
     command:
-      "irm https://github.com/RavaniRoshan/niki/releases/download/v0.8.0/niki-installer.ps1 | iex",
+      "irm https://github.com/RavaniRoshan/niki/releases/download/v0.11.0/niki-installer.ps1 | iex",
     note: "PowerShell installer from the current release.",
   },
   homebrew: {
@@ -83,10 +83,10 @@ export const INSTALLERS = {
     command: "brew install niki",
     note: "Homebrew formula availability and version depend on the tap.",
   },
-  cargo: {
+  go: {
     label: "Any (from source)",
-    command: "cargo install niki",
-    note: "Requires Rust 1.88+ (edition 2024).",
+    command: "go install github.com/RavaniRoshan/niki/cmd/niki@latest",
+    note: "Requires Go 1.24+.",
   },
 } as const;
 

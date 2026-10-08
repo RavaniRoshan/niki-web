@@ -10,17 +10,45 @@ Install NIKI using your preferred method.
 
 ---
 
-## One-Line Install Script (macOS / Linux)
+## One-Line Install Script (Linux / macOS)
 
 Downloads the official release binary and verifies its SHA-256 checksum:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/RavaniRoshan/niki/master/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/RavaniRoshan/niki/main/install.sh | bash
 ```
 
 ---
 
-## Homebrew (macOS)
+## PowerShell Installer (Windows)
+
+```powershell
+irm https://github.com/RavaniRoshan/niki/releases/download/v0.11.0/niki-installer.ps1 | iex
+```
+
+---
+
+## Pre-built Binaries (GitHub Releases)
+
+Download pre-compiled static binaries directly from the [Releases](https://github.com/RavaniRoshan/niki/releases) page:
+
+```bash
+# Linux (amd64)
+curl -L https://github.com/RavaniRoshan/niki/releases/latest/download/niki_linux_amd64.tar.gz | tar -xz
+sudo mv niki /usr/local/bin/
+
+# macOS (Apple Silicon arm64)
+curl -L https://github.com/RavaniRoshan/niki/releases/latest/download/niki_darwin_arm64.tar.gz | tar -xz
+sudo mv niki /usr/local/bin/
+
+# macOS (Intel amd64)
+curl -L https://github.com/RavaniRoshan/niki/releases/latest/download/niki_darwin_amd64.tar.gz | tar -xz
+sudo mv niki /usr/local/bin/
+```
+
+---
+
+## Homebrew (macOS / Linux)
 
 ```bash
 brew install niki
@@ -28,31 +56,27 @@ brew install niki
 
 ---
 
-## Cargo Binstall / Crates.io
+## Go Install
 
-If you already have Rust and `cargo-binstall` installed:
-
-```bash
-cargo binstall niki
-```
-
-Or install from source with Cargo:
+If you have Go 1.24+ installed:
 
 ```bash
-cargo install --locked niki
+go install github.com/RavaniRoshan/niki/cmd/niki@latest
 ```
+
+Ensure your `$GOPATH/bin` or `$HOME/go/bin` is in your `$PATH`.
 
 ---
 
 ## Build from Source
 
-NIKI's MSRV is Rust 1.88 with the 2024 edition.
+NIKI requires Go 1.24+.
 
 ```bash
 git clone https://github.com/RavaniRoshan/niki.git
 cd niki
-cargo build --release
-sudo cp target/release/niki /usr/local/bin/
+go build -ldflags="-s -w" -o bin/niki cmd/niki/main.go
+sudo cp bin/niki /usr/local/bin/
 ```
 
 ---
@@ -68,8 +92,8 @@ niki doctor
 Illustrative output:
 
 ```text
-✓ niki version — 0.8.0
-✓ rust toolchain — rustc 1.88.0
+✓ niki version — 0.11.0
+✓ go toolchain — go1.24.0
 ✓ container runtime — podman version 5.x
 ✓ git — git version 2.x
 ⚠ sandbox image present — niki-sandbox:24.04 not found locally

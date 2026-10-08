@@ -190,6 +190,26 @@
   gap: 12px;
 }
 
+.heroBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  animation: heroRise 620ms var(--landing-ease-out) 260ms both;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border: 1px solid var(--landing-line);
+  border-radius: 999px;
+  color: var(--landing-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+}
+
 .primaryAction,
 .secondaryAction {
   display: inline-flex;
@@ -2299,5 +2319,155 @@
 
   .commandStatusText {
     animation: none;
+  }
+}
+
+/* ---------- Performance Section ---------- */
+
+.performanceSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-block: var(--landing-section-space);
+}
+
+.performanceTable {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-card-radius);
+  overflow: hidden;
+}
+
+.performanceHeader,
+.performanceRow {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 0.8fr 1fr 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 12px 16px;
+  font-size: var(--landing-small-size);
+  line-height: 1.5;
+}
+
+.performanceHeader {
+  background: var(--landing-surface);
+  color: var(--landing-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.performanceRow {
+  border-top: 1px solid var(--landing-line);
+  color: var(--landing-ink);
+}
+
+.performanceRowHighlight {
+  background: var(--landing-surface);
+  color: var(--landing-signal);
+}
+
+.performanceTool {
+  font-weight: 500;
+}
+
+/* ---------- Tool Suite Section ---------- */
+
+.toolSuiteSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-block: var(--landing-section-space);
+}
+
+.toolGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.toolCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--landing-line);
+  border-radius: var(--landing-card-radius);
+  background: var(--landing-surface);
+}
+
+.toolName {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--landing-signal);
+}
+
+.toolPurpose {
+  font-size: var(--landing-small-size);
+  color: var(--landing-ink);
+  line-height: 1.5;
+}
+
+.toolSafety {
+  font-size: var(--landing-meta-size);
+  color: var(--landing-muted);
+  line-height: 1.5;
+}
+
+/* ---------- Philosophy List ---------- */
+
+.philosophyList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--landing-line);
+}
+
+.philosophyItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.philosophyTitle {
+  font-size: var(--landing-small-size);
+  font-weight: 500;
+  color: var(--landing-ink);
+}
+
+.philosophyBody {
+  font-size: var(--landing-meta-size);
+  color: var(--landing-muted);
+  line-height: 1.5;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 639px) {
+  .performanceHeader,
+  .performanceRow {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .performanceHeader span:nth-child(3),
+  .performanceHeader span:nth-child(4),
+  .performanceHeader span:nth-child(5),
+  .performanceHeader span:nth-child(6),
+  .performanceHeader span:nth-child(7),
+  .performanceRow span:nth-child(3),
+  .performanceRow span:nth-child(4),
+  .performanceRow span:nth-child(5),
+  .performanceRow span:nth-child(6),
+  .performanceRow span:nth-child(7) {
+    display: none;
+  }
+
+  .toolGrid {
+    grid-template-columns: 1fr;
   }
 }

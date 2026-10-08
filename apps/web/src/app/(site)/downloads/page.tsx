@@ -7,7 +7,7 @@ import { pageMetadata } from "@/lib/meta";
 
 export const metadata = pageMetadata({
   title: `Niki ${RELEASE.version} download`,
-  description: `Current stable release, ${RELEASE.date}. Release archives are built by cargo-dist; verify the downloaded archive against the current release checksum information before use. One Rust binary; no hosted service.`,
+  description: `Current stable release, ${RELEASE.date}. Release archives are built by goreleaser; verify the downloaded archive against the current release checksum information before use. One Go binary; no hosted service.`,
   path: "/downloads",
 });
 
@@ -34,9 +34,9 @@ export default function DownloadsPage() {
           </nav>
           <h1>Niki {RELEASE.version}</h1>
           <p>
-            Current stable release, {RELEASE.date}. Release archives are built by cargo-dist; verify
+            Current stable release, {RELEASE.date}. Release archives are built by goreleaser; verify
             the downloaded archive against the current release checksum information before use. One
-            Rust binary; no hosted service.
+            Go binary; no hosted service.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "24px" }}>
             <Link className="ax-btn ax-btn--primary" href={WEB_ROUTES.home}>
@@ -72,9 +72,9 @@ export default function DownloadsPage() {
           <div className="ax-grid" style={{ alignContent: "start" }}>
             <h2 style={{ margin: 0, fontSize: "1.25rem" }}>Package managers</h2>
             <CodeBlock label="Homebrew (macOS/Linux)" code={INSTALLERS.homebrew.command} />
-            <CodeBlock label="Cargo (from source)" code={INSTALLERS.cargo.command} />
+            <CodeBlock label="Go install (from source)" code={INSTALLERS.go.command} />
             <p style={{ margin: 0, fontSize: "0.8125rem", color: "var(--gray-10)" }}>
-              {INSTALLERS.homebrew.note} {INSTALLERS.cargo.note}
+              {INSTALLERS.homebrew.note} {INSTALLERS.go.note}
             </p>
           </div>
         </div>

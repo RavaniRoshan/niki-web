@@ -186,13 +186,13 @@ export default function ProductPage() {
       <Box>
         <BoxHeader
           heading="What it is"
-          aside={<span className="ax-badge">Rust CLI · local branch output</span>}
+          aside={<span className="ax-badge">Go CLI · local branch output</span>}
         />
         <div className="ax-split">
           <div>
             <p>
-              Niki is a Rust CLI with one job: take a sentence, return a branch. It runs a pipeline
-              of LLM stages — Planner, Coder, Tester, Reviewer — each with its own prompt, its own
+              Niki is a Go CLI with one job: take a sentence, return a branch. It runs a pipeline of
+              LLM stages — Planner, Coder, Tester, Reviewer — each with its own prompt, its own
               model and its own fresh session. Stages exchange typed artifacts, not a shared
               conversation.
             </p>

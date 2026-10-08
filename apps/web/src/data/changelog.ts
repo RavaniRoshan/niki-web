@@ -14,6 +14,41 @@ export interface ChangelogRelease {
 
 export const RELEASES: ChangelogRelease[] = [
   {
+    version: "0.11.0",
+    date: "2026-10-08",
+    summary:
+      "TUI redesign, Go rewrite, and platform hardening. The terminal UI was rebuilt to replicate Claude Code and Kimi Code styling with a pixel mascot badge, rounded welcome card, redesigned composer, dual-mode status footer, and enriched transcript rendering. The product was rewritten in Go for a 19MB static binary with 5.9ms boot time. Cross-platform terminal polling, slash command interception, and CI/release hardening.",
+    categories: [
+      {
+        name: "Added",
+        items: [
+          "TUI redesign replicating Claude Code and Kimi Code styling",
+          "Pixel mascot badge with customizable theme styles",
+          "Rounded welcome card with aligned metadata table (directory, session, model, version)",
+          "Quick action announcement row with cyan diamond glyph",
+          "Redesigned composer with rounded border and dynamic responsive width",
+          "Dual-mode status footer with permission pills, mode badge, thinking state, cwd, git branch, keyboard hints, and real token context meter",
+          "Enriched transcript rendering with golden sparkle user glyphs, assistant bullets, and tree-branch tool execution cells",
+          "Slash command interception for /model, /doctor, /compact",
+          "Cross-platform terminal polling on POSIX and Windows",
+          "Complete NIKI skeleton with live TUI, safety, extensibility, and reliability",
+          "Readiness matrix, MCP manager, TUI lifecycle, and performance contract (Phases 5-7)",
+          "README rewritten as marketing showcase with install.sh",
+        ],
+      },
+      {
+        name: "Changed",
+        items: [
+          "Product rewritten in Go (from Rust) for a 19MB static binary with zero runtime dependencies",
+          "Performance contract: 5.9ms boot to first frame, 13.1MB idle RSS, 6.8ms --version",
+          "Bubblewrap sandboxing with read-only root, private /tmp, network namespace denial, and dropped capabilities",
+        ],
+      },
+    ],
+    tag: "v0.11.0",
+    url: "https://github.com/RavaniRoshan/niki/releases/tag/v0.11.0",
+  },
+  {
     version: "0.8.0",
     date: "2026-09-23",
     summary:

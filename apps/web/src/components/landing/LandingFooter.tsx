@@ -40,7 +40,7 @@ export default function LandingFooter() {
             <span>{`© ${new Date().getFullYear()} Niki contributors`}</span>
             <span aria-hidden="true">|</span>
             <a href={SITE.repo} target="_blank" rel="noreferrer noopener">
-              Apache-2.0
+              MIT
             </a>
             <span aria-hidden="true">|</span>
             <span>No telemetry</span>

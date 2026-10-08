@@ -1,0 +1,109 @@
+---
+title: TUI Overview
+description: The redesigned terminal UI — Claude Code and Kimi Code styling with a 19MB Go binary.
+sidebar:
+  order: 1
+  label: TUI Overview
+---
+
+## Terminal UI Overview
+
+NIKI's terminal UI was redesigned to replicate the styling of Claude Code and Kimi Code, built in Go as a 19MB static binary with zero runtime dependencies. The TUI boots to an interactive frame in **5.9 ms** and outputs `--version` in **6.8 ms**.
+
+---
+
+## Design Language
+
+The TUI follows a modern terminal aesthetic with:
+
+- **Pixel mascot badge** with customizable theme styles
+- **Rounded welcome card** with aligned metadata table (directory, session, model, version)
+- **Quick action announcement row** with cyan diamond glyph
+- **Redesigned composer** with rounded border and dynamic responsive width
+- **Dual-mode status footer** with permission pills, mode badge, thinking state, cwd, git branch, keyboard hints, and real token context meter
+- **Enriched transcript rendering** with golden sparkle user glyphs, assistant bullets, and tree-branch tool execution cells
+
+---
+
+## Performance Contract
+
+| Metric | NIKI (Go) | Codex CLI (Rust) |
+| --- | --- | --- |
+| `--version` | **6.8 ms** | 20.0 ms |
+| TTFP (First Paint) | **5.9 ms** | 23.4 ms |
+| Idle Memory (2s) | **13.1 MB** | 21.7 MB |
+| Binary Size | **19 MB** | 244 MB |
+
+Measured on host (`AMD Ryzen 7 4800H`, `Linux WSL2`, `go1.27.1`).
+
+---
+
+## Cross-Platform Support
+
+The TUI supports cross-platform terminal polling on both POSIX and Windows systems, with:
+
+- POSIX terminal polling via termios
+- Windows terminal polling via console API
+- Graceful fallback for unsupported terminals
+- `NIKI_TUI_DEBUG` per-frame log for troubleshooting
+
+---
+
+## Keyboard Shortcuts
+
+| Key | Action |
+| --- | --- |
+| `Enter` | Send message or execute command |
+| `Esc` | Interrupt ongoing model stream or deny approval prompt |
+| `Ctrl+C` | Cleanly cancel current turn and restore terminal state |
+| `Ctrl+Z` | Suspend process to background |
+| `Ctrl+F` | Transcript search |
+| `Ctrl+E` | Toggle mouse motion/SGR |
+| `Ctrl+Y` | Yank from kill ring |
+| `Ctrl+W` / `Ctrl+U` / `Ctrl+K` | Delete into kill ring |
+| `Ctrl+Z` / `Ctrl+_` | Input undo |
+| `Ctrl+Y` | Input redo (yank) |
+| `Alt+Y` | Yank-pop (cycle kill ring) |
+
+---
+
+## Slash Commands
+
+| Command | Action |
+| --- | --- |
+| `/help` | Display active keybindings, tools, and slash commands |
+| `/doctor` | Run comprehensive system and sandbox diagnostics |
+| `/compact` | Force context compaction, folding past turn history |
+| `/model` | Inspect active model, context window, and token prices |
+| `/clear` | Clear visible terminal viewport |
+| `/quit` | Cleanly restore terminal termios state and exit |
+| `/status` | Show pipeline status |
+| `/permissions` | Manage permission settings |
+| `/plan` | Toggle plan mode |
+| `/version` | Show version information |
+| `/rename` | Rename current session |
+| `/fork` | Fork current session |
+| `/branch` | Show or switch branches |
+| `/usage` | Show usage statistics |
+| `/effort` | Adjust effort level |
+| `/mcp` | Manage MCP servers |
+| `/skills` | Manage skills |
+| `/copy` | Copy last response |
+| `/export-md` | Export transcript as Markdown |
+| `/btw` | Add a side note |
+| `/code-review` | Run code review |
+| `/security-review` | Run security review |
+| `/add-dir` | Add directory to workspace |
+| `/loop` | Toggle loop mode |
+| `/voice` | Toggle voice input |
+
+---
+
+## Theming
+
+The TUI supports theme customization with:
+
+- Warm SAND_500 as the default theme
+- Customizable mascot badge styles
+- Color depth detection: `NO_COLOR` → ANSI-16 → 256-color → truecolor
+- Kitty keyboard protocol support (progressive adoption, I4)

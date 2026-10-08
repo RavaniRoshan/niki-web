@@ -51,7 +51,7 @@ const commitments = [
   "Claims link to repository code, docs, or run artifacts where available",
   "Evals disclose methodology, costs and maintainer judgments",
   "CI gates: fmt, clippy warning-free, tests, supply-chain checks",
-  "Releases use cargo-dist; verify the current release checksum information",
+  "Releases use goreleaser; verify the current release checksum information",
 ];
 
 export default function CommunityPage() {

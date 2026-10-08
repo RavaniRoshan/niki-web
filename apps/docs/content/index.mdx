@@ -7,7 +7,7 @@ description: Open-source multi-agent coding engine with reviewable diffs and run
 
 **Turn a sentence into a reviewable code change.**
 
-NIKI v0.8.0 is an open-source multi-agent coding engine written in Rust. Its default `auto` topology uses **Planner + solo Coder** for low-complexity tasks and **Planner → Coder → Tester → Reviewer** for higher-complexity runs. The default container backend executes against the repository bind-mounted at `/workspace`; a git-worktree backend is also available.
+NIKI v0.11.0 is an open-source multi-agent coding engine written in Go. Its default `auto` topology uses **Planner + solo Coder** for low-complexity tasks and **Planner → Coder → Tester → Reviewer** for higher-complexity runs. The default container backend executes against the repository bind-mounted at `/workspace`; a git-worktree backend is also available.
 
 <Callout type="tip">
   **Your working tree is modified during eligible runs.** The container backend
@@ -26,7 +26,7 @@ niki run "Add a GET /health endpoint returning { status: 'ok', uptime }" --proje
    "Add a GET /health endpoint…"
 
  [Planner]   Done · Spec: 1 file to modify
- [Coder]     Done · Changed 1 file · src/api.rs [modified]
+  [Coder]     Done · Changed 1 file · src/main.go [modified]
  [Tester]    Done · 8/8 tests passed
  [Reviewer]  Done · Approved · correctness 10/10 · quality 9/10 · coverage 10/10
  [NIKI]      Task complete · Branch: niki/6d281d6d · Verdict: Approved · Revisions: 0

@@ -44,8 +44,8 @@ Task output is stored under `.niki/tasks/<id>/`: `report.md`, `changes.patch`, p
 
 ### Supply chain
 
-Tight `deny.toml` license allow-list, `cargo audit` in CI, checksum-verified
-installers, and release channels via cargo-dist. Outbound traffic depends on
+Tight `deny.toml` license allow-list, `golangci-lint` in CI, checksum-verified
+installers, and release channels via goreleaser. Outbound traffic depends on
 features: provider APIs, `niki research`, knowledge URLs, optional OTLP export,
 and remote MCP client traffic can all leave the machine. The current pipeline
 does not connect configured MCP servers.

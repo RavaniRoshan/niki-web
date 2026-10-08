@@ -242,9 +242,9 @@ export const NAV_LINKS: readonly NavEntry[] = [
 ] as const;
 
 export const HERO = {
-  title: "Niki is your coding agent for building software you can review.",
+  title: "A personal coding-agent harness in Go. One static binary. Instant to open.",
   primaryAction: {
-    label: "Download for Linux",
+    label: "Download Niki",
     href: WEB_ROUTES.downloads,
   },
   secondaryAction: {
@@ -253,6 +253,14 @@ export const HERO = {
     external: true,
   },
 } as const;
+
+export const HERO_BADGES = [
+  { label: "Go 1.24+" },
+  { label: "MIT License" },
+  { label: "Startup 5.9ms" },
+  { label: "Binary 19MB" },
+  { label: "CGO Disabled" },
+] as const;
 
 /* Split so the section does not say the same sentence twice. The eyebrow is
    the premise, the count is the number, and the foot is the only part that
@@ -399,11 +407,113 @@ export const CAPABILITIES = [
   },
 ] as const;
 
+export const PERFORMANCE_SECTION = {
+  title: "Performance contracts. No feelings, just measurements.",
+  body: "Every number is real, measured on host with the included PTY probe harness and hyperfine. NIKI boots to first frame 3.96x faster than Codex, consumes 39% less memory, and compiles to a binary 12.8x smaller.",
+} as const;
+
+export const PERFORMANCE_CONTRACTS = [
+  {
+    tool: "Codex CLI",
+    version: "0.152.1",
+    lang: "Rust",
+    versionTime: "20.0 ms",
+    ttfp: "23.4 ms",
+    memory: "21.7 MB",
+    binary: "244 MB",
+  },
+  {
+    tool: "Google agy",
+    version: "1.3.1",
+    lang: "Go",
+    versionTime: "19.3 ms",
+    ttfp: "778.5 ms",
+    memory: "225.5 MB",
+    binary: "202 MB",
+  },
+  {
+    tool: "Kimi Code",
+    version: "2.1.1",
+    lang: "TS/Node",
+    versionTime: "188.4 ms",
+    ttfp: "1253.7 ms",
+    memory: "391.6 MB",
+    binary: "75 MB",
+  },
+  {
+    tool: "NIKI",
+    version: "0.11.0",
+    lang: "Go",
+    versionTime: "6.8 ms",
+    ttfp: "5.9 ms",
+    memory: "13.1 MB",
+    binary: "19 MB",
+  },
+] as const;
+
+export const TOOL_SUITE_SECTION = {
+  title: "Built-in tool suite. Zero fluff.",
+  body: "Seven core coding tools, each with explicit safety guarantees. No bloat, no framework sprawl, just what a coding agent needs.",
+} as const;
+
+export const TOOL_SUITE = [
+  {
+    name: "read_file",
+    purpose: "Read file contents with line ranges",
+    safety: "Bounded size limits, path sanitization",
+  },
+  {
+    name: "write_file",
+    purpose: "Atomic write file replacement",
+    safety: "Temporary file swap, prevents corruption",
+  },
+  {
+    name: "edit_file",
+    purpose: "Targeted string replacement",
+    safety: "Requires exact match, rejects ambiguous edits",
+  },
+  {
+    name: "apply_patch",
+    purpose: "Unified diff patch applicator",
+    safety: "Fuzzed parser (>400k iterations with 0 panics)",
+  },
+  {
+    name: "glob",
+    purpose: "Find files matching wildcard patterns",
+    safety: "Bounded directory walking, ignore awareness",
+  },
+  {
+    name: "grep",
+    purpose: "Fast regex content search",
+    safety: "Read-only concurrency, skip binary files",
+  },
+  {
+    name: "shell",
+    purpose: "Execute shell commands in workspace",
+    safety: "Bubblewrap isolation, network denial, dropped caps",
+  },
+] as const;
+
 export const MANIFESTO = {
   title: "Niki is free software you can read end to end.",
-  body: "Apache-2.0 licensed, no telemetry, your own provider keys. Every prompt, every gate, and every artifact is in a repository you can fork tonight.",
+  body: "MIT licensed, no telemetry, your own provider keys. Every prompt, every gate, and every artifact is in a repository you can fork tonight.",
   link: { label: "Read the source", href: SITE.repo, external: true },
 } as const;
+
+export const PHILOSOPHY = [
+  {
+    title: "Rule of Proof",
+    body: "Works means a real test or measurement ran and its output was verified.",
+  },
+  {
+    title: "Zero Proprietary Code",
+    body: "No leaked, decompiled, or reconstructed proprietary source was ever accessed or copied.",
+  },
+  {
+    title: "Small and Boring",
+    body: "Dependencies pass strict admission checks. Zero framework sprawl.",
+  },
+] as const;
 
 export const CHANGELOG_SECTION = {
   title: "Changelog",
@@ -447,7 +557,7 @@ export const HIGHLIGHTS = [
 ] as const;
 
 export const FINAL_CTA = {
-  title: "Try Niki now.",
+  title: "One sentence in. A reviewable branch out.",
   action: {
     label: "Download Niki",
     href: WEB_ROUTES.downloads,

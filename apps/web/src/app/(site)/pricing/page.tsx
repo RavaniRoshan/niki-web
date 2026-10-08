@@ -7,7 +7,7 @@ import { pageMetadata } from "@/lib/meta";
 export const metadata = pageMetadata({
   title: "Free software. Bring your own keys.",
   description:
-    "Niki is open source under Apache-2.0. There is no paid tier, payment processing, account, or billing system. You pay your model provider, or use a local Ollama model.",
+    "Niki is open source under MIT. There is no paid tier, payment processing, account, or billing system. You pay your model provider, or use a local Ollama model.",
   path: "/pricing",
 });
 
@@ -17,7 +17,7 @@ const included = [
   "12 named providers, custom base_url endpoints, and per-agent model mixing",
   "Plan mode, sessions, memory, goals, research commands",
   "Evals harness, audit bundles, optional OTLP trace export",
-  "Apache-2.0: use it commercially, modify it, ship it",
+  "MIT: use it commercially, modify it, ship it",
 ];
 
 const costs = [
@@ -61,8 +61,8 @@ export default function PricingPage() {
           </nav>
           <h1>Free software. Bring your own keys.</h1>
           <p>
-            Niki is open source under Apache-2.0. There is no paid tier, payment processing,
-            account, or billing system. You pay your model provider, or use a local Ollama model.
+            Niki is open source under MIT. There is no paid tier, payment processing, account, or
+            billing system. You pay your model provider, or use a local Ollama model.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "24px" }}>
             <Link className="ax-btn ax-btn--primary" href={WEB_ROUTES.downloads}>
@@ -185,7 +185,7 @@ export default function PricingPage() {
             <p className="ax-plan__price">None</p>
             <p>There is no subscription, checkout, account, or Niki usage billing today.</p>
             <ul className="ax-pricing-list ax-pricing-list--plain">
-              <li>Current software is Apache-2.0</li>
+              <li>Current software is MIT</li>
               <li>You provide infrastructure and provider credentials</li>
               <li>No Niki invoice or seat license</li>
             </ul>
@@ -195,7 +195,7 @@ export default function PricingPage() {
         <div style={{ padding: "24px 24px 32px" }}>
           <p style={{ margin: 0, fontSize: "0.8125rem", color: "var(--gray-10)" }}>
             Niki does not currently provide subscriptions, checkout, accounts or usage metering. The
-            local Apache-2.0 pipeline is available without a Niki paid plan.
+            local MIT pipeline is available without a Niki paid plan.
           </p>
         </div>
       </Box>

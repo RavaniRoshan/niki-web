@@ -37,10 +37,10 @@ export const SITE = {
   },
   /** Latest release info — data-driven; update per release or fetch dynamically later */
   release: {
-    version: "0.8.0",
-    tag: "v0.8.0",
-    date: "2026-09-23",
-    notes: "https://github.com/RavaniRoshan/niki/releases/tag/v0.8.0",
+    version: "0.11.0",
+    tag: "v0.11.0",
+    date: "2026-10-08",
+    notes: "https://github.com/RavaniRoshan/niki/releases/tag/v0.11.0",
     latest: "https://github.com/RavaniRoshan/niki/releases/latest",
   },
 } as const;

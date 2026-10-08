@@ -1,4 +1,4 @@
-import { MANIFESTO } from "./content";
+import { MANIFESTO, PHILOSOPHY } from "./content";
 import { BACKENDS, PROVIDERS } from "./content";
 import styles from "./sections.module.css";
 
@@ -41,6 +41,14 @@ export default function ManifestoCard() {
         <p className={styles.manifestoProviderLine}>
           {PROVIDERS.map((provider) => provider.name).join(", ")}.
         </p>
+        <div className={styles.philosophyList}>
+          {PHILOSOPHY.map((item) => (
+            <div key={item.title} className={styles.philosophyItem}>
+              <span className={styles.philosophyTitle}>{item.title}</span>
+              <span className={styles.philosophyBody}>{item.body}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

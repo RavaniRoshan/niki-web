@@ -12,7 +12,7 @@ Run your first NIKI task and review the resulting branch or evidence bundle.
 
 ## Prerequisites
 
-1. **Rust:** Rust 1.88+ (2024 edition) installed.
+1. **Go:** Go 1.24+ installed.
 2. **Container Engine:** [Podman](https://podman.io) (preferred) or [Docker](https://docs.docker.com/get-docker/). Without `DOCKER_HOST`, socket discovery tries rootless before rootful endpoints.
 3. **LLM API Key:** At least one API key from Anthropic, OpenAI, OpenRouter, Google, or a local Ollama instance.
 
@@ -20,7 +20,7 @@ Run your first NIKI task and review the resulting branch or evidence bundle.
 
 ## Step 1: Build the Sandbox Image
 
-NIKI executes code and test suites inside a hardened container image with `git`, `node`, `npm`, `python3`, `rustc`, and `cargo` pre-installed.
+NIKI executes code and test suites inside a hardened container image with `git`, `node`, `npm`, `python3`, and `go` pre-installed.
 
 ```bash
 # Build sandbox image using Podman or Docker
@@ -63,7 +63,7 @@ A full multi-agent run with a resolved, green test command can look like this:
    "Add a GET /health endpoint…"
 
  [Planner]   Done · Spec: 1 file to modify
- [Coder]     Done · Changed 1 file · src/api.rs [modified]
+  [Coder]     Done · Changed 1 file · src/main.go [modified]
  [Tester]    Done · 8/8 tests passed
  [Reviewer]  Done · Approved · correctness 10/10 · quality 9/10 · coverage 10/10
  [NIKI]      Task complete · Branch: niki/6d281d6d · Verdict: Approved · Revisions: 0

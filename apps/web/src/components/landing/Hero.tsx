@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { HERO } from "./content";
+import { HERO, HERO_BADGES } from "./content";
 import GradientWash from "./GradientWash";
 import PipelineVideo from "./PipelineVideo";
 import styles from "./sections.module.css";
@@ -39,6 +39,13 @@ export default function Hero() {
           >
             {HERO.secondaryAction.label} <span aria-hidden="true">→</span>
           </a>
+        </div>
+        <div className={styles.heroBadges}>
+          {HERO_BADGES.map((badge) => (
+            <span key={badge.label} className={styles.heroBadge}>
+              {badge.label}
+            </span>
+          ))}
         </div>
       </div>
 
